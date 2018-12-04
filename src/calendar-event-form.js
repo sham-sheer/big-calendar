@@ -44,6 +44,8 @@ class Form extends Component {
     this.state = {
       title: '',
       desc: '',
+      startParsed: '',
+      endParsed: '',
       start: '',
       end: ''
     };
@@ -78,8 +80,10 @@ class Form extends Component {
     const endDateParsedInUTC = this.processStringForUTC(endDateParsed);
     console.log(startDateParsedInUTC + " " + endDateParsedInUTC);
     this.setState({
-      start: startDateParsedInUTC,
-      end: endDateParsedInUTC
+      startParsed: startDateParsedInUTC,
+      endParsed: endDateParsedInUTC,
+      start: this.props.match.params.start,
+      end: this.props.match.params.end
     })
   }
 
@@ -92,11 +96,11 @@ class Form extends Component {
   }
 
   handleChangeStartTime(e) {
-    this.setState({ start: e.target.value });
+    this.setState({ startParsed: e.target.value });
   }
 
   handleChangeEndTime(e) {
-    this.setState({ end: e.target.value });
+    this.setState({ endParsed: e.target.value });
   }
 
   handleSubmit(e) {
@@ -132,7 +136,7 @@ class Form extends Component {
           id="datetime-local"
           label="Start"
           type="datetime-local"
-          defaultValue={this.state.start}
+          defaultValue={this.state.startParsed}
           className={classes.textField}
           InputLabelProps={{
             shrink: true,
@@ -145,7 +149,7 @@ class Form extends Component {
           id="datetime-local"
           label="End"
           type="datetime-local"
-          defaultValue={this.state.end}
+          defaultValue={this.state.endParsed}
           className={classes.textField}
           InputLabelProps={{
             shrink: true,

@@ -26,25 +26,18 @@ class CalendarContainer extends Component {
     ]
   };
 
-  postProcessEvent = (event) => {
-    debugger
-    const start = event.start.moment().format('llll');
-    console.log(start);
-  }
-
   updateEventsList = (event) => {
-      this.postProcessEvent(event);
-      /*this.setState({
+      this.setState({
         events: [
           ...this.state.events,
           {
-            allDay: false
-            start,
-            end,
-            title,
+            allDay: false,
+            end: new Date(event.endParsed),
+            start: new Date(event.startParsed),
+            title: event.title,
           },
         ],
-      })*/
+      })
   }
 
   getEventsFromMove = (events) => {

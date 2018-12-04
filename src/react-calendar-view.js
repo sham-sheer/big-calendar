@@ -35,7 +35,7 @@ class ReactCalendarView extends React.Component {
   }
 
   moveEvent({ event, start, end }) {
-      const { events } = this.props;
+      const events = this.props.eventsList;
 
       const idx = events.indexOf(event);
       const updatedEvent = { ...event, start, end };
@@ -48,7 +48,7 @@ class ReactCalendarView extends React.Component {
   }
 
   resizeEvent = (resizeType, { event, start, end }) => {
-    const { events } = this.props;
+    const events = this.props.eventsList;
 
     const nextEvents = events.map(existingEvent => {
       return existingEvent.id === event.id
@@ -62,27 +62,11 @@ class ReactCalendarView extends React.Component {
     });
   };
 
-  handleSelect = ({ start, end }) => {
-    const title = window.prompt('New Event name')
-    if (title)
-      this.setState({
-        events: [
-          ...this.state.events,
-          {
-            start,
-            end,
-            title,
-          },
-        ],
-      })
-  }
-
   handleSelectDate = ({ start, end }) => {
     this.props.history.push(`/${start}/$${end}`);
   }
 
   render() {
-    debugger
     return (
       <DragAndDropCalendar
         className="react-calendar-view"
@@ -92,7 +76,7 @@ class ReactCalendarView extends React.Component {
         onEventDrop={this.moveEvent}
         resizable
         onEventResize={this.resizeEvent}
-        defaultView={BigCalendar.Views.DAY}
+        defaultView={BigCalendar.Views.MONTH}
         onSelectSlot={this.handleSelectDate}
         popup
       />
