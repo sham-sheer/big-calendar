@@ -19,8 +19,8 @@ class CalendarContainer extends Component {
       },
       {
         allDay: true,
-        end: new Date('December 09, 2018 11:13:00'),
-        start: new Date('December 09, 2018 11:13:00'),
+        end: new Date('December 05, 2018 11:13:00'),
+        start: new Date('December 05, 2018 11:13:00'),
         title: 'All Day Event',
       }
     ]
@@ -71,6 +71,7 @@ class CalendarContainer extends Component {
             />
           </Switch>
         </Router>
+
       </div>
     );
   }

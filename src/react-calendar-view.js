@@ -4,33 +4,39 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
 import './react-calendar-view.css';
 import { withRouter } from 'react-router-dom';
-import 'react-big-calendar/lib/addons/dragAndDrop/styles.less'
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.less';
+import Modal from 'react-modal';
 
 
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
+
 class ReactCalendarView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      events: [
-        {
-          allDay: false,
-          end: new Date('December 10, 2018 11:13:00'),
-          start: new Date('December 09, 2018 12:13:00'),
-          title: 'hi',
-        },
-        {
-          allDay: true,
-          end: new Date('December 09, 2018 11:13:00'),
-          start: new Date('December 09, 2018 11:13:00'),
-          title: 'All Day Event',
-        }
-      ],
+      currentEvent: '',
+      isShowEvent: false,
+      currentEventStartDateTime: '',
+      currentEventStartDateTime: ''
     };
 
     this.moveEvent = this.moveEvent.bind(this);
+  }
+
+  componentWillMount() {
+    Modal.setAppElement('body');
   }
 
   moveEvent({ event, start, end }) {
@@ -62,12 +68,39 @@ class ReactCalendarView extends React.Component {
     this.props.history.push(`/${start}/$${end}`);
   }
 
-  handleEventClick = ({ event }) => {
-    alert(event);
+  handleEventClick = (event) => {
+    this.setState({
+      isShowEvent: true,
+      currentEvent: event,
+      currentEventStartDateTime: moment(event.start).format("D, MMMM YYYY, h:mm a"),
+      currentEventEndDateTime: moment(event.end).format("D, MMMM Do YYYY, h:mm a"),
+    })
+  }
+
+  close = () => {
+    this.setState({
+      isShowEvent: false
+    })
+  }
+
+  afterOpenModal = () => {
+    // references are now sync'd and can be accessed.
   }
 
   render() {
     return (
+      <div>
+      <Modal
+          isOpen={this.state.isShowEvent}
+          onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.close}
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <h2 ref={subtitle => this.subtitle = subtitle}>{this.state.currentEvent.title}</h2>
+          <h4>{this.state.currentEventStartDateTime} - {this.state.currentEventEndDateTime}</h4>
+          <button onClick={this.close}>close</button>
+        </Modal>
       <DragAndDropCalendar
         selectable
         localizer={localizer}
@@ -75,10 +108,12 @@ class ReactCalendarView extends React.Component {
         onEventDrop={this.moveEvent}
         resizable
         onEventResize={this.resizeEvent}
-        defaultView={BigCalendar.Views.MONTH}
+        defaultView={BigCalendar.Views.DAY}
         onSelectSlot={this.handleSelectDate}
-        onSelectEvent={event => alert(event.title)}
+        onSelectEvent={(event) => this.handleEventClick(event)}
+        popup
       />
+      </div>
     );
   }
 }
