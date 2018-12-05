@@ -3,7 +3,7 @@ import Root from './containers/Root';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Switch, Route } from 'react-router-dom';
 import CalendarEventForm from './calendar-event-form';
-import Calendar from './react-calendar-view';
+import ReactCalendarView from './react-calendar-view';
 import moment from 'moment';
 
 
@@ -54,7 +54,7 @@ class CalendarContainer extends Component {
             <Route
               exact path="/"
               render={(props) =>
-                <Calendar
+                <ReactCalendarView
                   {...props}
                   eventsList={this.state.events}
                   pushEventsFromMove={this.getEventsFromMove}

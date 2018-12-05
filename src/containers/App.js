@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+
 const App = ({ children }) => (
   <div>{children}</div>
 );

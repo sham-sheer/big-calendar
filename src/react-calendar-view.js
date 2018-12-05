@@ -1,11 +1,10 @@
 import React from "react";
-import { DragDropContext } from "react-dnd";
 import BigCalendar from "react-big-calendar";
-import HTML5Backend from "react-dnd-html5-backend";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
 import './react-calendar-view.css';
 import { withRouter } from 'react-router-dom';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.less'
 
 
 const localizer = BigCalendar.momentLocalizer(moment);
@@ -57,19 +56,19 @@ class ReactCalendarView extends React.Component {
     });
 
     this.props.pushEventsFromResize(nextEvents);
-    this.setState({
-      events: nextEvents
-    });
   };
 
   handleSelectDate = ({ start, end }) => {
     this.props.history.push(`/${start}/$${end}`);
   }
 
+  handleEventClick = ({ event }) => {
+    alert(event);
+  }
+
   render() {
     return (
       <DragAndDropCalendar
-        className="react-calendar-view"
         selectable
         localizer={localizer}
         events={this.props.eventsList}
@@ -78,12 +77,10 @@ class ReactCalendarView extends React.Component {
         onEventResize={this.resizeEvent}
         defaultView={BigCalendar.Views.MONTH}
         onSelectSlot={this.handleSelectDate}
-        popup
+        onSelectEvent={event => alert(event.title)}
       />
     );
   }
 }
 
-const Calendar = DragDropContext(HTML5Backend)(ReactCalendarView);
-
-export default withRouter(Calendar);
+export default withRouter(ReactCalendarView);
