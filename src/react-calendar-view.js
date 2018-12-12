@@ -6,7 +6,8 @@ import './react-calendar-view.css';
 import { withRouter } from 'react-router-dom';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.less';
 import Modal from 'react-modal';
-
+import { addNewEvent } from './redux/actions';
+import { connect } from 'react-redux';
 
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
@@ -88,8 +89,9 @@ class ReactCalendarView extends React.Component {
   }
 
   render() {
+    console.log(this.props.events);
     return (
-      <div>
+      <>
       <Modal
           isOpen={this.state.isShowEvent}
           onAfterOpen={this.afterOpenModal}
@@ -113,9 +115,16 @@ class ReactCalendarView extends React.Component {
         onSelectEvent={(event) => this.handleEventClick(event)}
         popup
       />
-      </div>
+      </>
     );
   }
 }
+const mapStateToProps = state => {
+  return {
+    events: state.events,
+  }
+}
 
-export default withRouter(ReactCalendarView);
+const mapDispatchToProps = { addNewEvent }
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ReactCalendarView));
