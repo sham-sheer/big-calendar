@@ -6,7 +6,7 @@ import './react-calendar-view.css';
 import { withRouter } from 'react-router-dom';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.less';
 import Modal from 'react-modal';
-import { addNewEvent } from './redux/actions';
+import { updateEvents, getEvents } from './redux/actions';
 import { connect } from 'react-redux';
 
 const localizer = BigCalendar.momentLocalizer(moment);
@@ -29,41 +29,40 @@ class ReactCalendarView extends React.Component {
     this.state = {
       currentEvent: '',
       isShowEvent: false,
-      currentEventStartDateTime: '',
       currentEventStartDateTime: ''
     };
-
-    this.moveEvent = this.moveEvent.bind(this);
   }
 
   componentWillMount() {
     Modal.setAppElement('body');
+
   }
 
-  moveEvent({ event, start, end }) {
-      const events = this.props.eventsList;
+  componentDidMount() {
+    this.props.getEvents();
+  }
+
+  moveEventList = ({ event, start, end }) => {
+      const events = this.props.events;
 
       const idx = events.indexOf(event);
       const updatedEvent = { ...event, start, end };
 
       const nextEvents = [...events];
       nextEvents.splice(idx, 1, updatedEvent);
-
-
-      this.props.pushEventsFromMove(nextEvents);
+      this.props.updateEvents(nextEvents);
   }
 
   resizeEvent = (resizeType, { event, start, end }) => {
-    const events = this.props.eventsList;
+    const events = this.props.events;
 
     const nextEvents = events.map(existingEvent => {
       return existingEvent.id === event.id
         ? { ...existingEvent, start, end }
         : existingEvent;
     });
-
-    this.props.pushEventsFromResize(nextEvents);
-  };
+    this.props.updateEvents(nextEvents);
+  }
 
   handleSelectDate = ({ start, end }) => {
     this.props.history.push(`/${start}/$${end}`);
@@ -89,7 +88,6 @@ class ReactCalendarView extends React.Component {
   }
 
   render() {
-    console.log(this.props.events);
     return (
       <>
       <Modal
@@ -106,14 +104,13 @@ class ReactCalendarView extends React.Component {
       <DragAndDropCalendar
         selectable
         localizer={localizer}
-        events={this.props.eventsList}
-        onEventDrop={this.moveEvent}
-        resizable
+        events={this.props.events}
+        onEventDrop={this.moveEventList}
         onEventResize={this.resizeEvent}
-        defaultView={BigCalendar.Views.DAY}
         onSelectSlot={this.handleSelectDate}
         onSelectEvent={(event) => this.handleEventClick(event)}
         popup
+        resizable
       />
       </>
     );
@@ -125,6 +122,12 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = { addNewEvent }
+const mapDispatchToProps = dispatch => ({
+  updateEvents: (nextEvents) => dispatch(updateEvents(nextEvents)),
+  getEvents: () => dispatch(getEvents())
+
+})
+
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ReactCalendarView));

@@ -6,15 +6,16 @@ import './calendar-event-form.css';
 import { withRouter } from 'react-router-dom';
 import purple from '@material-ui/core/colors/purple';
 import moment from "moment";
+import { addNewEvent } from './redux/actions';
+import { connect } from 'react-redux';
 
-export const START_INDEX_OF_UTC_FORMAT = 17;
-export const START_INDEX_OF_HOUR = 11;
-export const END_INDEX_OF_HOUR = 13;
-export const TIME_OFFSET = 12;
-export const START_INDEX_OF_DATE = 0;
-export const END_INDEX_OF_DATE = 11;
-export const START_INDEX_OF_MINUTE = 14;
-export const END_INDEX_OF_MINUTE = 16;
+const START_INDEX_OF_UTC_FORMAT = 17;
+const START_INDEX_OF_HOUR = 11;
+const END_INDEX_OF_HOUR = 13;
+const TIME_OFFSET = 12;
+const START_INDEX_OF_DATE = 0;
+const END_INDEX_OF_DATE = 11;
+const END_INDEX_OF_MINUTE = 16;
 
 const styles = theme => ({
   container: {
@@ -106,7 +107,12 @@ class Form extends Component {
   handleSubmit(e) {
     // need to write validation method
     e.preventDefault();
-    this.props.updateEvents(this.state);
+    this.props.addNewEvent({
+      allDay: false,
+      end: new Date(this.state.endParsed),
+      start: new Date(this.state.startParsed),
+      title: this.state.title,
+    });
     this.props.history.push('/');
   }
 
@@ -166,6 +172,12 @@ class Form extends Component {
   }
 }
 
-const CalendarEventForm = withStyles(styles)(Form)
+const mapStateToProps = state => {
+  return {
+    events: state.events,
+  }
+}
 
-export default withRouter(CalendarEventForm);
+const mapDispatchToProps = { addNewEvent }
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withStyles(styles)(Form)));
