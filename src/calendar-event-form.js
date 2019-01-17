@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { FormControl } from 'react-bootstrap';
-import './calendar-event-form.css';
-import { withRouter } from 'react-router-dom';
-import purple from '@material-ui/core/colors/purple';
 import moment from "moment";
 import { addNewEvent } from './redux/actions';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { withStyles } from '@material-ui/core/styles';
 
 const START_INDEX_OF_UTC_FORMAT = 17;
 const START_INDEX_OF_HOUR = 11;
@@ -29,11 +27,6 @@ const styles = theme => ({
   },
   margin: {
     margin: theme.spacing.unit,
-  },
-  cssLabel: {
-    '&$cssFocused': {
-      color: purple[500],
-    },
   },
   cssFocused: {},
 });
@@ -117,10 +110,9 @@ class Form extends Component {
   }
 
   render() {
-    const { classes } = this.props;
     return (
       <div className="form-event-container">
-      <form className={classes.container} onSubmit={this.handleSubmit} noValidate>
+      <form className="container" onSubmit={this.handleSubmit} noValidate>
 
         {/* Title Form*/}
         <FormControl
@@ -143,7 +135,7 @@ class Form extends Component {
           label="Start"
           type="datetime-local"
           defaultValue={this.state.startParsed}
-          className={classes.textField}
+          className="textField"
           InputLabelProps={{
             shrink: true,
           }}
@@ -156,7 +148,7 @@ class Form extends Component {
           label="End"
           type="datetime-local"
           defaultValue={this.state.endParsed}
-          className={classes.textField}
+          className="textField"
           InputLabelProps={{
             shrink: true,
           }}
@@ -171,6 +163,7 @@ class Form extends Component {
     )
   }
 }
+
 
 const mapStateToProps = state => {
   return {

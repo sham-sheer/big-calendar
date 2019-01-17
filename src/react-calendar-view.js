@@ -2,12 +2,11 @@ import React from "react";
 import BigCalendar from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
-import './react-calendar-view.css';
-import { withRouter } from 'react-router-dom';
-import 'react-big-calendar/lib/addons/dragAndDrop/styles.less';
 import Modal from 'react-modal';
+import { withRouter } from 'react-router-dom';
 import { updateEvents, getEvents } from './redux/actions';
 import { connect } from 'react-redux';
+import './react-calendar-view.css';
 
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
@@ -116,6 +115,7 @@ class ReactCalendarView extends React.Component {
     );
   }
 }
+
 const mapStateToProps = state => {
   return {
     events: state.events,
