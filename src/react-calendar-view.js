@@ -11,6 +11,14 @@ import './react-calendar-view.css';
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 
+const CALENDAR_ID = 'shamsheer619@gmail.com';
+const CLIENT_ID = '65724758895-gc7lubjkjsqqddfhlb7jcme80i3mjqn0.apps.googleusercontent.com';
+const API_KEY = 'AIzaSyCTYXWtoRKnXeZkPCcZwYOXm0Qz3Lz9F9g';
+const SCOPE = `https://www.googleapis.com/auth/calendar.events`;
+
+var GoogleAuth;
+
+
 const customStyles = {
   content : {
     top                   : '50%',
@@ -38,7 +46,7 @@ class ReactCalendarView extends React.Component {
   }
 
   componentDidMount() {
-    this.props.getEvents();
+    handleClientLoad();
   }
 
   moveEventList = ({ event, start, end }) => {
@@ -116,11 +124,78 @@ class ReactCalendarView extends React.Component {
   }
 }
 
+function initClient() {
+  window.gapi.client.init({
+      'apiKey': API_KEY,
+      'clientId': CLIENT_ID,
+      'scope': SCOPE,
+      'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+  }).then(function () {
+      GoogleAuth = window.gapi.auth2.getAuthInstance();
+      handleAuthClick();
+      // Handle initial sign-in state. (Determine if user is already signed in)
+      GoogleAuth.isSignedIn.listen(updateSigninStatus);
+      setSigninStatus();
+  })
+}
+
+
+
+function revokeAccess() {
+  GoogleAuth.disconnect();
+}
+
+function handleAuthClick() {
+  if (GoogleAuth.isSignedIn.get()) {
+      // User is authorized and has clicked 'Sign out' button.
+      GoogleAuth.signOut();
+  } else {
+      // User is not signed in. Start Google auth flow.
+      GoogleAuth.signIn();
+    }
+}
+
+function updateSigninStatus(isSignedIn) {
+  setSigninStatus();
+}
+
+function setSigninStatus(isSignedIn) {
+  var user = GoogleAuth.currentUser.get();
+  var isAuthorized = user.hasGrantedScopes(SCOPE);
+  if (isAuthorized) {
+    console.log("Authorized");
+    makeApiCall();
+  } else {
+    console.log("Not authorized");
+  }
+}
+
+const pageToken = null;
+
+function makeApiCall() {
+  return window.gapi.client.request({
+        'path': `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`,
+      }).then(resp => {
+        debugger
+      let events = resp.result.items;
+      console.log(events);
+    }, (reason) => {
+      console.log(reason);
+    });
+}
+
+
+function handleClientLoad() {
+  window.gapi.load('client:auth2', initClient);
+}
+
 const mapStateToProps = state => {
   return {
     events: state.events,
   }
 }
+
+
 
 const mapDispatchToProps = dispatch => ({
   updateEvents: (nextEvents) => dispatch(updateEvents(nextEvents)),

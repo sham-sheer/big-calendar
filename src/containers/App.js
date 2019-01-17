@@ -7,7 +7,7 @@ import IssueOAuth from './Containers/IssueOAuth';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './redux/reducers';
-import { apiMiddleware, loggerMiddleware, tokenMiddleware } from './redux/middleware';
+import { apiMiddleware, loggerMiddleware } from './redux/middleware';
 
 
 
@@ -15,7 +15,7 @@ class App extends Component {
 
   render() {
     const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-    const store = createStore(rootReducer, composeEnhancers(applyMiddleware(tokenMiddleware, apiMiddleware, loggerMiddleware)));
+    const store = createStore(rootReducer, composeEnhancers(applyMiddleware(apiMiddleware, loggerMiddleware)));
     return (
       <Provider store={store}>
       <BrowserRouter>

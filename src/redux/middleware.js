@@ -24,7 +24,7 @@ function initClient() {
 
       // Handle initial sign-in state. (Determine if user is already signed in)
       var user = GoogleAuth.currentUser.get();
-      console.log(user);
+      GoogleAuth.signIn();
   })
 }
 
@@ -80,7 +80,7 @@ export const apiMiddleware = store => next => action => {
   if(action.type === 'GET_EVENTS') {
 
     // Not complete
-    //handleClientLoad();
+    handleClientLoad();
   }
   return next(action);
 }
