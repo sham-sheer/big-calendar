@@ -1,4 +1,4 @@
-import { ADD_NEW_EVENT, UPDATE_EVENTS, GET_EVENTS_SUCCESS, GET_EVENTS_FAILURE } from './actions';
+import { ADD_NEW_EVENT, UPDATE_EVENTS, GET_GOOGLE_EVENTS_SUCCESS, GET_GOOGLE_EVENTS_FAILURE, GET_OUTLOOK_EVENTS_SUCCESS, GET_OUTLOOK_EVENTS_FAILURE } from './actions';
 
 const initialState = {
   events: [
@@ -26,15 +26,23 @@ export default function eventsReducer(state = initialState, action) {
       return {
         events: action.payload.updatedEvents
       }
-    case GET_EVENTS_SUCCESS:
+    case GET_GOOGLE_EVENTS_SUCCESS:
       return {
         ...state,
         data: action.payload.data
       }
-    case GET_EVENTS_FAILURE:
+    case GET_GOOGLE_EVENTS_FAILURE:
       return {
         ...state,
         error: action.payload.error
+      }
+    case GET_OUTLOOK_EVENTS_SUCCESS:
+      return {
+        ...state
+      }
+    case GET_OUTLOOK_EVENTS_FAILURE:
+      return {
+        ...state
       }
     default:
       return state;

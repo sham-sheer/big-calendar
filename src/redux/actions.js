@@ -3,9 +3,14 @@
  */
 export const ADD_NEW_EVENT = 'ADD_NEW_EVENT';
 export const UPDATE_EVENTS = 'UPDATE_EVENTS';
-export const GET_EVENTS = 'GET_EVENTS';
-export const GET_EVENTS_SUCCESS = 'GET_EVENTS_SUCCESS';
-export const GET_EVENTS_FAILURE = 'GET_EVENTS_FAILURE';
+export const GET_GOOGLE_EVENTS = 'GET_GOOGLE_EVENTS';
+export const GET_GOOGLE_EVENTS_SUCCESS = 'GET_EVENTS_SUCCESS';
+export const GET_GOOGLE_EVENTS_FAILURE = 'GET_EVENTS_FAILURE';
+export const GET_OUTLOOK_EVENTS = 'GET_OUTLOOK_EVENTS';
+export const GET_OUTLOOK_EVENTS_SUCCESS = 'GET_OUTLOOK_EVENTS_SUCCESS';
+export const GET_OUTLOOK_EVENTS_FAILURE = 'GET_OUTLOOK_EVENTS_FAILURE';
+
+
 
 export function addNewEvent(newEvent) {
   return {
@@ -24,10 +29,23 @@ export function updateEvents(updatedEvents) {
   }
 }
 
-export function getEvents() {
+export function getGoogleEvents() {
   return {
-    type: GET_EVENTS,
+    type: GET_GOOGLE_EVENTS,
     payload: {
+    },
+    meta: {
+      api_status: 'REQUEST',
+      call: 'GET'
+    }
+  }
+}
+
+export function getOutlookEvents(url) {
+  return {
+    type: GET_OUTLOOK_EVENTS,
+    payload: {
+      url: url
     },
     meta: {
       api_status: 'REQUEST',

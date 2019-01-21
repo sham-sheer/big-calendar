@@ -1,9 +1,20 @@
-.container: {
+const styles = theme => ({
+  container: {
     display: 'flex',
     flexWrap: 'wrap',
-},
-.textField: {
+  },
+  textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
     width: 300,
   },
+  margin: {
+    margin: theme.spacing.unit,
+  },
+  cssLabel: {
+    '&$cssFocused': {
+      color: purple[500],
+    },
+  },
+  cssFocused: {},
+});
