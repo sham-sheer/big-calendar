@@ -8,14 +8,11 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import eventsReducer from '../redux/reducers';
 import { apiMiddleware, loggerMiddleware } from '../redux/middleware';
+import {store} from '../store/configureStore';
 
 
 class CalendarContainer extends Component {
   render() {
-    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-    const store = createStore(eventsReducer, composeEnhancers(applyMiddleware(apiMiddleware, loggerMiddleware)));
-
     return (
       <div className="calendar-container">
       <Provider store={store}>
