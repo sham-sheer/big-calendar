@@ -41,11 +41,10 @@ export function getGoogleEvents() {
   }
 }
 
-export function getOutlookEvents(url) {
+export function getOutlookEvents() {
   return {
     type: GET_OUTLOOK_EVENTS,
     payload: {
-      url: url
     },
     meta: {
       api_status: 'REQUEST',

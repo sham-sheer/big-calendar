@@ -1,5 +1,4 @@
 import { createLogger } from 'redux-logger';
-import axios from 'axios';
 export const loggerMiddleware = createLogger();
 
 
@@ -11,13 +10,13 @@ function googleCalendarEvents() {
         'path': `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`,
       }).then(resp => {
       let events = resp.result.items;
-      console.log(events);
+      return events;
     }, (reason) => {
-      console.log(reason);
+      return reason;
     });
 }
 
-function getUserEvents() {
+function outlookCalendarEvents() {
   return MicrosoftGraph.Client.init({
     authProvider: (done) => {
       done(null, window.localStorage.getItem('at'))
@@ -28,9 +27,9 @@ function getUserEvents() {
     .orderby('createdDatetime DESC')
     .get((err, res) => {
       if (err) {
-        console.log(err);
+        return err;
       } else {
-        console.log(res.value);
+        return res.value;
       }
     });
 }
@@ -38,11 +37,23 @@ function getUserEvents() {
 
 export const apiMiddleware = store => next => action => {
   if(action.type === 'GET_GOOGLE_EVENTS') {
-    googleCalendarEvents();
+    const value = googleCalendarEvents();
+    next({
+      type: action.type + '_SUCCESS',
+      payload: {
+        data: value
+      }
+    })
   }
-  if(action.type == 'GET_OUTLOOK_EVENTS') {
-    const url = action.payload.url;
-    getUserEvents();
+  if(action.type === 'GET_OUTLOOK_EVENTS') {
+    const value = outlookCalendarEvents();
+    next({
+      type: action.type + '_SUCCESS',
+      payload: {
+        data: value
+      }
+    })
   }
+
   return next(action);
 }

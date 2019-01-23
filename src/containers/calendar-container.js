@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Switch, Route } from 'react-router-dom';
-import CalendarEventForm from '../calendar-event-form';
+import CalendarEventForm from './event-form-container';
 import ViewContainer from './view-container';
-import OutLookOAuth from './outlook-oauth';
+import OutLookRedirect from '../components/outlook-redirect';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import eventsReducer from '../redux/reducers';
@@ -21,7 +21,7 @@ class CalendarContainer extends Component {
       <Provider store={store}>
         <Router>
           <Switch>
-            <Route path={"/outlook-redirect"} component={OutLookOAuth} />
+            <Route path={"/outlook-redirect"} component={OutLookRedirect} />
             <Route exact path="/" component={ViewContainer} />
             <Route path="/:start/:end" component={CalendarEventForm} />
           </Switch>
