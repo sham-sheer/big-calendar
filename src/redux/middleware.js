@@ -5,17 +5,6 @@ export const loggerMiddleware = createLogger();
 const CALENDAR_ID = 'shamsheer619@gmail.com';
 const MicrosoftGraph = require("@microsoft/microsoft-graph-client");
 
-function googleCalendarEvents() {
-  return window.gapi.client.request({
-        'path': `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`,
-      }).then(resp => {
-      let events = resp.result.items;
-      return events;
-    }, (reason) => {
-      return reason;
-    });
-}
-
 function outlookCalendarEvents() {
   return MicrosoftGraph.Client.init({
     authProvider: (done) => {
@@ -37,13 +26,25 @@ function outlookCalendarEvents() {
 
 export const apiMiddleware = store => next => action => {
   if(action.type === 'GET_GOOGLE_EVENTS') {
-    const value = googleCalendarEvents();
-    next({
-      type: action.type + '_SUCCESS',
-      payload: {
-        data: value
-      }
-    })
+    window.gapi.client.request({
+         'path': `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`,
+       }).then(resp => {
+       let events = resp.result.items;
+       debugger
+       next({
+         type: action.type + '_SUCCESS',
+         payload: {
+           data: events
+         }
+       });
+     }, (reason) => {
+       next({
+         type: action.type + '_FAILURE',
+         payload: {
+           data: reason
+         }
+       });
+     });
   }
   if(action.type === 'GET_OUTLOOK_EVENTS') {
     const value = outlookCalendarEvents();
@@ -54,6 +55,5 @@ export const apiMiddleware = store => next => action => {
       }
     })
   }
-
   return next(action);
 }

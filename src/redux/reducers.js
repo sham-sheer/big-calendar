@@ -1,4 +1,4 @@
-import { ADD_NEW_EVENT, UPDATE_EVENTS, GET_GOOGLE_EVENTS_SUCCESS, GET_GOOGLE_EVENTS_FAILURE, GET_OUTLOOK_EVENTS_SUCCESS, GET_OUTLOOK_EVENTS_FAILURE } from './actions';
+import { ADD_NEW_EVENT, UPDATE_EVENTS, GET_GOOGLE_EVENTS, GET_GOOGLE_EVENTS_SUCCESS, GET_GOOGLE_EVENTS_FAILURE, GET_OUTLOOK_EVENTS_SUCCESS, GET_OUTLOOK_EVENTS_FAILURE } from './actions';
 
 const initialState = {
   events: [
@@ -10,8 +10,10 @@ const initialState = {
 
     }
   ],
-  data: [],
-  error: ''
+  google_data: [],
+  outlook_data: [],
+  error: '',
+  beginAPi: false
 }
 
 
@@ -20,16 +22,23 @@ export default function eventsReducer(state = initialState, action) {
     case ADD_NEW_EVENT:
       const newEventsList = state.events.concat(action.payload.newEvent);
       return {
+        ...state,
         events: newEventsList
       }
     case UPDATE_EVENTS:
       return {
+        ...state,
         events: action.payload.updatedEvents
+      }
+    case GET_GOOGLE_EVENTS:
+      return {
+        ...state,
+        beginAPi: true
       }
     case GET_GOOGLE_EVENTS_SUCCESS:
       return {
         ...state,
-        data: action.payload.data
+        google_data: action.payload.data
       }
     case GET_GOOGLE_EVENTS_FAILURE:
       return {
@@ -38,11 +47,13 @@ export default function eventsReducer(state = initialState, action) {
       }
     case GET_OUTLOOK_EVENTS_SUCCESS:
       return {
-        ...state
+        ...state,
+        outlook_data: action.payload.data
       }
     case GET_OUTLOOK_EVENTS_FAILURE:
       return {
-        ...state
+        ...state,
+        error: action.payload.error
       }
     default:
       return state;

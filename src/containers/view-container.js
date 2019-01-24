@@ -2,10 +2,12 @@ import ReactCalendarView from '../components/react-calendar-view';
 import { withRouter } from 'react-router-dom';
 import { updateEvents, getGoogleEvents, getOutlookEvents } from '../redux/actions';
 import { connect } from 'react-redux';
+import { getFilteredEvents } from '../redux/selectors';
 
 const mapStateToProps = state => {
+  debugger
   return {
-    events: state.events,
+    events: getFilteredEvents(state)
   }
 }
 

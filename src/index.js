@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import CalendarContainer from './containers/calendar-container';
 import * as serviceWorker from './serviceWorker';
 import './bootstrap.css';
 import Routes from './routes';
