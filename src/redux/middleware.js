@@ -30,7 +30,6 @@ export const apiMiddleware = store => next => action => {
          'path': `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events`,
        }).then(resp => {
        let events = resp.result.items;
-       debugger
        next({
          type: action.type + '_SUCCESS',
          payload: {
