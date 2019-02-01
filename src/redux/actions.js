@@ -10,43 +10,37 @@ export const GET_OUTLOOK_EVENTS = 'GET_OUTLOOK_EVENTS';
 export const GET_OUTLOOK_EVENTS_SUCCESS = 'GET_OUTLOOK_EVENTS_SUCCESS';
 export const GET_OUTLOOK_EVENTS_FAILURE = 'GET_OUTLOOK_EVENTS_FAILURE';
 export const BEGIN_GOOGLE_AUTH = 'BEGIN_GOOGLE_AUTH';
+export const SUCCESS_GOOGLE_AUTH = 'SUCCESS_GOOGLE_AUTH';
+export const BEGIN_GOOGLE_LOAD = 'BEGIN_GOOGLE_LOAD';
+export const BEGIN_GET_GOOGLE_CALENDAR = 'BEGIN_GET_GOOGLE_CALENDAR';
+export const POST_GOOGLE_EVENT = 'POST_GOOGLE_EVENT';
+export const POST_GOOGLE_EVENT_SUCCESS = 'POST_GOOGLE_EVENT_SUCCESS';
 
-
-
-export function addNewEvent(newEvent) {
-  return {
-    type: ADD_NEW_EVENT,
-    payload: {
-      newEvent: newEvent
-    }
-  }
-}
-export function updateEvents(updatedEvents) {
-  return {
+export const updateEvents = (updatedEvents) => ({
     type: UPDATE_EVENTS,
     payload: {
       updatedEvents: updatedEvents
     }
-  }
-}
+})
 
-export function getGoogleEvents() {
-  return {
-    type: GET_GOOGLE_EVENTS,
-    payload: {
-
-    }
+export const successGoogleAuth = (user) => ({
+  type: SUCCESS_GOOGLE_AUTH,
+  payload: {
+    user
   }
-}
+})
 
-export function getOutlookEvents() {
-  return {
-    type: GET_OUTLOOK_EVENTS,
-    payload: {
-    },
-    meta: {
-      api_status: 'REQUEST',
-      call: 'GET'
-    }
+export const postGoogleEvent = (event) => ({
+  type: POST_GOOGLE_EVENT,
+  payload: {
+    event
   }
-}
+})
+
+export const getGoogleEvents = () => ({ type: GET_GOOGLE_EVENTS })
+
+export const beginGoogleAuth = () => ({ type: BEGIN_GOOGLE_AUTH })
+
+export const beginGetGoogleCalendar = () => ({ type: BEGIN_GET_GOOGLE_CALENDAR })
+
+export const getOutlookEvents = () => ({ type: GET_OUTLOOK_EVENTS })

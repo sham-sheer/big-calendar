@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { FormControl } from 'react-bootstrap';
 import moment from "moment";
+import getDb from '../db';
 
 const START_INDEX_OF_UTC_FORMAT = 17;
 const START_INDEX_OF_HOUR = 11;
@@ -52,7 +53,7 @@ export default class Form extends Component {
     const endDateParsed = moment(this.props.match.params.end).format("YYYY-MM-DDThh:mm a");
     const startDateParsedInUTC = this.processStringForUTC(startDateParsed);
     const endDateParsedInUTC = this.processStringForUTC(endDateParsed);
-    console.log(startDateParsedInUTC + " " + endDateParsedInUTC);
+    console.log(moment(startDateParsedInUTC).format() + " " + endDateParsedInUTC);
     this.setState({
       startParsed: startDateParsedInUTC,
       endParsed: endDateParsedInUTC,
@@ -77,15 +78,22 @@ export default class Form extends Component {
     this.setState({ endParsed: e.target.value });
   }
 
-  handleSubmit(e) {
+  handleSubmit = async (e) => {
     // need to write validation method
     e.preventDefault();
-    this.props.addNewEvent({
-      allDay: false,
-      end: new Date(this.state.endParsed),
-      start: new Date(this.state.startParsed),
-      title: this.state.title,
+    this.props.postGoogleEvent({
+      'summary': this.state.title,
+      'start': {
+        'dateTime' : moment(this.state.startParsed).format(),
+        'timezone' : 'America/Los_Angeles'
+      },
+      'end': {
+        'dateTime' : moment(this.state.endParsed).format(),
+        'timezone' : 'America/Los_Angeles'
+      }
+
     });
+    const db = await getDb();
     this.props.history.push('/');
   }
 

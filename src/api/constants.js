@@ -17,3 +17,51 @@ export const OUTLOOK_PARAMS_URL = `response_type=id_token+token&client_id=${OUTL
                            &scope=${OUTLOOK_SCOPE}&state=f175f48d-d277-9893-9c8d-dcc2a95ffe16
                            &nonce=593a2b06-d77b-31c2-ae43-e74c0ebeb304
                            &response_mode=fragment`
+
+
+                           // Google OAuth Functions
+
+                           handleGoogleClientLoad = () => {
+                             window.gapi.load('client:auth2', this.initClient);
+                           }
+
+                           initClient = () => {
+                             window.gapi.client.init({
+                                 'apiKey': API_KEY,
+                                 'clientId': GOOGLE_CLIENT_ID,
+                                 'scope': GOOGLE_SCOPE,
+                                 'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+                             }).then( () => {
+                                 GoogleAuth = window.gapi.auth2.getAuthInstance();
+                                 this.handleAuthClick();
+                                 GoogleAuth.isSignedIn.listen(this.updateSigninStatus);
+                                 this.setSigninStatus();
+                             })
+                           }
+
+                           handleAuthClick = () => {
+                             if (GoogleAuth.isSignedIn.get()) {
+                                 GoogleAuth.signOut();
+                             } else {
+                                 GoogleAuth.signIn();
+                             }
+                           }
+
+                           updateSigninStatus = (isSignedIn) => {
+                             this.setSigninStatus();
+                           }
+
+                           setSigninStatus = () => {
+                             var user = GoogleAuth.currentUser.get();
+                             var isAuthorized = user.hasGrantedScopes(GOOGLE_SCOPE);
+                             if (isAuthorized) {
+                               console.log("Authorized");
+                               this.props.beginGetGoogleCalendar();
+                             } else {
+                               console.log("Not authorized");
+                             }
+                           }
+
+                           revokeAccess = () => {
+                             GoogleAuth.disconnect();
+                           }

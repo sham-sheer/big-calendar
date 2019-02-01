@@ -1,4 +1,4 @@
-import { addNewEvent } from '../redux/actions';
+import { postGoogleEvent } from '../redux/actions';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
@@ -27,6 +27,8 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = { addNewEvent }
+const mapDispatchToProps = dispatch => ({
+  postGoogleEvent: (event) => dispatch(postGoogleEvent(event)),
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withStyles(styles)(Form)));

@@ -1,25 +1,40 @@
-export default {
-  title: 'event schema',
-  version: 0,
-  description: 'describes a calendar event',
-  type: 'object',
-  properties: {
-    id: {
+const eventSchema =  {
+  "title": 'event schema',
+  "version": 0,
+  "description": 'describes a calendar event',
+  "type": 'object',
+  "properties": {
+    "summary": {
       'type': 'string',
-      'primary': true
+      'index': true
     },
-    title: {
-      'type': 'string'
+    "end": {
+      "type": "object",
+      "properties": {
+          "dateTime": {
+              "type": "string"
+          },
+          "timezone": {
+              "type": "string"
+          }
+      }
     },
-    end: {
-      'type': 'number'
+    "start": {
+      "type": "object",
+      "properties": {
+          "dateTime": {
+              "type": "string"
+          },
+          "timezone": {
+              "type": "string"
+          }
+      }
     },
-    start: {
-      'type': 'number'
-    },
-    allDay: {
+    "allDay": {
       'type': 'boolean'
     }
   },
-  required: ['title']
+  "required": ['summary', 'end', 'start']
 }
+
+export default eventSchema;
