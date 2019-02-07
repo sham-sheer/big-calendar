@@ -4,6 +4,7 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
 import Modal from 'react-modal';
 import './react-calendar-view.css';
+import getDb from '../db';
 
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
@@ -23,7 +24,7 @@ export default class ReactCalendarView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentEvent: '',
+      currentEvent: [{}] ,
       isShowEvent: false,
       currentEventStartDateTime: '',
       currentEventEndDateTime: ''
@@ -35,8 +36,40 @@ export default class ReactCalendarView extends React.Component {
     Modal.setAppElement('body');
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    const db = await getDb();
     this.props.beginGoogleAuth();
+    db.events.insert$.subscribe(changeEvent => console.dir(changeEvent));
+    if(!this.props.initialSync) {
+      this.performSync(db);
+    }
+  }
+
+  performSync = (db) => {
+    this.initialSync(db).then((data) => {
+      if(data.length > 0) {
+        this.props.updateEvents(data);
+      }
+    });
+  }
+
+ watchDb = async () => {
+
+ }
+
+ initialSync = async (db) => {
+    let data = [];
+    await db.events.find().exec().then(events => {
+        data = events.map(singleEvent => {
+          return {
+            id: singleEvent.id,
+            end: singleEvent.end,
+            start: singleEvent.start,
+            summary: singleEvent.summary,
+          }
+        });
+      });
+    return data;
   }
 
   // Outlook OAuth Functions
@@ -72,6 +105,7 @@ export default class ReactCalendarView extends React.Component {
 
   handleSelectDate = ({ start, end }) => {
     this.props.history.push(`/${start}/$${end}`);
+
   }
 
   handleEventClick = (event) => {
@@ -98,6 +132,10 @@ export default class ReactCalendarView extends React.Component {
         selectable
         localizer={localizer}
         events={this.props.events}
+        views={{
+          month: true,
+          day: true,
+        }}
         onEventDrop={this.moveEventList}
         onEventResize={this.resizeEvent}
         onSelectSlot={this.handleSelectDate}
@@ -132,7 +170,7 @@ export default class ReactCalendarView extends React.Component {
             </button>
           </a>
           <button className="btn btn-block btn-social"
-                  onClick={() => this.props.getGoogleEvents()}>
+                  onClick={() => this.props.beginGetGoogleEvents()}>
             <span className="fa fa-google"></span>
               Get Google Events
           </button>

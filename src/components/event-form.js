@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { FormControl } from 'react-bootstrap';
 import moment from "moment";
-import getDb from '../db';
 
 const START_INDEX_OF_UTC_FORMAT = 17;
 const START_INDEX_OF_HOUR = 11;
@@ -93,7 +92,6 @@ export default class Form extends Component {
       }
 
     });
-    const db = await getDb();
     this.props.history.push('/');
   }
 

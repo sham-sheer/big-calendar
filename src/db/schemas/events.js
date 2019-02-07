@@ -4,11 +4,14 @@ const eventSchema =  {
   "description": 'describes a calendar event',
   "type": 'object',
   "properties": {
+    "id": {
+      'type': 'string',
+      'primary': true
+    },
     "summary": {
       'type': 'string',
-      'index': true
     },
-    "end": {
+    "start": {
       "type": "object",
       "properties": {
           "dateTime": {
@@ -19,7 +22,7 @@ const eventSchema =  {
           }
       }
     },
-    "start": {
+    "end": {
       "type": "object",
       "properties": {
           "dateTime": {

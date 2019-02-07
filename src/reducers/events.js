@@ -1,6 +1,6 @@
 import {
          UPDATE_EVENTS,
-         GET_GOOGLE_EVENTS,
+         GET_GOOGLE_EVENTS_BEGIN,
          GET_GOOGLE_EVENTS_SUCCESS,
          GET_GOOGLE_EVENTS_FAILURE,
          GET_OUTLOOK_EVENTS_SUCCESS,
@@ -9,20 +9,13 @@ import {
 } from '../redux/actions';
 
 const initialState = {
-  events: [
-    {
-      allDay: false,
-      end: new Date('December 12, 2018 02:13:00'),
-      start: new Date('December 12, 2018 01:13:00'),
-      title: 'New Event',
-
-    }
-  ],
+  events: [],
   google_data: [],
   outlook_data: [],
   new_event: [],
   error: '',
-  beginAPI: false
+  beginAPI: false,
+  initialSync: false
 }
 
 
@@ -31,9 +24,10 @@ export default function eventsReducer(state = initialState, action) {
     case UPDATE_EVENTS:
       return {
         ...state,
-        events: action.payload.updatedEvents
+        google_data: state.google_data.concat(action.payload.updatedEvents),
+        initialSync: true
       }
-    case GET_GOOGLE_EVENTS:
+    case GET_GOOGLE_EVENTS_BEGIN:
       return {
         ...state,
         beginAPI: true

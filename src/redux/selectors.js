@@ -3,8 +3,7 @@ import moment from 'moment';
 
 const getGoogleEvents = state => state.events.google_data;
 
-
-//process google events data
+//process google events data for React Big calendar
 export const getFilteredEvents = createSelector(
   [getGoogleEvents],
   (google_data) => {
@@ -12,16 +11,18 @@ export const getFilteredEvents = createSelector(
     .map(eachEvent => {
         if(eachEvent.end.date === undefined) {
           return {
+            id: eachEvent.id,
             title: eachEvent.summary,
-            end: eachEvent.end.dateTime,
-            start: eachEvent.start.dateTime
+            end: new Date(eachEvent.end.dateTime),
+            start: new Date(eachEvent.start.dateTime)
           }
         }
         else {
           return {
+            id: eachEvent.id,
             title: eachEvent.summary,
-            end:  moment(eachEvent.end.date).format(),
-            start: moment(eachEvent.start.date).format()
+            end:  new Date(moment(eachEvent.end.date).format()),
+            start: new Date(moment(eachEvent.start.date).format())
           }
         }
       }
