@@ -1,26 +1,37 @@
 import ReactCalendarView from '../components/react-calendar-view';
 import { withRouter } from 'react-router-dom';
 import { updateEvents,
-        beginGetGoogleEvents,
+        //beginGetGoogleEvents,
         //getOutlookEvents,
-        beginGoogleAuth,
-        beginGetGoogleCalendar
+        //beginGoogleAuth,
+        getGoogleCalendarListBegin
 } from '../redux/actions';
+import {
+  beginGoogleAuth,
+} from '../actions/auth';
+import {
+  retrieveStoreEvents
+} from '../actions/db/events';
+import {
+  beginGetGoogleEvents
+} from '../actions/events';
 import { connect } from 'react-redux';
 import { getFilteredEvents } from '../redux/selectors';
 
 const mapStateToProps = state => {
   return {
     events: getFilteredEvents(state),
-    initialSync: state.events.initialSync
+    initialSync: state.events.initialSync,
+    isAuth: state.auth.currentUser
   }
 }
 
 const mapDispatchToProps = dispatch => ({
   updateEvents: (nextEvents) => dispatch(updateEvents(nextEvents)),
   beginGetGoogleEvents: () => dispatch(beginGetGoogleEvents()),
-  beginGetGoogleCalendar: () => dispatch(beginGetGoogleCalendar()),
   beginGoogleAuth: () => dispatch(beginGoogleAuth()),
+  getGoogleCalendarListBegin: () => dispatch(getGoogleCalendarListBegin()),
+  retrieveStoreEvents: () => dispatch(retrieveStoreEvents())
   //getOutlookEvents: (url) => dispatch(getOutlookEvents(url)),
 
 })

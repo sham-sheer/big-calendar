@@ -1,19 +1,25 @@
 import { createLogger } from 'redux-logger';
 import getDb from '../db';
+import md5 from 'md5';
+import { normalize, schema } from 'normalizr';
 
 export const loggerMiddleware = createLogger();
+
+export const GOOGLE_CLIENT_ID = '65724758895-gc7lubjkjsqqddfhlb7jcme80i3mjqn0.apps.googleusercontent.com';
+export const API_KEY = 'AIzaSyCTYXWtoRKnXeZkPCcZwYOXm0Qz3Lz9F9g';
+export const GOOGLE_SCOPE = `https://www.googleapis.com/auth/calendar.events`;
 
 
 const MicrosoftGraph = require("@microsoft/microsoft-graph-client");
 
-const GOOGLE_CLIENT_ID = '65724758895-gc7lubjkjsqqddfhlb7jcme80i3mjqn0.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyCTYXWtoRKnXeZkPCcZwYOXm0Qz3Lz9F9g';
-const GOOGLE_SCOPE = `https://www.googleapis.com/auth/calendar.events`;
+
 /* Use later
 const OUTLOOK_CLIENT_ID = '6b770a68-2156-4345-b0aa-d95419e31be1';
 const BASE_URL = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?';
 */
 let GoogleAuth;
+
+
 
 function outlookCalendarEvents() {
   return MicrosoftGraph.Client.init({
@@ -42,12 +48,29 @@ function handleAuthClick(auth) {
   }
 }
 
+export const fetchCalendarList = (request, calendarList, resolve, reject) => {
+  request.execute((resp) => {
+    const newList = calendarList.concat(resp.result.items);
+    let pageToken = resp.nextPageToken;
+    if(pageToken !== undefined) {
+      var nextRequest = window.gapi.client.calendar.calendarList.list({
+        'pageToken': pageToken
+      })
+      fetchEvents(nextRequest, newList, resolve, reject);
+    } else {
+      resolve(calendarList);
+    }
+  }, (error) => {
+    console.log(error);
+  })
+}
+
 export const fetchEvents = (request, items, resolve, reject) => {
     request.execute((resp) => {
     const newItems = items.concat(resp.result.items);
     let pageToken = resp.nextPageToken;
     let syncToken = resp.nextSyncToken;
-    debugger
+    //debugger
     if(pageToken !== undefined) {
       var nextRequest = window.gapi.client.calendar.events.list({
         'calendarId' : 'primary',
@@ -119,16 +142,38 @@ export const apiMiddleware = store => next => action => {
       let result = [];
       new Promise((resolve, reject) => {
         fetchEvents(request, result, resolve, reject);
-      }).then(response => {
-        storeEvents(response);
-        next({
-          type: 'GET_GOOGLE_EVENTS_SUCCESS',
-          payload: {
-            data: response
-          }
-        })
+      }).then(async response => {
+          let results = await storeEvents(response);
+          const myData = { events : results};
+          const singleEvent = new schema.Entity('events');
+          const mySchema = { events: [ singleEvent ]};
+          const normalizedResults = normalize(myData, mySchema);
+          next({
+            type: 'GET_GOOGLE_EVENTS_SUCCESS',
+            payload: {
+              data: results,
+              normalized_data: normalizedResults
+            }
+          })
+        });
+    })
+  }
+
+  if(action.type === 'GET_GOOGLE_CALENDAR_LIST_BEGIN') {
+    let pageToken = null
+    let calendarList = [];
+    window.gapi.client.load('calendar', 'v3', function() {
+      var request = window.gapi.client.calendar.calendarList.list({
+        'pageToken': pageToken
+      })
+      new Promise((resolve, reject) => {
+        fetchCalendarList(request, calendarList, resolve, reject);
+      }).then(async response => {
+        console.log(response)
       })
     })
+
+
   }
 
   if(action.type === 'NEXT_GET_GOOGLE_EVENTS') {
@@ -140,10 +185,9 @@ export const apiMiddleware = store => next => action => {
   }
 
   if(action.type === 'POST_GOOGLE_EVENT') {
-    var calendarObject =
-    {
+    let calendarObject = {
         'calendarId': 'primary',
-        'resource': action.payload.event
+        'resource': action.payload
     };
 
     //deprecated function: take note
@@ -160,15 +204,17 @@ export const apiMiddleware = store => next => action => {
       });
     })
   }
+
   if(action.type === 'GET_OUTLOOK_EVENTS') {
-    const value = outlookCalendarEvents();
+    /*const value = outlookCalendarEvents();
     next({
       type: action.type + '_SUCCESS',
       payload: {
         data: value
       }
-    })
+    })*/
   }
+
   return next(action);
 }
 
@@ -191,31 +237,39 @@ const storeEvent = async singleEvent => {
   return addedEvent;
 }
 
-const storeEvents = async events => {
+async function storeEvents(events){
   const db = await getDb();
   const dbEvents = filter(events);
   const addEvents = [];
   //need to preprocess data
-  dbEvents.forEach(async (dbEvent) => {
-    if(!!dbEvent.summary) {
-      await db.events.upsert(dbEvent);
-      addEvents.push(dbEvent);
+  const results = dbEvents.map(async dbEvent => {
+    if(!!dbEvent.id) {
+      try {
+        await db.events.upsert(dbEvent);
+      } catch(e) {
+        console.log(e);
+      }
+      return dbEvent;
     }
   });
-  debugger
-  return addEvents;
+  let values = await Promise.all(results);
+  return values;
 }
 
 export const filter = (data) => {
-    debugger
+  //debugger
     const formated_events = data
     .map(eachEvent => {
-        return {
-          'id' : eachEvent.id,
+        return  ({
+          'id' : md5(eachEvent.id),
           'end' : eachEvent.end,
           'start': eachEvent.start,
-          'summary': eachEvent.summary
-        }
+          'summary': eachEvent.summary,
+          'organizer': eachEvent.organizer,
+          'recurrence': eachEvent.recurrence,
+          'iCalUID': eachEvent.iCalUID,
+          'attendees': eachEvent.attendees
+        })
       }
     );
     return formated_events
@@ -224,7 +278,6 @@ export const filter = (data) => {
 
 export const dbMiddleware = store => next => action => {
   if(action.type === 'INITIAL_SYNC_EVENTS') {
-
   }
   return next(action);
 }

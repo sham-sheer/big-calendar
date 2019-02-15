@@ -11,6 +11,7 @@ import {
 const initialState = {
   events: [],
   google_data: [],
+  normalized_data: {},
   outlook_data: [],
   new_event: [],
   error: '',
@@ -18,13 +19,12 @@ const initialState = {
   initialSync: false
 }
 
-
 export default function eventsReducer(state = initialState, action) {
   switch(action.type) {
     case UPDATE_EVENTS:
       return {
         ...state,
-        google_data: state.google_data.concat(action.payload.updatedEvents),
+        normalized_data: Object.assign({}, state.normalized_data, action.payload),
         initialSync: true
       }
     case GET_GOOGLE_EVENTS_BEGIN:
@@ -33,10 +33,20 @@ export default function eventsReducer(state = initialState, action) {
         beginAPI: true
       }
     case GET_GOOGLE_EVENTS_SUCCESS:
+      let newIds = action.payload.normalized_data.result.events;
+      let newEvents = action.payload.normalized_data.entities.events;
+      let newPayload = {};
+      for(let key of newIds) {
+        if(!state.normalized_data.hasOwnProperty(key)) {
+          newPayload[key] = newEvents[key];
+        }
+      }
+      debugger;
       return {
         ...state,
         google_data: state.google_data.concat(action.payload.data),
-        beginAPI: false
+        beginAPI: false,
+        normalized_data: Object.assign({}, state.normalized_data, newPayload)
       }
     case GET_GOOGLE_EVENTS_FAILURE:
       return {

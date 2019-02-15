@@ -1,13 +1,14 @@
 import { createSelector } from 'reselect';
 import moment from 'moment';
 
-const getGoogleEvents = state => state.events.google_data;
+const getEvents = state => state.events.calEvents;
 
 //process google events data for React Big calendar
 export const getFilteredEvents = createSelector(
-  [getGoogleEvents],
-  (google_data) => {
-    const formated_events = google_data
+  [getEvents],
+  (normalized_data) => {
+    const data = Object.values(normalized_data);
+    const formated_events = data
     .map(eachEvent => {
         if(eachEvent.end.date === undefined) {
           return {

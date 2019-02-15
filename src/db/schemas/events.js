@@ -10,6 +10,7 @@ const eventSchema =  {
     },
     "summary": {
       'type': 'string',
+      'default' : 'Calendar Event'
     },
     "start": {
       "type": "object",
@@ -35,9 +36,45 @@ const eventSchema =  {
     },
     "allDay": {
       'type': 'boolean'
+    },
+    "organizer": {
+      "type":"object",
+      "properties": {
+        "id": "string",
+        "email": "string",
+        "displayName": "string",
+        "self": "boolean"
+      }
+    },
+    "recurrence" : {
+      "type": "array",
+      "item": {
+        "type": "string"
+      }
+    },
+    "iCalUID": {
+      "type": "string"
+    },
+    "attendees": {
+      "type": "array",
+      "item": {
+        "type": "object",
+        "properties": {
+            "id": "string",
+            "email": "string",
+            "displayName": "string",
+            "organizer": "boolean",
+            "self": "boolean",
+            "resource": "boolean",
+            "optional": "boolean",
+            "responseStatus": "string",
+            "comment": "string",
+            "additionalGuests": "number"
+        }
+      }
     }
   },
-  "required": ['summary', 'end', 'start']
+  "required": ['end', 'start']
 }
 
 export default eventSchema;

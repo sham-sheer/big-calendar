@@ -6,7 +6,7 @@ import CalendarEventForm from './containers/event-form-container';
 import ViewContainer from './containers/view-container';
 import OutLookRedirect from './components/outlook-redirect';
 import { Provider } from 'react-redux';
-import {store} from './store/configureStore';
+import {store} from './store/configureNewStore';
 
 export default () => (
   <App>

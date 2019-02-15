@@ -80,7 +80,7 @@ export default class Form extends Component {
   handleSubmit = async (e) => {
     // need to write validation method
     e.preventDefault();
-    this.props.postGoogleEvent({
+    this.props.postEventBegin({
       'summary': this.state.title,
       'start': {
         'dateTime' : moment(this.state.startParsed).format(),

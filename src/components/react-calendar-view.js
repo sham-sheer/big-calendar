@@ -29,6 +29,7 @@ export default class ReactCalendarView extends React.Component {
       currentEventStartDateTime: '',
       currentEventEndDateTime: ''
     };
+    let incrementalSync;
   }
 
   componentWillMount() {
@@ -36,13 +37,23 @@ export default class ReactCalendarView extends React.Component {
     Modal.setAppElement('body');
   }
 
-  async componentDidMount() {
+  /*async componentDidMount() {
     const db = await getDb();
     this.props.beginGoogleAuth();
     db.events.insert$.subscribe(changeEvent => console.dir(changeEvent));
     if(!this.props.initialSync) {
       this.performSync(db);
     }
+    //this.incrementalSync = setInterval(() => this.props.beginGetGoogleEvents(), 10000);
+  }*/
+
+  componentDidMount() {
+    this.props.beginGoogleAuth();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.incrementalSync);
+    this.incrementalSync = null;
   }
 
   performSync = (db) => {
@@ -53,9 +64,6 @@ export default class ReactCalendarView extends React.Component {
     });
   }
 
- watchDb = async () => {
-
- }
 
  initialSync = async (db) => {
     let data = [];
