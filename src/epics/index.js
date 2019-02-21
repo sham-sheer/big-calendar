@@ -1,12 +1,6 @@
-
-import 'rxjs/add/observable/of';
 import { combineEpics } from 'redux-observable';
-import { beginGoogleAuthEpic,
-         beginGoogleLoadAuthEpic } from './auth';
-import { getGoogleCalendarEpic } from './events';
+import { retrieveEventsEpic } from './db/events';
 
 export const rootEpic = combineEpics(
-  beginGoogleAuthEpic,
-  beginGoogleLoadAuthEpic,
-  getGoogleCalendarEpic
-)
+  retrieveEventsEpic
+);

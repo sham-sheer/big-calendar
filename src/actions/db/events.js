@@ -4,9 +4,20 @@ export const RETRIEVE_STORED_EVENTS = 'RETRIEVE_STORED_EVENTS';
 export const SUCCESS_STORED_EVENTS = 'SUCCESS_STORED_EVENTS';
 export const UPDATE_STORED_EVENTS = 'UPDATE_STORED_EVENTS';
 
+export const DUPLICATE_ACTION = 'DUPLICATE_ACTION';
+
 export const failStoringEvents = () => ({
   type: FAIL_STORE_EVENTS
 });
 export const retrieveStoreEvents = () => ({
   type: RETRIEVE_STORED_EVENTS
+})
+
+export const updateStoredEvents = (resp) => ({
+  type: UPDATE_STORED_EVENTS,
+  payload: resp
+})
+
+export const duplicateAction = () => ({
+  type: DUPLICATE_ACTION
 })

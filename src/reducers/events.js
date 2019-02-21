@@ -1,75 +1,35 @@
 import {
-         UPDATE_EVENTS,
-         GET_GOOGLE_EVENTS_BEGIN,
-         GET_GOOGLE_EVENTS_SUCCESS,
-         GET_GOOGLE_EVENTS_FAILURE,
-         GET_OUTLOOK_EVENTS_SUCCESS,
-         GET_OUTLOOK_EVENTS_FAILURE,
-         POST_GOOGLE_EVENT_SUCCESS
-} from '../redux/actions';
+  UPDATE_STORED_EVENTS,
+  SUCCESS_STORED_EVENTS,
+  DUPLICATE_ACTION
+} from '../actions/db/events';
 
 const initialState = {
-  events: [],
-  google_data: [],
-  normalized_data: {},
-  outlook_data: [],
-  new_event: [],
-  error: '',
-  beginAPI: false,
-  initialSync: false
+  calEvents: [],
+}
+
+const mergeEvents = (oldEvents, newItems) => {
+  let oldIds = oldEvents.map(item => item.id);
+  let newPayload = [...oldEvents];
+  for(let newItem of newItems) {
+    if(!oldIds.includes(newItem.id)) {
+      newPayload.push(newItem)
+    }
+  }
+  return newPayload;
 }
 
 export default function eventsReducer(state = initialState, action) {
   switch(action.type) {
-    case UPDATE_EVENTS:
-      return {
-        ...state,
-        normalized_data: Object.assign({}, state.normalized_data, action.payload),
-        initialSync: true
-      }
-    case GET_GOOGLE_EVENTS_BEGIN:
-      return {
-        ...state,
-        beginAPI: true
-      }
-    case GET_GOOGLE_EVENTS_SUCCESS:
-      let newIds = action.payload.normalized_data.result.events;
-      let newEvents = action.payload.normalized_data.entities.events;
-      let newPayload = {};
-      for(let key of newIds) {
-        if(!state.normalized_data.hasOwnProperty(key)) {
-          newPayload[key] = newEvents[key];
-        }
-      }
-      debugger;
-      return {
-        ...state,
-        google_data: state.google_data.concat(action.payload.data),
-        beginAPI: false,
-        normalized_data: Object.assign({}, state.normalized_data, newPayload)
-      }
-    case GET_GOOGLE_EVENTS_FAILURE:
-      return {
-        ...state,
-        error: action.payload.error,
-        beginAPI: false
-      }
-    case GET_OUTLOOK_EVENTS_SUCCESS:
-      return {
-        ...state,
-        outlook_data: action.payload.data
-      }
-    case GET_OUTLOOK_EVENTS_FAILURE:
-      return {
-        ...state,
-        error: action.payload.error
-      }
-    case POST_GOOGLE_EVENT_SUCCESS:
-      return {
-        ...state,
-        google_data: state.google_data.concat(action.payload.data)
-      }
+    case UPDATE_STORED_EVENTS:
+      return Object.assign({}, state, { calEvents: action.payload });
+    case SUCCESS_STORED_EVENTS: {
+      let newEvents = mergeEvents(state.calEvents, action.item)
+      return Object.assign({}, state, { calEvents: newEvents })
+    }
+    case DUPLICATE_ACTION:
+      return state
     default:
-      return state;
+      return state
   }
 }

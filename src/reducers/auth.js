@@ -1,4 +1,4 @@
-import { BEGIN_GOOGLE_AUTH, SUCCESS_GOOGLE_AUTH } from '../redux/actions';
+import { BEGIN_GOOGLE_AUTH, SUCCESS_GOOGLE_AUTH, FAIL_GOOGLE_AUTH } from '../actions/auth';
 
 
 const initialState = {
@@ -12,6 +12,8 @@ export default function authReducer(state = initialState, action) {
       return Object.assign({}, state, {isAuth: true, currentUser: null})
     case SUCCESS_GOOGLE_AUTH:
       return Object.assign({}, state, {isAuth: false, currentUser: action.payload.user})
+    case FAIL_GOOGLE_AUTH:
+      return Object.assign({}, state, {isAuth: false, currentUser: null})
     default:
       return state
   }

@@ -34,6 +34,10 @@ export const authBeginMiddleware = store => next => action => {
                   user
                 }
               })
+            } else {
+              next({
+                type: 'FAIL_GOOGLE_AUTH',
+              })
             }
         })
       }
@@ -46,6 +50,12 @@ export const authSuccessMiddleware = store => next => action => {
   if(action.type === 'SUCCESS_GOOGLE_AUTH') {
     next({
       type: 'RETRIEVE_STORED_EVENTS'
+    })
+  }
+  if(action.type === 'FAIL_GOOGLE_AUTH') {
+    //re
+    next({
+      type: 'RETRY_GOOGLE_AUTH'
     })
   }
   return next(action);

@@ -1,9 +1,8 @@
-import { postGoogleEvent } from '../redux/actions';
 import { postEventBegin } from '../actions/events';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import Form from '../components/event-form';
+import AddEvent from '../components/addEvent';
 
 
 const styles = theme => ({
@@ -29,8 +28,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  postGoogleEvent: (event) => dispatch(postGoogleEvent(event)),
   postEventBegin: (event) => dispatch(postEventBegin(event))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withStyles(styles)(Form)));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withStyles(styles)(AddEvent)));

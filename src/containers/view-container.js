@@ -1,11 +1,5 @@
-import ReactCalendarView from '../components/react-calendar-view';
+import View from '../components/view';
 import { withRouter } from 'react-router-dom';
-import { updateEvents,
-        //beginGetGoogleEvents,
-        //getOutlookEvents,
-        //beginGoogleAuth,
-        getGoogleCalendarListBegin
-} from '../redux/actions';
 import {
   beginGoogleAuth,
 } from '../actions/auth';
@@ -16,7 +10,7 @@ import {
   beginGetGoogleEvents
 } from '../actions/events';
 import { connect } from 'react-redux';
-import { getFilteredEvents } from '../redux/selectors';
+import { getFilteredEvents } from '../selectors/ui-selector';
 
 const mapStateToProps = state => {
   return {
@@ -27,15 +21,12 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  updateEvents: (nextEvents) => dispatch(updateEvents(nextEvents)),
   beginGetGoogleEvents: () => dispatch(beginGetGoogleEvents()),
   beginGoogleAuth: () => dispatch(beginGoogleAuth()),
-  getGoogleCalendarListBegin: () => dispatch(getGoogleCalendarListBegin()),
   retrieveStoreEvents: () => dispatch(retrieveStoreEvents())
-  //getOutlookEvents: (url) => dispatch(getOutlookEvents(url)),
 
 })
 
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ReactCalendarView));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(View));
