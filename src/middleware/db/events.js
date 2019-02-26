@@ -1,4 +1,4 @@
-import getDb from '../../db';
+/*import getDb from '../../db';
 import md5 from 'md5';
 import { normalize, schema } from 'normalizr';
 
@@ -42,21 +42,21 @@ async function retrieveEvents() {
   });
   return data;
 }
-export const storeEventsMiddleware = store => next => action => {
+/*export const storeEventsMiddleware = store => next => action => {
   if(action.type === 'BEGIN_STORE_EVENTS') {
     storeEvents(action.payload).then((resp) => {
       next({
         type: 'SUCCESS_STORED_EVENTS',
-        item: resp
+        payload: resp
       })
     }, (error) => {
       console.log(error);
     })
   }
   return next(action);
-}
+}*/
 
-export const apiSuccessToDbMiddleware = store => next => action => {
+/*export const apiSuccessToDbMiddleware = store => next => action => {
   if(action.type === 'POST_EVENT_SUCCESS') {
     next({
       type: 'BEGIN_STORE_EVENTS',
@@ -72,7 +72,7 @@ export const apiSuccessToDbMiddleware = store => next => action => {
   return next(action);
 }
 
-export const eventsStoreOutMiddleware = store => next => action => {
+/*export const eventsStoreOutMiddleware = store => next => action => {
   if(action.type === 'RETRIEVE_STORED_EVENTS') {
     retrieveEvents().then((resp) => {
       next({
@@ -105,4 +105,4 @@ const filter = (events) => {
   else {
     return [];
   }
-}
+}*/

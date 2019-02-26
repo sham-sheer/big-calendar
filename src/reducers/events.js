@@ -24,7 +24,7 @@ export default function eventsReducer(state = initialState, action) {
     case UPDATE_STORED_EVENTS:
       return Object.assign({}, state, { calEvents: action.payload });
     case SUCCESS_STORED_EVENTS: {
-      let newEvents = mergeEvents(state.calEvents, action.item)
+      let newEvents = mergeEvents(state.calEvents, action.payload)
       return Object.assign({}, state, { calEvents: newEvents })
     }
     case DUPLICATE_ACTION:

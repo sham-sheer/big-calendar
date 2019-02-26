@@ -24,10 +24,7 @@ const epicMiddleware = createEpicMiddleware();
 export const store = createStore(rootReducer, composeEnhancers(applyMiddleware(
                                                                                authBeginMiddleware,
                                                                                authSuccessMiddleware,
-                                                                               eventsStoreOutMiddleware,
-                                                                               eventsMiddleware,
-                                                                               apiSuccessToDbMiddleware,
-                                                                               storeEventsMiddleware,
+                                                                               //eventsMiddleware,
                                                                                epicMiddleware,
                                                                                loggerMiddleware)));
 

@@ -21,3 +21,13 @@ export const updateStoredEvents = (resp) => ({
 export const duplicateAction = () => ({
   type: DUPLICATE_ACTION
 })
+
+export const successStoringEvents = (payload) => ({
+  type: SUCCESS_STORED_EVENTS,
+  payload: payload
+});
+
+export const beginStoringEvents = (payload) => ({
+  type: BEGIN_STORE_EVENTS,
+  payload: payload
+})

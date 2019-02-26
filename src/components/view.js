@@ -151,12 +151,17 @@ export default class View extends React.Component {
   }
 
   render() {
-    return (
-      <>
-      {this.renderSignupLinks()}
-      {this.renderEventPopup()}
-      {this.renderCalendar()}
-      </>
-    );
+    if(this.props.isAuth !== undefined) {
+      return (
+        <>
+        {this.renderSignupLinks()}
+        {this.renderEventPopup()}
+        {this.renderCalendar()}
+        </>
+      );
+    }
+    else {
+      return (<div>Logging in...</div>);
+    }
   }
 }

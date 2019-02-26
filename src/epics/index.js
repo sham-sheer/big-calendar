@@ -1,6 +1,16 @@
 import { combineEpics } from 'redux-observable';
-import { retrieveEventsEpic } from './db/events';
+import {
+  retrieveEventsEpic,
+  storeEventsEpic,
+  beginStoreEventsEpic,
+} from './db/events';
+import {
+  beginGetEventsEpics
+} from './events';
 
 export const rootEpic = combineEpics(
-  retrieveEventsEpic
+  retrieveEventsEpic,
+  storeEventsEpic,
+  beginStoreEventsEpic,
+  beginGetEventsEpics
 );
