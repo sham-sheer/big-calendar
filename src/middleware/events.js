@@ -1,7 +1,7 @@
 import { normalize, schema } from 'normalizr';
 
 const fetchEvents = (request, items, resolve, reject) => {
-    request.execute((resp) => {
+  request.execute((resp) => {
     const newItems = items.concat(resp.result.items);
     let pageToken = resp.nextPageToken;
     let syncToken = resp.nextSyncToken;
@@ -28,7 +28,7 @@ const fetchEvents = (request, items, resolve, reject) => {
       reject('Something went wrong, Please refresh and try again');
     }
   });
-}
+};
 
 export const eventsMiddleware = store => next => action => {
   if(action.type === 'GET_EVENTS_BEGIN') {
@@ -50,43 +50,43 @@ export const eventsMiddleware = store => next => action => {
       new Promise((resolve, reject) => {
         fetchEvents(request, result, resolve, reject);
       }).then(async response => {
-          const myData = { events : response};
-          const singleEvent = new schema.Entity('events');
-          const mySchema = { events: [ singleEvent ]};
-          const normalizedResults = normalize(myData, mySchema);
-          next({
-            type: 'GET_EVENTS_SUCCESS',
-            payload: {
-              data: response,
-            }
-          })
+        const myData = { events : response};
+        const singleEvent = new schema.Entity('events');
+        const mySchema = { events: [ singleEvent ]};
+        const normalizedResults = normalize(myData, mySchema);
+        next({
+          type: 'GET_EVENTS_SUCCESS',
+          payload: {
+            data: response,
+          }
         });
-    })
+      });
+    });
   }
   if(action.type === 'POST_EVENT_BEGIN') {
-      let calendarObject = {
-          'calendarId': 'primary',
-          'resource': action.payload
-      };
+    let calendarObject = {
+      'calendarId': 'primary',
+      'resource': action.payload
+    };
 
-      //deprecated function: take note
-      window.gapi.client.load('calendar', 'v3', function() {
-        var request = window.gapi.client.calendar.events.insert(calendarObject);
-        request.execute((resp) => {
-          const newId = resp.id
+    //deprecated function: take note
+    window.gapi.client.load('calendar', 'v3', function() {
+      var request = window.gapi.client.calendar.events.insert(calendarObject);
+      request.execute((resp) => {
+        const newId = resp.id;
+        next({
+          type: 'POST_EVENT_SUCCESS',
+          payload: {
+            data: [resp],
+          }
+        }, (error) => {
           next({
-            type: 'POST_EVENT_SUCCESS',
-            payload: {
-              data: [resp],
-            }
-          }, (error) => {
-            next({
-              type: 'POST_EVENT_FAILURE',
-              payload: error
-            })
-          })
+            type: 'POST_EVENT_FAILURE',
+            payload: error
+          });
         });
-      })
+      });
+    });
   }
   return next(action);
-}
+};

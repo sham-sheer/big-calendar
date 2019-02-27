@@ -34,21 +34,21 @@ export default class AddEvent extends Component {
   processStringForUTC = (dateInString) => {
     let dateInStringInUTC;
     if(dateInString.substring(START_INDEX_OF_UTC_FORMAT) === 'pm') {
-        const hourInString = parseInt(dateInString.substring(START_INDEX_OF_HOUR, END_INDEX_OF_HOUR), 10);
-        const hourInStringInUTC = hourInString + TIME_OFFSET;
-        console.log(hourInStringInUTC.toString());
-        dateInStringInUTC = dateInString.substring(START_INDEX_OF_DATE, END_INDEX_OF_DATE)
+      const hourInString = parseInt(dateInString.substring(START_INDEX_OF_HOUR, END_INDEX_OF_HOUR), 10);
+      const hourInStringInUTC = hourInString + TIME_OFFSET;
+      console.log(hourInStringInUTC.toString());
+      dateInStringInUTC = dateInString.substring(START_INDEX_OF_DATE, END_INDEX_OF_DATE)
                                       + hourInStringInUTC.toString()
                                       + dateInString.substring(END_INDEX_OF_HOUR, END_INDEX_OF_MINUTE);
     }
     else {
-        dateInStringInUTC = dateInString.substring(START_INDEX_OF_DATE, END_INDEX_OF_MINUTE);
+      dateInStringInUTC = dateInString.substring(START_INDEX_OF_DATE, END_INDEX_OF_MINUTE);
     }
     return dateInStringInUTC;
   }
 
   componentWillMount() {
-    const startDateParsed = moment(this.props.match.params.start).format("YYYY-MM-DDThh:mm a")
+    const startDateParsed = moment(this.props.match.params.start).format("YYYY-MM-DDThh:mm a");
     const endDateParsed = moment(this.props.match.params.end).format("YYYY-MM-DDThh:mm a");
     const startDateParsedInUTC = this.processStringForUTC(startDateParsed);
     const endDateParsedInUTC = this.processStringForUTC(endDateParsed);
@@ -58,7 +58,7 @@ export default class AddEvent extends Component {
       endParsed: endDateParsedInUTC,
       start: this.props.match.params.start,
       end: this.props.match.params.end
-    })
+    });
   }
 
   handleTitleChange(e) {
@@ -98,54 +98,54 @@ export default class AddEvent extends Component {
   render() {
     return (
       <div className="form-event-container">
-      <form className="container" onSubmit={this.handleSubmit} noValidate>
+        <form className="container" onSubmit={this.handleSubmit} noValidate>
 
-        {/* Title Form*/}
-        <FormControl
-          type="text"
-          value={this.state.value}
-          placeholder="Enter title of Event"
-          onChange={this.handleTitleChange}
-        />
+          {/* Title Form*/}
+          <FormControl
+            type="text"
+            value={this.state.value}
+            placeholder="Enter title of Event"
+            onChange={this.handleTitleChange}
+          />
 
-        {/* Text Area */}
-        <FormControl
-          componentClass="textarea"
-          placeholder="Description"
-          onChange={this.handleDescChange}
-        />
+          {/* Text Area */}
+          <FormControl
+            componentClass="textarea"
+            placeholder="Description"
+            onChange={this.handleDescChange}
+          />
 
-        {/* Start Time and Date */}
-        <TextField
-          id="datetime-local"
-          label="Start"
-          type="datetime-local"
-          defaultValue={this.state.startParsed}
-          className="textField"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={this.handleChangeStartTime}
-        />
+          {/* Start Time and Date */}
+          <TextField
+            id="datetime-local"
+            label="Start"
+            type="datetime-local"
+            defaultValue={this.state.startParsed}
+            className="textField"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={this.handleChangeStartTime}
+          />
 
-        {/* End Time and Date */}
-        <TextField
-          id="datetime-local"
-          label="End"
-          type="datetime-local"
-          defaultValue={this.state.endParsed}
-          className="textField"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={this.handleChangeEndTime}
-        />
+          {/* End Time and Date */}
+          <TextField
+            id="datetime-local"
+            label="End"
+            type="datetime-local"
+            defaultValue={this.state.endParsed}
+            className="textField"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={this.handleChangeEndTime}
+          />
 
-        <input type="submit" value="Submit" />
-      </form>
+          <input type="submit" value="Submit" />
+        </form>
       </div>
 
 
-    )
+    );
   }
 }

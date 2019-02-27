@@ -54,14 +54,14 @@ export default class View extends React.Component {
   // Calendar Event Functions
 
   moveEventList = ({ event, start, end }) => {
-      const events = this.props.events;
+    const events = this.props.events;
 
-      const idx = events.indexOf(event);
-      const updatedEvent = { ...event, start, end };
+    const idx = events.indexOf(event);
+    const updatedEvent = { ...event, start, end };
 
-      const nextEvents = [...events];
-      nextEvents.splice(idx, 1, updatedEvent);
-      this.props.updateEvents(nextEvents);
+    const nextEvents = [...events];
+    nextEvents.splice(idx, 1, updatedEvent);
+    this.props.updateEvents(nextEvents);
   }
 
   resizeEvent = (resizeType, { event, start, end }) => {
@@ -85,13 +85,13 @@ export default class View extends React.Component {
       currentEvent: event,
       currentEventStartDateTime: moment(event.start).format("D, MMMM YYYY, h:mm a"),
       currentEventEndDateTime: moment(event.end).format("D, MMMM Do YYYY, h:mm a"),
-    })
+    });
   }
 
   closeModal = () => {
     this.setState({
       isShowEvent: false
-    })
+    });
   }
 
 
@@ -114,39 +114,39 @@ export default class View extends React.Component {
         popup
         resizable
       />
-    )
+    );
   }
   renderEventPopup = () => {
     return (
       <Modal
-       isOpen={this.state.isShowEvent}
-       onAfterOpen={this.afterOpenModal}
-       onRequestClose={this.closeModal}
-       style={customStyles}
-       contentLabel="Event Modal" >
+        isOpen={this.state.isShowEvent}
+        onAfterOpen={this.afterOpenModal}
+        onRequestClose={this.closeModal}
+        style={customStyles}
+        contentLabel="Event Modal" >
         <h2 ref={subtitle => this.subtitle = subtitle}>{this.state.currentEvent.title}</h2>
         <h4>{this.state.currentEventStartDateTime} - {this.state.currentEventEndDateTime}</h4>
         <button onClick={this.close}>close</button>
       </Modal>
-    )
+    );
   }
 
   renderSignupLinks = () => {
     return (
       <div>
-         <a href={this.authorizeOutLookCodeRequest()}>
+        <a href={this.authorizeOutLookCodeRequest()}>
           <button className="btn btn-block btn-social">
             <span className="fa fa-outlook"></span>
               Sign in with Outlook
-            </button>
-          </a>
-          <button className="btn btn-block btn-social"
-                  onClick={() => this.props.beginGetGoogleEvents()}>
-            <span className="fa fa-google"></span>
-              Get Google Events
           </button>
+        </a>
+        <button className="btn btn-block btn-social"
+          onClick={() => this.props.beginGetGoogleEvents()}>
+          <span className="fa fa-google"></span>
+              Get Google Events
+        </button>
       </div>
-    )
+    );
   }
 
   render() {

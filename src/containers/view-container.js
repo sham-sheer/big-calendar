@@ -17,15 +17,15 @@ const mapStateToProps = state => {
     events: getFilteredEvents(state),
     initialSync: state.events.initialSync,
     isAuth: state.auth.currentUser
-  }
-}
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
   beginGetGoogleEvents: () => dispatch(beginGetGoogleEvents()),
   beginGoogleAuth: () => dispatch(beginGoogleAuth()),
   retrieveStoreEvents: () => dispatch(retrieveStoreEvents())
 
-})
+});
 
 
 

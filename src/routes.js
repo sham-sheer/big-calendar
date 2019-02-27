@@ -10,14 +10,14 @@ import {store} from './store/configureStore';
 
 export default () => (
   <App>
-  <Provider store={store}>
-    <Router>
-      <Switch>
-        <Route path={"/outlook-redirect"} component={OutLookRedirect} />
-        <Route exact path="/" component={ViewContainer} />
-        <Route path="/:start/:end" component={CalendarEventForm} />
-      </Switch>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <Switch>
+          <Route path={"/outlook-redirect"} component={OutLookRedirect} />
+          <Route exact path="/" component={ViewContainer} />
+          <Route path="/:start/:end" component={CalendarEventForm} />
+        </Switch>
+      </Router>
     </Provider>
   </App>
-)
+);

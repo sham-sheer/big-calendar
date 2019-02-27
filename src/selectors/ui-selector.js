@@ -9,14 +9,14 @@ export const getFilteredEvents = createSelector(
   (normalized_data) => {
     const data = Object.values(normalized_data);
     const formated_events = data
-    .map(eachEvent => {
+      .map(eachEvent => {
         if(eachEvent.end.date === undefined) {
           return {
             id: eachEvent.id,
             title: eachEvent.summary,
             end: new Date(eachEvent.end.dateTime),
             start: new Date(eachEvent.start.dateTime)
-          }
+          };
         }
         else {
           return {
@@ -24,10 +24,10 @@ export const getFilteredEvents = createSelector(
             title: eachEvent.summary,
             end:  new Date(moment(eachEvent.end.date).format()),
             start: new Date(moment(eachEvent.start.date).format())
-          }
+          };
         }
       }
-    );
-    return formated_events
+      );
+    return formated_events;
   }
-)
+);
