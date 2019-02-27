@@ -79,6 +79,7 @@ async function storeEvents(events){
 
 const filter = (events) => {
     if(events.data !== undefined) {
+      debugger
       const formated_events = events.data
       .map(eachEvent => {
           return  ({
