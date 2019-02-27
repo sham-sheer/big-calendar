@@ -9,11 +9,11 @@ class OutLookRedirect extends React.Component {
   }
   componentDidMount() {
     const accessToken = queryString
-                        .parse(this.props.location.hash)
-                        .access_token;
+      .parse(this.props.location.hash)
+      .access_token;
     this.setState({
       access_token: accessToken
-    })
+    });
     window.localStorage.setItem('at', accessToken);
   }
 
@@ -21,12 +21,12 @@ class OutLookRedirect extends React.Component {
     if(this.state.access_token !== '') {
       return (
         <Redirect to="/" />
-      )
+      );
     }
     else {
       return (
         <div>Loading...</div>
-      )
+      );
     }
   }
 
@@ -35,7 +35,7 @@ class OutLookRedirect extends React.Component {
       <div>
         {this.renderRedirect()}
       </div>
-    )
+    );
   }
 }
 

@@ -6,30 +6,30 @@ import {
 
 const initialState = {
   calEvents: [],
-}
+};
 
 const mergeEvents = (oldEvents, newItems) => {
   let oldIds = oldEvents.map(item => item.id);
   let newPayload = [...oldEvents];
   for(let newItem of newItems) {
     if(!oldIds.includes(newItem.id)) {
-      newPayload.push(newItem)
+      newPayload.push(newItem);
     }
   }
   return newPayload;
-}
+};
 
 export default function eventsReducer(state = initialState, action) {
   switch(action.type) {
     case UPDATE_STORED_EVENTS:
       return Object.assign({}, state, { calEvents: action.payload });
     case SUCCESS_STORED_EVENTS: {
-      let newEvents = mergeEvents(state.calEvents, action.payload)
-      return Object.assign({}, state, { calEvents: newEvents })
+      let newEvents = mergeEvents(state.calEvents, action.payload);
+      return Object.assign({}, state, { calEvents: newEvents });
     }
     case DUPLICATE_ACTION:
-      return state
+      return state;
     default:
-      return state
+      return state;
   }
 }

@@ -12,10 +12,10 @@ export const beginGetEventsEpics = action$ => action$.pipe(
     let load = new Promise((resolve, reject) =>
       resolve(window.gapi.client.load('calendar', 'v3'))
     );
-    debugger
+    debugger;
     from(load).pipe(
       mergeMap(() => {
-        debugger
+        debugger;
         let syncToken = localStorage.getItem('sync');
         let request;
         if(syncToken == null) {
@@ -23,7 +23,7 @@ export const beginGetEventsEpics = action$ => action$.pipe(
           request = new Promise((resolve,reject) => {
             return resolve(window.gapi.client.calendar.events.list({
               'calendarId' : 'primary'
-            }))
+            }));
           });
         }
         else {
@@ -32,22 +32,22 @@ export const beginGetEventsEpics = action$ => action$.pipe(
             return resolve(window.gapi.client.calendar.events.list({
               'calendarId' : 'primary',
               'syncToken'  : syncToken
-            }))
+            }));
           });
         }
-        debugger
+        debugger;
         from(request).pipe(
           map(resp => {
             let result = [];
             const results = new Promise((resolve, reject) => {
               fetchEvents(resp, result, resolve, reject);
-            })
+            });
             debugger;
             return duplicateAction();
           })
-        )
+        );
       })
-    )
+    );
     /*window.gapi.client.load('calendar', 'v3')
       .then(() => {
         let syncToken = localStorage.getItem('sync');
@@ -79,13 +79,13 @@ export const beginGetEventsEpics = action$ => action$.pipe(
       })
       return duplicateAction();*/
   })
-)
+);
 
 const normalizeEvents = (response) => {
   let singleEvent = new schema.Entity('events');
   let results = normalize({ events : response}, { events: [ singleEvent ]});
   return results;
-}
+};
 
 const fetchEvents = (resp, items, resolve, reject) => {
   const newItems = items.concat(resp.result.items);
@@ -102,14 +102,14 @@ const fetchEvents = (resp, items, resolve, reject) => {
           localStorage.deleteItem('sync');
           window.gapi.client.calendar.events.list({
             'calendarId' : 'primary',
-          }).then(newResp => fetchEvents(newResp, items, resolve, reject))
+          }).then(newResp => fetchEvents(newResp, items, resolve, reject));
         } else {
           console.log(e);
           reject('Something went wrong, Please refresh and try again');
         }
-      })
+      });
   } else {
     localStorage.setItem('sync', syncToken);
     resolve(newItems);
   }
-}
+};

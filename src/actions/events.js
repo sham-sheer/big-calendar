@@ -27,9 +27,9 @@ export const DELETE_EVENT_SUCCESS = 'DELETE_EVENT_SUCCESS';
 export const DELETE_EVENT_FAILURE = 'DELETE_EVENT_FAILURE';
 
 
-export const beginGetGoogleEvents = () => ({ type: GET_EVENTS_BEGIN })
+export const beginGetGoogleEvents = () => ({ type: GET_EVENTS_BEGIN });
 
 export const postEventBegin = (calEvent) => ({
   type: POST_EVENT_BEGIN,
   payload: calEvent
-})
+});

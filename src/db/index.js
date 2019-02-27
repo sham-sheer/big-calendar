@@ -11,7 +11,7 @@ const collections = [
     name: 'events' ,
     schema: schema
   }
-]
+];
 
 const createDb = async () => {
   const db = await RxDB.create({
@@ -24,7 +24,7 @@ const createDb = async () => {
     collections.map(colData => db.collection(colData))
   );
   return db;
-}
+};
 
 
 
@@ -34,4 +34,4 @@ export default () => {
     dbPromise = createDb();
   }
   return dbPromise;
-}
+};

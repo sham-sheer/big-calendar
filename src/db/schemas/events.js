@@ -214,6 +214,4 @@ export default {
     // ----------------------------------------------- //
   },
   "required": ["end", "start"]
-}
-
-export default eventSchema;
+};

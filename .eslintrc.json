@@ -22,13 +22,13 @@
   },
   "rules": {
     "no-console": 0,
+    "no-debugger": 0,
     "no-unused-vars": ["warn", { "args": "none" }],
     "semi": ["warn", "always"],
     "no-extra-boolean-cast": 0,
     "indent": [ 2, 2, 
       { 
-        "SwitchCase": 1, 
-        "VariableDeclarator": "first"
+        "SwitchCase": 1
       }],
     "react/jsx-uses-vars": 2,
     "react/prop-types": 0,
