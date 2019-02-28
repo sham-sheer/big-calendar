@@ -1,5 +1,5 @@
 import * as RxDB from 'rxdb';
-import schema from './schemas/events';
+import schema from './schemas';
 
 RxDB.plugin(require('pouchdb-adapter-idb'));
 RxDB.plugin(require('pouchdb-adapter-http'));
@@ -8,7 +8,7 @@ let dbPromise = null;
 
 const collections = [
   {
-    name: 'events' ,
+    name: 'events',
     schema: schema
   }
 ];

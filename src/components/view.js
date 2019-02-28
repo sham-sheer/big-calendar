@@ -79,7 +79,6 @@ export default class View extends React.Component {
 
   handleSelectDate = ({ start, end }) => {
     this.props.history.push(`/${start}/$${end}`);
-
   }
 
   handleEventClick = (event) => {

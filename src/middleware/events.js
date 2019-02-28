@@ -88,5 +88,11 @@ export const eventsMiddleware = store => next => action => {
       });
     });
   }
+
+  if(action.type === 'REMOVE_EVENT_BEGIN') {
+
+  }
+
+  if(action.type === 'post')
   return next(action);
 };

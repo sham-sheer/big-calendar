@@ -1,4 +1,4 @@
-import { API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/google';
+import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
 
 import { buildAuthUrl,PopupCenter } from '../utils/outlook';
 import * as AuthActionTypes from '../actions/auth';
@@ -19,7 +19,7 @@ export const authBeginMiddleware = store => next => action => {
     window.gapi.load('client:auth2', {
       callback: () => {
         window.gapi.client.init({
-          'apiKey': API_KEY,
+          'apiKey': GOOGLE_API_KEY,
           'clientId': GOOGLE_CLIENT_ID,
           'scope': GOOGLE_SCOPE,
           'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],

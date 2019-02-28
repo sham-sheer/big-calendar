@@ -10,6 +10,8 @@ export const MOVE_EVENT_BEGIN = 'BEGIN_MOVE_EVENT';
 export const MOVE_EVENT_SUCCESS = 'MOVE_EVENT_SUCCESS';
 export const MOVE_EVENT_FAILURE = 'MOVE_EVENT_FAILURE';
 
+
+//You good bro?
 export const EDIT_EVENT_BEGIN = 'EDIT_EVENT_BEGIN';
 export const EDIT_EVENT_SUCCESS = 'EDIT_EVENT_SUCCESS';
 export const EDIT_EVENT_FAILURE = 'EDIT_EVENT_FAILURE';
@@ -27,11 +29,21 @@ export const DELETE_EVENT_SUCCESS = 'DELETE_EVENT_SUCCESS';
 export const DELETE_EVENT_FAILURE = 'DELETE_EVENT_FAILURE';
 
 
-export const beginGetGoogleEvents = () => ({ type: GET_EVENTS_BEGIN });
+export const beginGetGoogleEvents = (resp) => ({
+  type: GET_EVENTS_BEGIN,
+  payload: resp
+});
 
 export const postEventBegin = (calEvent) => ({
   type: POST_EVENT_BEGIN,
   payload: calEvent
+});
+
+export const getEventsSuccess = (response) => ({
+  type: GET_EVENTS_SUCCESS,
+  payload: {
+    data: response,
+  }
 });
 
 // ---------------------- OUTLOOK ---------------------- //
@@ -41,3 +53,4 @@ export const GET_OUTLOOK_EVENTS_FAILURE = 'GET_OUTLOOK_EVENTS_FAILURE';
 
 export const beginGetOutlookEvents = () => ({ type: GET_OUTLOOK_EVENTS_BEGIN });
 // ---------------------- OUTLOOK ---------------------- //
+
