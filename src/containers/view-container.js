@@ -7,7 +7,8 @@ import {
   retrieveStoreEvents
 } from '../actions/db/events';
 import {
-  beginGetGoogleEvents
+  beginGetGoogleEvents,
+  beginDeleteEvent
 } from '../actions/events';
 import { connect } from 'react-redux';
 import { getFilteredEvents } from '../selectors/ui-selector';
@@ -23,8 +24,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   beginGetGoogleEvents: () => dispatch(beginGetGoogleEvents()),
   beginGoogleAuth: () => dispatch(beginGoogleAuth()),
-  retrieveStoreEvents: () => dispatch(retrieveStoreEvents())
-
+  retrieveStoreEvents: () => dispatch(retrieveStoreEvents()),
+  beginDeleteEvent: (id) => dispatch(beginDeleteEvent(id))
 });
 
 

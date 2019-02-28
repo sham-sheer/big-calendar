@@ -1,8 +1,8 @@
 import { GET_EVENTS_BEGIN,
          POST_EVENT_BEGIN,
          getEventsSuccess,
-         postEventSuccess
-
+         postEventSuccess,
+         DELETE_EVENT_BEGIN
 } from '../actions/events';
 import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
@@ -13,7 +13,8 @@ import { loadClient,
          loadFullCalendar,
          loadSyncCalendar,
          loadNextPage,
-         postGoogleEvent
+         postGoogleEvent,
+         deleteGoogleEvent
        } from '../utils/client/google';
 
 export const beginGetEventsEpics = action$ => action$.pipe(
@@ -47,6 +48,11 @@ const postEvent = async (resource) => {
   };
   await loadClient();
   return postGoogleEvent(calendarObject);
+}
+
+const deleteEvent = async (id) => {
+    await loadClient();
+    return deleteGoogleEvent(id);
 }
 
 const setCalendarRequest = () => {

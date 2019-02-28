@@ -3,6 +3,7 @@ import {
   retrieveEventsEpic,
   storeEventsEpic,
   beginStoreEventsEpic,
+  deleteEventEpics
 } from './db/events';
 import {
   beginGetEventsEpics,
@@ -14,5 +15,6 @@ export const rootEpic = combineEpics(
   storeEventsEpic,
   beginStoreEventsEpic,
   beginGetEventsEpics,
-  beginPostEventEpics
+  beginPostEventEpics,
+  deleteEventEpics
 );

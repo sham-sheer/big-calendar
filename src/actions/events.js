@@ -24,10 +24,13 @@ export const UPDATE_EVENTS_BEGIN = 'UPDATE_EVENTS_BEGIN';
 export const UPDATE_EVENTS_SUCCESS = 'UPDATE_EVENTS_SUCCESS';
 export const UPDATE_EVENTS_FAILURE = 'UPDATE_EVENTS_FAILURE';
 
-export const DELETE_EVENT_BEGIN = 'DELETE_EVENT';
+export const DELETE_EVENT_BEGIN = 'DELETE_EVENT_BEGIN';
 export const DELETE_EVENT_SUCCESS = 'DELETE_EVENT_SUCCESS';
 export const DELETE_EVENT_FAILURE = 'DELETE_EVENT_FAILURE';
 
+export const DELETE_EVENT_BEGIN_API = 'DELETE_EVENT_BEGIN_API';
+export const DELETE_EVENT_SUCCESS_API = 'DELETE_EVENT_SUCCESS_API';
+export const DELETE_EVENT_FAILURE_API = 'DELETE_EVENT_FAILURE_API';
 
 export const beginGetGoogleEvents = (resp) => ({
   type: GET_EVENTS_BEGIN,
@@ -47,4 +50,9 @@ export const getEventsSuccess = (response) => ({
 export const postEventSuccess = (response) => ({
   type: POST_EVENT_SUCCESS,
   payload: response
+})
+
+export const beginDeleteEvent = (id) => ({
+  type: DELETE_EVENT_BEGIN,
+  payload: id
 })

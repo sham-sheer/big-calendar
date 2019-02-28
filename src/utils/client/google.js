@@ -33,6 +33,12 @@ export const postGoogleEvent = async (calendarObject) => {
   })
 }
 
+export const deleteGoogleEvent = async (eventId) => {
+  return new Promise((resolve) => {
+    resolve(window.gapi.client.calendar.events.delete('primary', eventId));
+  })
+}
+
 export const loadNextPage = async (pageToken) => {
   return new Promise((resolve) => {
     resolve(window.gapi.client.calendar.events.list({
