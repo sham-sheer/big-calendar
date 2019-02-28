@@ -36,7 +36,8 @@ export default class View extends React.Component {
     Modal.setAppElement('body');
   }
   componentDidMount() {
-    this.props.beginGoogleAuth();
+    // this.props.beginGoogleAuth();
+    // this.props.beginOutlookAuth();
   }
 
   componentWillUnmount() {
@@ -47,6 +48,7 @@ export default class View extends React.Component {
   // Outlook OAuth Functions
 
   authorizeOutLookCodeRequest = () => {
+    this.props.beginOutlookAuth();
     //return BASE_URL + PARAMS_URL;
   }
 
@@ -135,14 +137,16 @@ export default class View extends React.Component {
   renderSignupLinks = () => {
     return (
       <div>
-        <a href={this.authorizeOutLookCodeRequest()}>
-          <button className="btn btn-block btn-social">
+        <a>
+          <button className="btn btn-block btn-social" 
+            onClick={() => this.authorizeOutLookCodeRequest()}>
             <span className="fa fa-outlook"></span>
               Sign in with Outlook
           </button>
         </a>
         <button className="btn btn-block btn-social"
-          onClick={() => this.props.beginGetGoogleEvents()}>
+          onClick={() => this.props.beginGetOutlookEvents()}>
+          {/* onClick={() => this.props.beginGetGoogleEvents()}> */}
           <span className="fa fa-google"></span>
               Get Google Events
         </button>

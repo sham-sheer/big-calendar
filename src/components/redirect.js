@@ -8,13 +8,20 @@ class OutLookRedirect extends React.Component {
     access_token: ''
   }
   componentDidMount() {
-    const accessToken = queryString
-      .parse(this.props.location.hash)
-      .access_token;
+    const response = queryString
+      .parse(this.props.location.hash);
+    const accessToken = response.access_token;
     this.setState({
       access_token: accessToken
     });
-    window.localStorage.setItem('at', accessToken);
+
+    var expiresin = (parseInt(response.expires_in) - 300) * 1000;
+    var now = new Date();
+    var expireDate = new Date(now.getTime() + expiresin);
+  
+    window.localStorage.setItem('outlook_access_token', accessToken);
+    window.localStorage.setItem('outlook_expiry', expireDate.getTime());
+    window.localStorage.setItem('outlook_id_token', response.id_token);
   }
 
   renderRedirect = () => {

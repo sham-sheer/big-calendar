@@ -1,10 +1,11 @@
-import { GET_EVENTS_BEGIN } from '../actions/events';
+import { GET_EVENTS_BEGIN, GET_OUTLOOK_EVENTS_BEGIN } from '../actions/events';
 import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
 import { from } from 'rxjs';
 import { normalize, schema } from 'normalizr';
 
+import { Client } from '@microsoft/microsoft-graph-client';
 
 export const beginGetEventsEpics = action$ => action$.pipe(
   ofType(GET_EVENTS_BEGIN),
@@ -113,3 +114,83 @@ const fetchEvents = (resp, items, resolve, reject) => {
     resolve(newItems);
   }
 };
+
+// ------------------------------------ OUTLOOK ------------------------------------ //
+
+function getAccessToken(callback) {
+  var now = new Date().getTime();
+  var isExpired = now > parseInt(window.localStorage.getItem('outlook_expiry'));
+  // Do we have a token already?
+  if (window.localStorage.getItem('outlook_access_token') && !isExpired) {
+    // Just return what we have
+    if (callback) {
+      callback(window.localStorage.getItem('outlook_access_token'));
+    }
+  } else {
+    // Attempt to do a hidden iframe request
+    // makeSilentTokenRequest(callback);
+    console.log("Access token expired!!");
+  }
+}
+
+function getUserEvents(callback) {
+  getAccessToken(function(accessToken) {
+    if (accessToken) {
+      // Create a Graph client
+      var client = Client.init({
+        authProvider: (done) => {
+          // Just return the token
+          done(null, accessToken);
+        }
+      });
+
+      // Get the 10 newest events
+      client
+        .api('/me/events')
+        .top(10)
+        .select('subject,start,end,createdDateTime')
+        .orderby('createdDateTime DESC')
+        .get((err, res) => {
+          if (err) {
+            callback(null, err);
+          } else {
+            callback(res.value);
+          }
+        });
+    } else {
+      var error = { responseText: 'Could not retrieve access token' };
+      callback(null, error);
+    }
+  });
+}
+
+export const beginGetOutlookEventsEpics = action$ => action$.pipe(
+  ofType(GET_OUTLOOK_EVENTS_BEGIN),
+  mergeMap(() => {
+    let load = new Promise((resolve, reject) =>
+      resolve(getUserEvents((events, error) => {
+        console.log(events);
+      }))
+    );
+    // debugger;
+    // // let load = new Promise((resolve, reject) =>
+    // //   resolve(
+    // //     getUserEvents((events, error) => {
+    // //       console.log("testing");
+    // //       if (error) {
+    // //         console.log("Get Outlook Events Error: " + error);
+    // //       }
+
+    // //       console.log(events);
+    // //     })
+    // //   )
+    // // );
+    // let load = new Promise((resolve, reject) =>
+    //   resolve(
+    //     console.log("hello world!!")
+    //   )
+    // );
+    // from(load).pipe(
+    // );
+  })
+);

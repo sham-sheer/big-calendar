@@ -33,3 +33,11 @@ export const postEventBegin = (calEvent) => ({
   type: POST_EVENT_BEGIN,
   payload: calEvent
 });
+
+// ---------------------- OUTLOOK ---------------------- //
+export const GET_OUTLOOK_EVENTS_BEGIN = 'GET_OUTLOOK_EVENTS_BEGIN';
+export const GET_OUTLOOK_EVENTS_SUCCESS = 'GET_OUTLOOK_EVENTS_SUCCESS';
+export const GET_OUTLOOK_EVENTS_FAILURE = 'GET_OUTLOOK_EVENTS_FAILURE';
+
+export const beginGetOutlookEvents = () => ({ type: GET_OUTLOOK_EVENTS_BEGIN });
+// ---------------------- OUTLOOK ---------------------- //

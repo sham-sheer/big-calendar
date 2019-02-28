@@ -1,5 +1,7 @@
 import { API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/google';
 
+import { buildAuthUrl,PopupCenter } from '../utils/outlook';
+import * as AuthActionTypes from '../actions/auth';
 
 let GoogleAuth = '';
 
@@ -42,6 +44,10 @@ export const authBeginMiddleware = store => next => action => {
         });
       }
     });
+  } else if (action.type === AuthActionTypes.BEGIN_OUTLOOK_AUTH) {
+    const url = buildAuthUrl();
+    console.log(url);
+    window.open(url,'_self',false);
   }
   return next(action);
 };
@@ -56,6 +62,17 @@ export const authSuccessMiddleware = store => next => action => {
     //re
     next({
       type: 'RETRY_GOOGLE_AUTH'
+    });
+  }
+
+  if(action.type === AuthActionTypes.SUCCESS_OUTLOOK_AUTH) {
+    next({
+      type: 'RETRIEVE_STORED_EVENTS'
+    });
+  }
+  if(action.type === AuthActionTypes.FAIL_OUTLOOK_AUTH) {
+    next({
+      type: AuthActionTypes.RETRY_OUTLOOK_AUTH
     });
   }
   return next(action);

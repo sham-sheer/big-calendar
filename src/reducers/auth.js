@@ -1,4 +1,4 @@
-import { BEGIN_GOOGLE_AUTH, SUCCESS_GOOGLE_AUTH, FAIL_GOOGLE_AUTH } from '../actions/auth';
+import * as AuthActionTypes from '../actions/auth';
 
 
 const initialState = {
@@ -8,12 +8,20 @@ const initialState = {
 
 export default function authReducer(state = initialState, action) {
   switch(action.type) {
-    case BEGIN_GOOGLE_AUTH:
+    case AuthActionTypes.BEGIN_GOOGLE_AUTH:
       return Object.assign({}, state, {isAuth: true, currentUser: null});
-    case SUCCESS_GOOGLE_AUTH:
+    case AuthActionTypes.SUCCESS_GOOGLE_AUTH:
       return Object.assign({}, state, {isAuth: false, currentUser: action.payload.user});
-    case FAIL_GOOGLE_AUTH:
+    case AuthActionTypes.FAIL_GOOGLE_AUTH:
       return Object.assign({}, state, {isAuth: false, currentUser: null});
+
+    case AuthActionTypes.BEGIN_OUTLOOK_AUTH:
+      return Object.assign({}, state, {isAuth: true, currentUser: null});
+    case AuthActionTypes.SUCCESS_OUTLOOK_AUTH:
+      return Object.assign({}, state, {isAuth: false, currentUser: action.payload.user});
+    case AuthActionTypes.FAIL_OUTLOOK_AUTH:
+      return Object.assign({}, state, {isAuth: false, currentUser: null});
+
     default:
       return state;
   }
