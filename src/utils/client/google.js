@@ -27,6 +27,12 @@ export const loadSyncCalendar = async (syncToken) => {
   })
 }
 
+export const postGoogleEvent = async (calendarObject) => {
+  return new Promise((resolve) => {
+    resolve(window.gapi.client.calendar.events.insert(calendarObject));
+  })
+}
+
 export const loadNextPage = async (pageToken) => {
   return new Promise((resolve) => {
     resolve(window.gapi.client.calendar.events.list({

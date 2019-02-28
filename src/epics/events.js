@@ -1,5 +1,8 @@
 import { GET_EVENTS_BEGIN,
-         getEventsSuccess
+         POST_EVENT_BEGIN,
+         getEventsSuccess,
+         postEventSuccess
+
 } from '../actions/events';
 import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
@@ -9,7 +12,8 @@ import { normalize, schema } from 'normalizr';
 import { loadClient,
          loadFullCalendar,
          loadSyncCalendar,
-         loadNextPage
+         loadNextPage,
+         postGoogleEvent
        } from '../utils/client/google';
 
 export const beginGetEventsEpics = action$ => action$.pipe(
@@ -27,6 +31,23 @@ export const beginGetEventsEpics = action$ => action$.pipe(
     )
   )
 )
+
+export const beginPostEventEpics = action$ => action$.pipe(
+  ofType(POST_EVENT_BEGIN),
+  mergeMap(action => from(postEvent(action.payload)).pipe(
+      map(resp => postEventSuccess([resp.result]))
+    )
+  )
+ )
+
+const postEvent = async (resource) => {
+  let calendarObject = {
+      'calendarId': 'primary',
+      'resource': resource
+  };
+  await loadClient();
+  return postGoogleEvent(calendarObject);
+}
 
 const setCalendarRequest = () => {
   let request;

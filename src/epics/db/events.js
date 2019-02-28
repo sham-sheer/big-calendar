@@ -54,15 +54,16 @@ export const storeEventsEpic = action$ => action$.pipe(
 
 export const beginStoreEventsEpic = action$ => action$.pipe(
   ofType(POST_EVENT_SUCCESS, GET_EVENTS_SUCCESS),
-  map((action) => beginStoringEvents(action.payload))
+  map((action) => {
+    return beginStoringEvents(action.payload)
+  })
 );
 
 
 const storeEvents = async (events) => {
   const db = await getDb();
   const addedEvents = [];
-  const data = events.data;
-  for(let dbEvent of data) {
+  for(let dbEvent of events) {
     let filteredEvent = filter(dbEvent);
     try {
       await db.events.upsert(filteredEvent);

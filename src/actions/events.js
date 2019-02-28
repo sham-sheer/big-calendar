@@ -41,7 +41,10 @@ export const postEventBegin = (calEvent) => ({
 
 export const getEventsSuccess = (response) => ({
   type: GET_EVENTS_SUCCESS,
-  payload: {
-    data: response,
-  }
+  payload: response
+})
+
+export const postEventSuccess = (response) => ({
+  type: POST_EVENT_SUCCESS,
+  payload: response
 })

@@ -5,12 +5,14 @@ import {
   beginStoreEventsEpic,
 } from './db/events';
 import {
-  beginGetEventsEpics
+  beginGetEventsEpics,
+  beginPostEventEpics
 } from './events';
 
 export const rootEpic = combineEpics(
   retrieveEventsEpic,
   storeEventsEpic,
   beginStoreEventsEpic,
-  beginGetEventsEpics
+  beginGetEventsEpics,
+  beginPostEventEpics
 );
