@@ -17,17 +17,10 @@ export const authBeginMiddleware = store => next => action => {
     window.gapi.load('client:auth2', {
       callback: () => {
         window.gapi.client.init({
-<<<<<<< HEAD
             'apiKey': GOOGLE_API_KEY,
             'clientId': GOOGLE_CLIENT_ID,
             'scope': GOOGLE_SCOPE,
             'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-=======
-          'apiKey': API_KEY,
-          'clientId': GOOGLE_CLIENT_ID,
-          'scope': GOOGLE_SCOPE,
-          'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
->>>>>>> c9ff191e3b06359f1b8affa2d8ae16d67709a46b
         }).then(() => {
           GoogleAuth = window.gapi.auth2.getAuthInstance();
           //GoogleAuth.signIn();

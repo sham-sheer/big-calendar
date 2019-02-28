@@ -2,6 +2,7 @@ import { map, mergeMap, switchMap, catchError } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
 import { from } from 'rxjs';
 import md5 from 'md5';
+
 import {
   RETRIEVE_STORED_EVENTS,
   BEGIN_STORE_EVENTS,
@@ -45,8 +46,7 @@ export const retrieveEventsEpic = action$ => action$.pipe(
 
 export const storeEventsEpic = action$ => action$.pipe(
   ofType(BEGIN_STORE_EVENTS),
-  map(({payload}) => filter(payload)),
-  mergeMap((payload) => from(storeEvents(payload)).pipe(
+  mergeMap((action) => from(storeEvents(action.payload)).pipe(
     map(results => successStoringEvents(results)),
     catchError(error => failStoringEvents(error))
   ))
@@ -54,54 +54,35 @@ export const storeEventsEpic = action$ => action$.pipe(
 
 export const beginStoreEventsEpic = action$ => action$.pipe(
   ofType(POST_EVENT_SUCCESS, GET_EVENTS_SUCCESS),
-  map(({ payload }) => beginStoringEvents(payload))
+  map((action) => beginStoringEvents(action.payload))
 );
 
 
-async function storeEvents(events){
+const storeEvents = async (events) => {
   const db = await getDb();
-  debugger;
-  const addEvents = [];
-  const results = events.map(async dbEvent => {
-    if(!!dbEvent.id) {
-      try {
-        await db.events.upsert(dbEvent);
-      } catch(e) {
-        return e;
-      }
-      return dbEvent;
+  const addedEvents = [];
+  const data = events.data;
+  for(let dbEvent of data) {
+    let filteredEvent = filter(dbEvent);
+    try {
+      await db.events.upsert(filteredEvent);
     }
-  });
-  let values = await Promise.all(results);
-  debugger;
-  return values;
+    catch(e) {
+      return e;
+    }
+    addedEvents.push(dbEvent);
+  }
+  return addedEvents;
 }
-
-const filter = (events) => {
-<<<<<<< HEAD
-    if(events.data !== undefined) {
-      debugger
-      const formated_events = events.data
-=======
-  if(events.data !== undefined) {
-    const formated_events = events.data
->>>>>>> c9ff191e3b06359f1b8affa2d8ae16d67709a46b
-      .map(eachEvent => {
-        return  ({
-          'id' : md5(eachEvent.id),
-          'end' : eachEvent.end,
-          'start': eachEvent.start,
-          'summary': eachEvent.summary,
-          'organizer': eachEvent.organizer,
-          'recurrence': eachEvent.recurrence,
-          'iCalUID': eachEvent.iCalUID,
-          'attendees': eachEvent.attendees
-        });
-      }
-      );
-    return formated_events;
-  }
-  else {
-    return [];
-  }
-};
+const filter = (dbEvent) => {
+  ['kind',
+  'etag',
+  'extendedProperties',
+  'conferenceData',
+  'reminders',
+  'attachments',
+  'hangoutLink'].forEach(e => delete dbEvent[e]);
+  dbEvent.id = md5(dbEvent.id);
+  dbEvent.creator = dbEvent.creator.email;
+  return dbEvent;
+}

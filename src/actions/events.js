@@ -29,19 +29,14 @@ export const DELETE_EVENT_SUCCESS = 'DELETE_EVENT_SUCCESS';
 export const DELETE_EVENT_FAILURE = 'DELETE_EVENT_FAILURE';
 
 
-<<<<<<< HEAD
 export const beginGetGoogleEvents = (resp) => ({
   type: GET_EVENTS_BEGIN,
   payload: resp
 })
-=======
-export const beginGetGoogleEvents = () => ({ type: GET_EVENTS_BEGIN });
->>>>>>> c9ff191e3b06359f1b8affa2d8ae16d67709a46b
 
 export const postEventBegin = (calEvent) => ({
   type: POST_EVENT_BEGIN,
   payload: calEvent
-<<<<<<< HEAD
 })
 
 export const getEventsSuccess = (response) => ({
@@ -50,6 +45,3 @@ export const getEventsSuccess = (response) => ({
     data: response,
   }
 })
-=======
-});
->>>>>>> c9ff191e3b06359f1b8affa2d8ae16d67709a46b

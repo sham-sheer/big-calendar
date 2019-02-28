@@ -79,45 +79,33 @@
 
 // export default eventSchema;
 
-export default {
+const eventSchema = {
   "title": "Event schema",
   "version": 0,
   "description": "Describes a calendar event",
   "type": "object",
   "properties": {
     // ----------------------------------------------- //
-    "eventId": {
+    "id": {
       "type": "string",
       "primary": true,
     },
     // ----------------------------------------------- //
+    "htmlLink": {
+      "type" : "string",
+    },
     "status": {
       "type": "string",
       "default" : "confirmed"
     },
     "created": {
-      "type": "object",
-      "description": "Time the event was created",
-      "properties": {
-        "dateTime": {
-          "type": "string"
-        },
-        "timezone": {
-          "type": "string"
-        }
-      },
-      "final": true
+      "type": "string"
     },
     "updated": {
-      "type": "object",
-      "properties": {
-        "dateTime": {
-          "type": "string"
-        },
-        "timezone": {
-          "type": "string"
-        }
-      }
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
     },
     "description": {
       "type": "string",
@@ -126,6 +114,15 @@ export default {
     "location": {
       "type": "string",
       "default" : "confirmed"
+    },
+    "colorId": {
+      "type": "string"
+    },
+    "creator": {
+      "type": "string"
+    },
+    "organizer": {
+      "type": "object"
     },
     // ----------------------------------------------- //
     "start": {
@@ -150,26 +147,36 @@ export default {
         }
       }
     },
-    "originalStartTime": {
-      "type": "object",
-      "properties": {
-        "dateTime": {
-          "type": "string",
-          "final": true
-        },
-        "timezone": {
-          "type": "string",
-          "final": true
-        }
-      },
-      "final": true
+    "endTimeUnspecified": {
+      "type" : "boolean",
+      "default" : false
     },
-    // ----------------------------------------------- //
     "recurrence" : {
       "type": "array",
       "item": {
         "type": "string"
       }
+    },
+    "recurringEventId": {
+      "type" : "string"
+    },
+    "originalStartTime": {
+      "type": "object",
+      "properties": {
+        "dateTime": {
+          "type": "string",
+        },
+        "timezone": {
+          "type": "string",
+        }
+      },
+    },
+    // ----------------------------------------------- //
+    "transparency": {
+      "type" : "string"
+    },
+    "visibility": {
+      "type" : "string"
     },
     // ----------------------------------------------- //
     "iCalUID": {
@@ -179,14 +186,11 @@ export default {
       "type": "number"
     },
     // ----------------------------------------------- //
-    "creatorId": {
-      "type": "string"
-    },
-    "organizer": {
-      "type": "object"
-    },
     "attendees": {
-      "type": "object"
+      "type": "array",
+      "item": {
+        "type": "object"
+      }
     },
     // ----------------------------------------------- //
     "anyoneCanAddSelf": {
@@ -201,6 +205,9 @@ export default {
     "guestsCanSeeOtherGuests": {
       "type": "boolean"
     },
+    "privateCopy": {
+      "type" : "boolean"
+    },
     "locked": {
       "type": "boolean"
     },
@@ -211,7 +218,20 @@ export default {
     "calenderId": {
       "type": "number"
     },
+    "source": {
+      "type": "object",
+      "properties": {
+        "url" : {
+          "type" : "string"
+        },
+        "title" : {
+          "type" : "string"
+        }
+      }
+    }
     // ----------------------------------------------- //
   },
   "required": ["end", "start"]
 };
+
+export default eventSchema;

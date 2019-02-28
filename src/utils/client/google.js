@@ -20,9 +20,18 @@ export const loadFullCalendar = async () =>  {
 
 export const loadSyncCalendar = async (syncToken) => {
   return new Promise((resolve) => {
-    resolve( window.gapi.client.calendar.events.list({
+    resolve(window.gapi.client.calendar.events.list({
       'calendarId' : 'primary',
       'syncToken'  : syncToken
     }));
+  })
+}
+
+export const loadNextPage = async (pageToken) => {
+  return new Promise((resolve) => {
+    resolve(window.gapi.client.calendar.events.list({
+      'calendarId' : 'primary',
+      'pageToken': pageToken
+    }))
   })
 }
