@@ -90,6 +90,9 @@ const eventSchema = {
       "type": "string",
       "primary": true,
     },
+    "originalId": {
+      "type": "string"
+    },
     // ----------------------------------------------- //
     "htmlLink": {
       "type" : "string",

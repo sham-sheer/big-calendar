@@ -16,6 +16,7 @@ import {
   POST_EVENT_SUCCESS,
   GET_EVENTS_SUCCESS,
   DELETE_EVENT_BEGIN,
+  deleteEventFromApi
 } from '../../actions/events';
 import getDb from '../../db';
 
@@ -63,7 +64,7 @@ export const beginStoreEventsEpic = action$ => action$.pipe(
 export const deleteEventEpics = action$ => action$.pipe(
   ofType(DELETE_EVENT_BEGIN),
   mergeMap((action) => from(deleteEvent(action.payload)).pipe(
-      map((removedEvent) => retrieveStoreEvents())
+      map((removedEvent) => retrieveStoreEvents()),
     )
   ),
 )
@@ -85,6 +86,7 @@ const storeEvents = async (events) => {
   }
   return addedEvents;
 }
+
 const filter = (dbEvent) => {
   ['kind',
   'etag',
@@ -93,8 +95,10 @@ const filter = (dbEvent) => {
   'reminders',
   'attachments',
   'hangoutLink'].forEach(e => delete dbEvent[e]);
+  dbEvent.originalId = dbEvent.id;
   dbEvent.id = md5(dbEvent.id);
   dbEvent.creator = dbEvent.creator.email;
+  debugger;
   return dbEvent;
 }
 
