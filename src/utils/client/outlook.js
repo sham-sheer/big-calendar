@@ -146,8 +146,8 @@ const parseHashParams = (hash) => {
 
 export const PopupCenter = (url, title, w, h) => {
   // Fixes dual-screen position                         Most browsers      Firefox
-  var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : window.screenX;
-  var dualScreenTop = window.screenTop != undefined ? window.screenTop : window.screenY;
+  var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+  var dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
 
   //eslint-disable-next-line
   var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
