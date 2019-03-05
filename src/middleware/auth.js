@@ -4,6 +4,7 @@ import { buildAuthUrl,PopupCenter } from '../utils/client/outlook';
 import * as Providers from '../utils/constants'; 
 
 import * as AuthActionTypes from '../actions/auth';
+import * as DbActionTypes from '../actions/db/events';
 
 let GoogleAuth = '';
 
@@ -18,11 +19,11 @@ const handleAuthClick = (auth) => {
 
 export const authBeginMiddleware = store => next => action => {
   if(action === undefined) {
-    console.log("Action undefined");
+    console.log("Action undefined, returning and doing nothing.");
     return;
   }
 
-  if(action.type === 'BEGIN_GOOGLE_AUTH') {
+  if(action.type === AuthActionTypes.BEGIN_GOOGLE_AUTH) {
     window.gapi.load('client:auth2', {
       callback: () => {
         window.gapi.client.init({
@@ -39,14 +40,14 @@ export const authBeginMiddleware = store => next => action => {
           const isAuthorized = user.hasGrantedScopes(GOOGLE_SCOPE);
           if(isAuthorized) {
             next({
-              type: 'SUCCESS_GOOGLE_AUTH',
+              type: AuthActionTypes.SUCCESS_GOOGLE_AUTH,
               payload: {
                 user
               }
             });
           } else {
             next({
-              type: 'FAIL_GOOGLE_AUTH',
+              type: AuthActionTypes.FAIL_GOOGLE_AUTH,
             });
           }
         });
@@ -61,22 +62,21 @@ export const authBeginMiddleware = store => next => action => {
 };
 
 export const authSuccessMiddleware = store => next => action => {
-  if(action.type === 'SUCCESS_GOOGLE_AUTH') {
+  if(action.type === AuthActionTypes.SUCCESS_GOOGLE_AUTH) {
     next({
-      type: 'RETRIEVE_STORED_EVENTS',
+      type: DbActionTypes.RETRIEVE_STORED_EVENTS,
       providerType: Providers.GOOGLE,
     });
   }
-  if(action.type === 'FAIL_GOOGLE_AUTH') {
-    //re
+  if(action.type === AuthActionTypes.FAIL_GOOGLE_AUTH) {
     next({
-      type: 'RETRY_GOOGLE_AUTH'
+      type: AuthActionTypes.RETRY_GOOGLE_AUTH
     });
   }
 
   if(action.type === AuthActionTypes.SUCCESS_OUTLOOK_AUTH) {
     next({
-      type: 'RETRIEVE_STORED_EVENTS',
+      type: DbActionTypes.RETRIEVE_STORED_EVENTS,
       providerType: Providers.OUTLOOK,
     });
   }

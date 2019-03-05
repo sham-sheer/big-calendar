@@ -18,11 +18,11 @@ import { loadClient,
   postGoogleEvent,
   deleteGoogleEvent
 } from '../utils/client/google';
-import { Client } from "@microsoft/microsoft-graph-client";
-import { PageIterator } from "@microsoft/microsoft-graph-client/lib/src/tasks/PageIterator";
+
 import * as Providers from '../utils/constants'; 
 
-import db from '../db/index';
+import { getUserEvents } from '../utils/client/outlook';
+
 import * as RxDB from 'rxdb';
 
 export const beginGetEventsEpics = action$ => action$.pipe(
@@ -112,91 +112,6 @@ const fetchEvents = (resp, items, resolve, reject) => {
 };
 
 // ------------------------------------ OUTLOOK ------------------------------------ //
-
-function getAccessToken(callback) {
-  var now = new Date().getTime();
-  var isExpired = now > parseInt(window.localStorage.getItem('outlook_expiry'));
-  // Do we have a token already?
-  if (window.localStorage.getItem('outlook_access_token') && !isExpired) {
-    // Just return what we have
-    if (callback) {
-      callback(window.localStorage.getItem('outlook_access_token'));
-    }
-  } else {
-    // Attempt to do a hidden iframe request
-    // makeSilentTokenRequest(callback);
-    console.log("Access token expired!!");
-  }
-}
-
-function getUserEvents(callback) {
-  getAccessToken(function(accessToken) {
-    if (accessToken) {
-      // Create a Graph client
-      var client = Client.init({
-        authProvider: (done) => {
-          // Just return the token
-          done(null, accessToken);
-        }
-      });
-
-      var id = "";
-      
-      // This first select is to choose from the list of calendars 
-      client
-        .api('/me/calendars')
-        .get(async (err, res) => {
-          if (err) {
-            console.log(err);
-          } else {
-            // console.log(res);
-            // We are hard coding to select from keith's calendar first. but change this for production. LOL
-            // By default, can use 0 coz should have a default calendar. 
-            id = res.value[3].id;
-
-            var allEvents = await loadOutlookEventsChunked(client, id);
-            callback(allEvents);
-          }
-        });
-    } else {
-      var error = { responseText: 'Could not retrieve access token' };
-      callback(null, error);
-    }
-  });
-}
-
-async function loadOutlookEventsChunked (client, id) {
-  var allEvents = [];
-
-  try {
-    // Makes request to fetch mails list. Which is expected to have multiple pages of data.
-    let response = await client
-      .api(`/me/calendars/${id}/events`)
-      .count(true)
-      .top(100)
-      .select('attendees, bodyPreview, changeKey, createdDateTime, end, iCalUId, id, isAllDay, organizer, lastModifiedDateTime, location, originalEndTimeZone, originalStart, originalStartTimeZone, recurrence, responseStatus, start, subject, webLink')
-      .orderby('createdDateTime DESC')
-      .get();
-
-    // Creating a new page iterator instance with client a graph client instance, page collection response from request and callback
-    let pageIterator = new PageIterator(client, response, (data) => {
-      allEvents.push(data);
-
-      if(allEvents.length !== response['@odata.count']){
-        return true; 
-      }
-      return false;
-    });
-    
-    // This iterates the collection until the nextLink is drained out.
-    // Wait till all the iterator are done
-    await pageIterator.iterate();
-    return allEvents;
-  } catch (e) {
-    throw e;
-  }
-}
-
 export const beginGetOutlookEventsEpics = action$ => action$.pipe(
   ofType(GET_OUTLOOK_EVENTS_BEGIN),
   mergeMap(() => from(new Promise((resolve, reject) => {
