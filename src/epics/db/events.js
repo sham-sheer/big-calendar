@@ -16,8 +16,11 @@ import {
   POST_EVENT_SUCCESS,
   GET_EVENTS_SUCCESS,
   DELETE_EVENT_BEGIN,
-  deleteEventFromApi
 } from '../../actions/events';
+import {
+  deleteGoogleEvent,
+  loadClient
+} from '../../utils/client/google';
 import getDb from '../../db';
 
 export const retrieveEventsEpic = action$ => action$.pipe(
@@ -33,7 +36,8 @@ export const retrieveEventsEpic = action$ => action$.pipe(
           'organizer': singleEvent.organizer,
           'recurrence': singleEvent.recurrence,
           'iCalUID': singleEvent.iCalUID,
-          'attendees': singleEvent.attendees
+          'attendees': singleEvent.attendees,
+          'originalId': singleEvent.originalId
         };
       })
       ),
@@ -64,16 +68,16 @@ export const beginStoreEventsEpic = action$ => action$.pipe(
 export const deleteEventEpics = action$ => action$.pipe(
   ofType(DELETE_EVENT_BEGIN),
   mergeMap((action) => from(deleteEvent(action.payload)).pipe(
-      map((removedEvent) => retrieveStoreEvents()),
+      map(() => retrieveStoreEvents()),
     )
   ),
 )
 
 
 const storeEvents = async (events) => {
-  debugger;
   const db = await getDb();
   const addedEvents = [];
+  debugger;
   for(let dbEvent of events) {
     let filteredEvent = filter(dbEvent);
     try {
@@ -98,14 +102,16 @@ const filter = (dbEvent) => {
   dbEvent.originalId = dbEvent.id;
   dbEvent.id = md5(dbEvent.id);
   dbEvent.creator = dbEvent.creator.email;
-  debugger;
   return dbEvent;
 }
 
 const deleteEvent = async (id) => {
   const db = await getDb();
+  await loadClient();
   const query = db.events.find().where("id").eq(id);
-  const removedEvent = await query.remove();
+  const originalDocument = await query.exec();
+  const originalId = originalDocument[0].get("originalId");
   debugger;
-  return removedEvent;
+  const responseFromAPI = await deleteGoogleEvent(originalId);
+  await query.remove();
 }

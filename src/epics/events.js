@@ -1,8 +1,9 @@
 import { GET_EVENTS_BEGIN,
          POST_EVENT_BEGIN,
+         DELETE_EVENT_BEGIN,
+         EDIT_EVENT_BEGIN,
          getEventsSuccess,
          postEventSuccess,
-         DELETE_EVENT_BEGIN
 } from '../actions/events';
 import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
@@ -41,6 +42,23 @@ export const beginPostEventEpics = action$ => action$.pipe(
   )
  )
 
+ // export const beginEditEventEpics = action$ => action$.pipe(
+ //   ofType(EDIT_EVENT_BEGIN),
+ //   mergeMap(action => from(editEvent(action.payload)).pipe(
+ //      map(resp => editEventSuccess([resp.result]))
+ //   )
+ //  )
+ // )
+
+ // export const deleteEventEpics = action$ => action$.pipe(
+ //   ofType(DELETE_EVENT_BEGIN),
+ //   mergeMap(action => from(deleteEvent(action.payload)).pipe(
+ //      map(resp => deleteEventSuccess([resp.result]))
+ //   )
+ //  )
+ // )
+
+
 const postEvent = async (resource) => {
   let calendarObject = {
       'calendarId': 'primary',
@@ -48,11 +66,6 @@ const postEvent = async (resource) => {
   };
   await loadClient();
   return postGoogleEvent(calendarObject);
-}
-
-const deleteEvent = async (id) => {
-    await loadClient();
-    return deleteGoogleEvent(id);
 }
 
 const setCalendarRequest = () => {
