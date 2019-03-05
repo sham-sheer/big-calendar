@@ -2,7 +2,6 @@ import { map, mergeMap, switchMap, catchError } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
 import { from } from 'rxjs';
 import md5 from 'md5';
-
 import {
   RETRIEVE_STORED_EVENTS,
   BEGIN_STORE_EVENTS,
@@ -10,11 +9,14 @@ import {
   updateStoredEvents,
   successStoringEvents,
   failStoringEvents,
-  beginStoringEvents
+  beginStoringEvents,
+  retrieveStoreEvents
 } from '../../actions/db/events';
 import {
   POST_EVENT_SUCCESS,
-  GET_EVENTS_SUCCESS
+  GET_EVENTS_SUCCESS,
+  DELETE_EVENT_BEGIN,
+  deleteEventFromApi
 } from '../../actions/events';
 import getDb from '../../db';
 
@@ -27,7 +29,7 @@ export const retrieveEventsEpic = action$ => action$.pipe(
       })),
       map(events => events.map(singleEvent => {
         return {
-          'id' : md5(singleEvent.id),
+          'id' : singleEvent.id,
           'end' : singleEvent.end,
           'start': singleEvent.start,
           'summary': singleEvent.summary,
@@ -57,7 +59,17 @@ export const storeEventsEpic = action$ => action$.pipe(
 
 export const beginStoreEventsEpic = action$ => action$.pipe(
   ofType(POST_EVENT_SUCCESS, GET_EVENTS_SUCCESS),
-  map((action) => beginStoringEvents(action.payload))
+  map((action) => {
+    return beginStoringEvents(action.payload);
+  })
+);
+
+export const deleteEventEpics = action$ => action$.pipe(
+  ofType(DELETE_EVENT_BEGIN),
+  mergeMap((action) => from(deleteEvent(action.payload)).pipe(
+    map((removedEvent) => retrieveStoreEvents()),
+  )
+  ),
 );
 
 
@@ -97,6 +109,7 @@ const filterIntoSchema = (dbEvent, type) => {
         'reminders',
         'attachments',
         'hangoutLink'].forEach(e => delete dbEvent[e]);
+      dbEvent.originalId = dbEvent.id;
       dbEvent.id = md5(dbEvent.id);
       dbEvent.creator = dbEvent.creator.email;
       
@@ -142,4 +155,12 @@ const filterIntoSchema = (dbEvent, type) => {
     default:
       console.log("PROVIDER NOT ACCOUNTED FOR");
   }
+};
+
+const deleteEvent = async (id) => {
+  const db = await getDb();
+  const query = db.events.find().where("id").eq(id);
+  const removedEvent = await query.remove();
+  debugger;
+  return removedEvent;
 };

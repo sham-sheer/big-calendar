@@ -1,4 +1,10 @@
-import { GET_EVENTS_BEGIN, GET_OUTLOOK_EVENTS_BEGIN,getEventsSuccess } from '../actions/events';
+import { GET_EVENTS_BEGIN,
+  POST_EVENT_BEGIN,
+  getEventsSuccess,
+  postEventSuccess,
+  DELETE_EVENT_BEGIN,
+  GET_OUTLOOK_EVENTS_BEGIN
+} from '../actions/events';
 import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
@@ -7,9 +13,12 @@ import { normalize, schema } from 'normalizr';
 import { loadClient,
   loadFullCalendar,
   loadSyncCalendar,
-  loadNextPage
+  loadNextPage,
+  postGoogleEvent,
+  deleteGoogleEvent
 } from '../utils/client/google';
 import { Client } from "@microsoft/microsoft-graph-client";
+
 
 export const beginGetEventsEpics = action$ => action$.pipe(
   ofType(GET_EVENTS_BEGIN),
@@ -26,6 +35,28 @@ export const beginGetEventsEpics = action$ => action$.pipe(
   )
   )
 );
+
+export const beginPostEventEpics = action$ => action$.pipe(
+  ofType(POST_EVENT_BEGIN),
+  mergeMap(action => from(postEvent(action.payload)).pipe(
+    map(resp => postEventSuccess([resp.result]))
+  )
+  )
+);
+
+const postEvent = async (resource) => {
+  let calendarObject = {
+    'calendarId': 'primary',
+    'resource': resource
+  };
+  await loadClient();
+  return postGoogleEvent(calendarObject);
+};
+
+const deleteEvent = async (id) => {
+  await loadClient();
+  return deleteGoogleEvent(id);
+};
 
 const setCalendarRequest = () => {
   let request;

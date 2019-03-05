@@ -131,7 +131,8 @@ export default class View extends React.Component {
         contentLabel="Event Modal" >
         <h2 ref={subtitle => this.subtitle = subtitle}>{this.state.currentEvent.title}</h2>
         <h4>{this.state.currentEventStartDateTime} - {this.state.currentEventEndDateTime}</h4>
-        <button onClick={this.close}>close</button>
+        <button onClick={this.closeModal}>Close</button>
+        <button onClick={() => this.props.beginDeleteEvent(this.state.currentEvent.id)}>Delete</button>
       </Modal>
     );
   }
