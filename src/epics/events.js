@@ -17,7 +17,7 @@ export const beginGetEventsEpics = action$ => action$.pipe(
     mergeMap(() => from(setCalendarRequest()).pipe(
       mergeMap(resp => from(eventsPromise(resp)).pipe(
         map((resp) => {
-          return getEventsSuccess(resp);
+          return getEventsSuccess(resp,'GOOGLE');
         })
       )
       )
@@ -104,11 +104,12 @@ function getUserEvents(callback) {
         }
       });
 
-      // Get the 10 newest events
+      // #TO-DO Figure out how to do pagination instead for future
       client
         .api('/me/events')
         .top(10)
-        .select('subject,start,end,createdDateTime')
+        // .select('*')
+        .select('attendees, bodyPreview, changeKey, createdDateTime, end, iCalUId, id, isAllDay, organizer, lastModifiedDateTime, location, originalEndTimeZone, originalStart, originalStartTimeZone, recurrence, responseStatus, start, subject, webLink')
         .orderby('createdDateTime DESC')
         .get((err, res) => {
           if (err) {
@@ -126,31 +127,14 @@ function getUserEvents(callback) {
 
 export const beginGetOutlookEventsEpics = action$ => action$.pipe(
   ofType(GET_OUTLOOK_EVENTS_BEGIN),
-  mergeMap(() => {
-    let load = new Promise((resolve, reject) =>
-      resolve(getUserEvents((events, error) => {
-        console.log(events);
-      }))
-    );
-    // debugger;
-    // // let load = new Promise((resolve, reject) =>
-    // //   resolve(
-    // //     getUserEvents((events, error) => {
-    // //       console.log("testing");
-    // //       if (error) {
-    // //         console.log("Get Outlook Events Error: " + error);
-    // //       }
-
-    // //       console.log(events);
-    // //     })
-    // //   )
-    // // );
-    // let load = new Promise((resolve, reject) =>
-    //   resolve(
-    //     console.log("hello world!!")
-    //   )
-    // );
-    // from(load).pipe(
-    // );
-  })
+  mergeMap(() => from(new Promise((resolve, reject) => {
+    getUserEvents((events, error) => {
+      resolve(events);
+    });
+  })).pipe(
+    map((resp) => {
+      return getEventsSuccess(resp, 'OUTLOOK');
+    })
+  )
+  )
 );

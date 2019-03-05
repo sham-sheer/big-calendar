@@ -229,6 +229,9 @@ const eventSchema = {
           "type" : "string"
         }
       }
+    },
+    "providerType": {
+      "type": "string"
     }
     // ----------------------------------------------- //
   },

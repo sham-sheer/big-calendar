@@ -29,7 +29,7 @@ const mapDispatchToProps = dispatch => ({
   beginGetOutlookEvents: () => dispatch(beginGetOutlookEvents()),
   beginOutlookAuth: () => dispatch(beginOutlookAuth()),
   
-  retrieveStoreEvents: () => dispatch(retrieveStoreEvents())
+  retrieveStoreEvents: (providerType) => dispatch(retrieveStoreEvents(providerType))
 });
 
 

@@ -29,7 +29,7 @@ const createDb = async () => {
 
 
 export default () => {
-  //RxDB.removeDatabase('eventsdb', 'idb')
+  // RxDB.removeDatabase('eventsdb', 'idb');
   if(!dbPromise) {
     dbPromise = createDb();
   }

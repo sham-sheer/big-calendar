@@ -28,6 +28,7 @@ export const authBeginMiddleware = store => next => action => {
           //GoogleAuth.signIn();
           handleAuthClick(GoogleAuth);
           const user = GoogleAuth.currentUser.get();
+          console.log(user);
           const isAuthorized = user.hasGrantedScopes(GOOGLE_SCOPE);
           if(isAuthorized) {
             next({
@@ -55,7 +56,8 @@ export const authBeginMiddleware = store => next => action => {
 export const authSuccessMiddleware = store => next => action => {
   if(action.type === 'SUCCESS_GOOGLE_AUTH') {
     next({
-      type: 'RETRIEVE_STORED_EVENTS'
+      type: 'RETRIEVE_STORED_EVENTS',
+      providerType: 'GOOGLE'
     });
   }
   if(action.type === 'FAIL_GOOGLE_AUTH') {
@@ -67,7 +69,8 @@ export const authSuccessMiddleware = store => next => action => {
 
   if(action.type === AuthActionTypes.SUCCESS_OUTLOOK_AUTH) {
     next({
-      type: 'RETRIEVE_STORED_EVENTS'
+      type: 'RETRIEVE_STORED_EVENTS',
+      providerType: 'OUTLOOK'
     });
   }
   if(action.type === AuthActionTypes.FAIL_OUTLOOK_AUTH) {

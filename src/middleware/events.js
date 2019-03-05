@@ -54,10 +54,12 @@ export const eventsMiddleware = store => next => action => {
         const singleEvent = new schema.Entity('events');
         const mySchema = { events: [ singleEvent ]};
         const normalizedResults = normalize(myData, mySchema);
+        console.log("midware");
         next({
           type: 'GET_EVENTS_SUCCESS',
           payload: {
             data: response,
+            providerType: 'GOOGLE',
           }
         });
       });
@@ -94,5 +96,5 @@ export const eventsMiddleware = store => next => action => {
   }
 
   if(action.type === 'post')
-  return next(action);
+    return next(action);
 };

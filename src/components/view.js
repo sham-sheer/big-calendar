@@ -52,6 +52,9 @@ export default class View extends React.Component {
     //return BASE_URL + PARAMS_URL;
   }
 
+  authorizeGoogleCodeRequest = () => {
+    this.props.beginGoogleAuth();
+  }
 
   // Calendar Event Functions
 
@@ -138,16 +141,27 @@ export default class View extends React.Component {
       <div>
         <a>
           <button className="btn btn-block btn-social" 
+            onClick={() => this.authorizeGoogleCodeRequest()}>
+            <span className="fa fa-outlook"></span>
+              Sign in with Google
+          </button>
+
+          <button className="btn btn-block btn-social" 
             onClick={() => this.authorizeOutLookCodeRequest()}>
             <span className="fa fa-outlook"></span>
               Sign in with Outlook
           </button>
         </a>
         <button className="btn btn-block btn-social"
-          onClick={() => this.props.beginGetOutlookEvents()}>
-          {/* onClick={() => this.props.beginGetGoogleEvents()}> */}
+          onClick={() => this.props.beginGetGoogleEvents()}>
           <span className="fa fa-google"></span>
               Get Google Events
+        </button>
+
+        <button className="btn btn-block btn-social"
+          onClick={() => this.props.beginGetOutlookEvents()}>
+          <span className="fa fa-google"></span>
+              Get Outlook Events
         </button>
       </div>
     );

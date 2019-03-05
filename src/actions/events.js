@@ -39,10 +39,11 @@ export const postEventBegin = (calEvent) => ({
   payload: calEvent
 });
 
-export const getEventsSuccess = (response) => ({
+export const getEventsSuccess = (response, providerType) => ({
   type: GET_EVENTS_SUCCESS,
   payload: {
     data: response,
+    providerType: providerType,
   }
 });
 
@@ -51,6 +52,21 @@ export const GET_OUTLOOK_EVENTS_BEGIN = 'GET_OUTLOOK_EVENTS_BEGIN';
 export const GET_OUTLOOK_EVENTS_SUCCESS = 'GET_OUTLOOK_EVENTS_SUCCESS';
 export const GET_OUTLOOK_EVENTS_FAILURE = 'GET_OUTLOOK_EVENTS_FAILURE';
 
-export const beginGetOutlookEvents = () => ({ type: GET_OUTLOOK_EVENTS_BEGIN });
+export const beginGetOutlookEvents = (resp) => ({ 
+  type: GET_OUTLOOK_EVENTS_BEGIN,
+  payload: resp
+});
+
+export const postOutlookEventBegin = (calEvent) => ({
+  type: POST_EVENT_BEGIN,
+  payload: calEvent
+});
+
+export const getOutlookEventsSuccess = (response) => ({
+  type: GET_EVENTS_SUCCESS,
+  payload: {
+    data: response,
+  }
+});
 // ---------------------- OUTLOOK ---------------------- //
 
