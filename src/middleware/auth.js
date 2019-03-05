@@ -1,6 +1,8 @@
 import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
+import { buildAuthUrl,PopupCenter } from '../utils/client/outlook';
 
-import { buildAuthUrl,PopupCenter } from '../utils/outlook';
+import * as Providers from '../utils/constants'; 
+
 import * as AuthActionTypes from '../actions/auth';
 
 let GoogleAuth = '';
@@ -15,6 +17,11 @@ const handleAuthClick = (auth) => {
 };
 
 export const authBeginMiddleware = store => next => action => {
+  if(action === undefined) {
+    console.log("Action undefined");
+    return;
+  }
+
   if(action.type === 'BEGIN_GOOGLE_AUTH') {
     window.gapi.load('client:auth2', {
       callback: () => {
@@ -57,7 +64,7 @@ export const authSuccessMiddleware = store => next => action => {
   if(action.type === 'SUCCESS_GOOGLE_AUTH') {
     next({
       type: 'RETRIEVE_STORED_EVENTS',
-      providerType: 'GOOGLE'
+      providerType: Providers.GOOGLE,
     });
   }
   if(action.type === 'FAIL_GOOGLE_AUTH') {
@@ -70,7 +77,7 @@ export const authSuccessMiddleware = store => next => action => {
   if(action.type === AuthActionTypes.SUCCESS_OUTLOOK_AUTH) {
     next({
       type: 'RETRIEVE_STORED_EVENTS',
-      providerType: 'OUTLOOK'
+      providerType: Providers.OUTLOOK,
     });
   }
   if(action.type === AuthActionTypes.FAIL_OUTLOOK_AUTH) {

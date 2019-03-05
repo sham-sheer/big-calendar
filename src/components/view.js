@@ -164,6 +164,12 @@ export default class View extends React.Component {
           <span className="fa fa-google"></span>
               Get Outlook Events
         </button>
+
+        <button className="btn btn-block btn-social"
+          onClick={() => this.props.clearAllEvents()}>
+          <span className="fa fa-google"></span>
+              Clear all Events
+        </button>
       </div>
     );
   }

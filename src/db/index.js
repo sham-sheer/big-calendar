@@ -13,7 +13,7 @@ const collections = [
   }
 ];
 
-const createDb = async () => {
+export const createDb = async () => {
   const db = await RxDB.create({
     name: 'eventsdb',
     adapter: 'idb',

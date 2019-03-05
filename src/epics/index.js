@@ -8,7 +8,8 @@ import {
 import {
   beginGetEventsEpics,
   beginGetOutlookEventsEpics,
-  beginPostEventEpics
+  beginPostEventEpics,
+  clearAllEventsEpics,
 } from './events';
 
 export const rootEpic = combineEpics(
@@ -18,5 +19,6 @@ export const rootEpic = combineEpics(
   beginGetEventsEpics,
   beginGetOutlookEventsEpics,
   beginPostEventEpics,
-  deleteEventEpics
+  deleteEventEpics,
+  clearAllEventsEpics,
 );

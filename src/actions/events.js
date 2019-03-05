@@ -71,14 +71,22 @@ export const beginGetOutlookEvents = (resp) => ({
 });
 
 export const postOutlookEventBegin = (calEvent) => ({
-  type: POST_EVENT_BEGIN,
+  type: GET_OUTLOOK_EVENTS_FAILURE,
   payload: calEvent
 });
 
 export const getOutlookEventsSuccess = (response) => ({
-  type: GET_EVENTS_SUCCESS,
+  type: GET_OUTLOOK_EVENTS_SUCCESS,
   payload: {
     data: response,
   }
 });
 // ---------------------- OUTLOOK ---------------------- //
+
+// ---------------------- GENERAL ---------------------- //
+export const CLEAR_ALL_EVENTS = 'CLEAR_ALL_EVENTS';
+
+export const clearAllEvents = () => ({ 
+  type: CLEAR_ALL_EVENTS,
+});
+// ---------------------- GENERAL ---------------------- //

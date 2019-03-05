@@ -3,7 +3,8 @@ import { GET_EVENTS_BEGIN,
   getEventsSuccess,
   postEventSuccess,
   DELETE_EVENT_BEGIN,
-  GET_OUTLOOK_EVENTS_BEGIN
+  GET_OUTLOOK_EVENTS_BEGIN, 
+  CLEAR_ALL_EVENTS,
 } from '../actions/events';
 import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
@@ -18,7 +19,11 @@ import { loadClient,
   deleteGoogleEvent
 } from '../utils/client/google';
 import { Client } from "@microsoft/microsoft-graph-client";
+import { PageIterator } from "@microsoft/microsoft-graph-client/lib/src/tasks/PageIterator";
+import * as Providers from '../utils/constants'; 
 
+import db from '../db/index';
+import * as RxDB from 'rxdb';
 
 export const beginGetEventsEpics = action$ => action$.pipe(
   ofType(GET_EVENTS_BEGIN),
@@ -26,7 +31,7 @@ export const beginGetEventsEpics = action$ => action$.pipe(
     mergeMap(() => from(setCalendarRequest()).pipe(
       mergeMap(resp => from(eventsPromise(resp)).pipe(
         map((resp) => {
-          return getEventsSuccess(resp,'GOOGLE');
+          return getEventsSuccess(resp,Providers.GOOGLE);
         })
       )
       )
@@ -135,18 +140,22 @@ function getUserEvents(callback) {
         }
       });
 
-      // #TO-DO Figure out how to do pagination instead for future
+      var id = "";
+      
+      // This first select is to choose from the list of calendars 
       client
-        .api('/me/events')
-        .top(10)
-        // .select('*')
-        .select('attendees, bodyPreview, changeKey, createdDateTime, end, iCalUId, id, isAllDay, organizer, lastModifiedDateTime, location, originalEndTimeZone, originalStart, originalStartTimeZone, recurrence, responseStatus, start, subject, webLink')
-        .orderby('createdDateTime DESC')
-        .get((err, res) => {
+        .api('/me/calendars')
+        .get(async (err, res) => {
           if (err) {
-            callback(null, err);
+            console.log(err);
           } else {
-            callback(res.value);
+            // console.log(res);
+            // We are hard coding to select from keith's calendar first. but change this for production. LOL
+            // By default, can use 0 coz should have a default calendar. 
+            id = res.value[3].id;
+
+            var allEvents = await loadOutlookEventsChunked(client, id);
+            callback(allEvents);
           }
         });
     } else {
@@ -154,6 +163,38 @@ function getUserEvents(callback) {
       callback(null, error);
     }
   });
+}
+
+async function loadOutlookEventsChunked (client, id) {
+  var allEvents = [];
+
+  try {
+    // Makes request to fetch mails list. Which is expected to have multiple pages of data.
+    let response = await client
+      .api(`/me/calendars/${id}/events`)
+      .count(true)
+      .top(100)
+      .select('attendees, bodyPreview, changeKey, createdDateTime, end, iCalUId, id, isAllDay, organizer, lastModifiedDateTime, location, originalEndTimeZone, originalStart, originalStartTimeZone, recurrence, responseStatus, start, subject, webLink')
+      .orderby('createdDateTime DESC')
+      .get();
+
+    // Creating a new page iterator instance with client a graph client instance, page collection response from request and callback
+    let pageIterator = new PageIterator(client, response, (data) => {
+      allEvents.push(data);
+
+      if(allEvents.length !== response['@odata.count']){
+        return true; 
+      }
+      return false;
+    });
+    
+    // This iterates the collection until the nextLink is drained out.
+    // Wait till all the iterator are done
+    await pageIterator.iterate();
+    return allEvents;
+  } catch (e) {
+    throw e;
+  }
 }
 
 export const beginGetOutlookEventsEpics = action$ => action$.pipe(
@@ -164,8 +205,20 @@ export const beginGetOutlookEventsEpics = action$ => action$.pipe(
     });
   })).pipe(
     map((resp) => {
-      return getEventsSuccess(resp, 'OUTLOOK');
+      return getEventsSuccess(resp, Providers.OUTLOOK);
     })
   )
   )
 );
+// ------------------------------------ OUTLOOK ------------------------------------ //
+
+
+// ------------------------------------ GENERAL ------------------------------------ //
+export const clearAllEventsEpics = action$ => action$.pipe(
+  ofType(CLEAR_ALL_EVENTS),
+  map(() => {
+    localStorage.clear();
+    RxDB.removeDatabase('eventsdb', 'idb');
+  })
+);
+// ------------------------------------ GENERAL ------------------------------------ //

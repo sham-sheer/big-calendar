@@ -4,7 +4,11 @@ export const GOOGLE_SCOPE = `https://www.googleapis.com/auth/calendar.events`;
 
 
 export async function loadClient() {
-  let result =  new Promise((resolve) => {
+  let result =  new Promise((resolve, reject) => {
+    if (window.gapi.client === undefined) {
+      reject("Client undefined!");
+    }
+
     resolve(window.gapi.client.load('calendar', 'v3'));
   });
   return result;
@@ -30,14 +34,14 @@ export const loadSyncCalendar = async (syncToken) => {
 export const postGoogleEvent = async (calendarObject) => {
   return new Promise((resolve) => {
     resolve(window.gapi.client.calendar.events.insert(calendarObject));
-  })
-}
+  });
+};
 
 export const deleteGoogleEvent = async (eventId) => {
   return new Promise((resolve) => {
     resolve(window.gapi.client.calendar.events.delete('primary', eventId));
-  })
-}
+  });
+};
 
 export const loadNextPage = async (pageToken) => {
   return new Promise((resolve) => {

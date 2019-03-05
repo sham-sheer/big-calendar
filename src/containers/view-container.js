@@ -10,7 +10,8 @@ import {
 import {
   beginGetGoogleEvents,
   beginGetOutlookEvents,
-  beginDeleteEvent
+  beginDeleteEvent,
+  clearAllEvents,
 } from '../actions/events';
 import { connect } from 'react-redux';
 import { getFilteredEvents } from '../selectors/ui-selector';
@@ -31,7 +32,9 @@ const mapDispatchToProps = dispatch => ({
   beginOutlookAuth: () => dispatch(beginOutlookAuth()),
   
   retrieveStoreEvents: (providerType) => dispatch(retrieveStoreEvents(providerType)),
-  beginDeleteEvent: (id) => dispatch(beginDeleteEvent(id))
+  beginDeleteEvent: (id) => dispatch(beginDeleteEvent(id)),
+
+  clearAllEvents: () => dispatch(clearAllEvents()),
 });
 
 

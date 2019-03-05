@@ -19,6 +19,7 @@ import {
   deleteEventFromApi
 } from '../../actions/events';
 import getDb from '../../db';
+import * as Providers from '../../utils/constants'; 
 
 export const retrieveEventsEpic = action$ => action$.pipe(
   ofType(RETRIEVE_STORED_EVENTS),
@@ -101,7 +102,7 @@ const storeEvents = async (payload) => {
 
 const filterIntoSchema = (dbEvent, type) => {
   switch(type) {
-    case 'GOOGLE':
+    case Providers.GOOGLE:
       ['kind',
         'etag',
         'extendedProperties',
@@ -114,7 +115,7 @@ const filterIntoSchema = (dbEvent, type) => {
       dbEvent.creator = dbEvent.creator.email;
       
       return dbEvent;
-    case 'OUTLOOK': 
+    case Providers.OUTLOOK: 
       ['@odata.etag'].forEach(e => delete dbEvent[e]);
       var schemaCastedDbObject = {};
       
@@ -153,7 +154,7 @@ const filterIntoSchema = (dbEvent, type) => {
 
       return schemaCastedDbObject;
     default:
-      console.log("PROVIDER NOT ACCOUNTED FOR");
+      console.log("Provider " + type + " not available");
   }
 };
 
