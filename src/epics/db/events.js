@@ -72,10 +72,10 @@ export const beginStoreEventsEpic = action$ => action$.pipe(
 export const deleteEventEpics = action$ => action$.pipe(
   ofType(DELETE_EVENT_BEGIN),
   mergeMap((action) => from(deleteEvent(action.payload)).pipe(
-      map(() => retrieveStoreEvents()),
-    )
+    map(() => retrieveStoreEvents()),
+  )
   ),
-)
+);
 
 
 const storeEvents = async (payload) => {
@@ -170,4 +170,4 @@ const deleteEvent = async (id) => {
   const originalId = originalDocument[0].get("originalId");
   const responseFromAPI = await deleteGoogleEvent(originalId);
   await query.remove();
-}
+};

@@ -1,7 +1,8 @@
-import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
+import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE, filterUser } from '../utils/client/google';
 import { buildAuthUrl,PopupCenter } from '../utils/client/outlook';
 
 import * as Providers from '../utils/constants'; 
+import getDb from '../db';
 
 import * as AuthActionTypes from '../actions/auth';
 import * as DbActionTypes from '../actions/db/events';
@@ -31,19 +32,17 @@ export const authBeginMiddleware = store => next => action => {
           'clientId': GOOGLE_CLIENT_ID,
           'scope': GOOGLE_SCOPE,
           'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-        }).then(() => {
+        }).then(async () => {
           GoogleAuth = window.gapi.auth2.getAuthInstance();
           //GoogleAuth.signIn();
           handleAuthClick(GoogleAuth);
           const user = GoogleAuth.currentUser.get();
+          const authResponse = user.getAuthResponse();
+          console.log(authResponse);
 
-          console.log(user.getBasicProfile());
-          console.log('ID: ' + user.getBasicProfile().getId());
-          console.log('Full Name: ' + user.getBasicProfile().getName());
-          console.log('Given Name: ' + user.getBasicProfile().getGivenName());
-          console.log('Family Name: ' + user.getBasicProfile().getFamilyName());
-          console.log('Image URL: ' + user.getBasicProfile().getImageUrl());
-          console.log('Email: ' + user.getBasicProfile().getEmail());
+          const db = await getDb();
+          db.provider_users.find().exec().then(document => console.log(document));
+          db.provider_users.upsert(filterUser(user.getBasicProfile(), authResponse.access_token, authResponse.expires_at));
 
           const isAuthorized = user.hasGrantedScopes(GOOGLE_SCOPE);
           if(isAuthorized) {
@@ -63,7 +62,6 @@ export const authBeginMiddleware = store => next => action => {
     });
   } else if (action.type === AuthActionTypes.BEGIN_OUTLOOK_AUTH) {
     const url = buildAuthUrl();
-    console.log(url);
     window.open(url,'_self',false);
   }
   return next(action);

@@ -1,5 +1,7 @@
-import { Client } from "@microsoft/microsoft-graph-client";
-import { PageIterator } from "@microsoft/microsoft-graph-client/lib/src/tasks/PageIterator";
+import { Client } from '@microsoft/microsoft-graph-client';
+import { PageIterator } from '@microsoft/microsoft-graph-client/lib/src/tasks/PageIterator';
+import md5 from 'md5';
+import * as ProviderTypes from '../constants';
 
 const OUTLOOK_APPLICATION_ID = '8f81c6fd-0bf6-4b44-9c6a-32fe75795c4d';
 const OUTLOOK_OAUTH_ENDPOINT = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?`;
@@ -163,3 +165,17 @@ export const PopupCenter = (url, title, w, h) => {
   if (window.focus) newWindow.focus();
 };
 
+export const filterUser = (jsonObj, accessToken, accessTokenExpiry) => {
+  return {
+    personId: md5(jsonObj['id']),
+    originalId: jsonObj['id'],
+    // originalObject: jsonObj,
+    email: jsonObj['mail'],
+    // displayName: jsonObj['displayName'],
+    // familyName: jsonObj['surename'],
+    // givenName: jsonObj['givenName'],
+    providerType: ProviderTypes.OUTLOOK,
+    accessToken: accessToken,
+    accessTokenExpiry: accessTokenExpiry,
+  };
+};

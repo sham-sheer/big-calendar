@@ -50,21 +50,21 @@ export const beginPostEventEpics = action$ => action$.pipe(
   )
 );
 
- // export const beginEditEventEpics = action$ => action$.pipe(
- //   ofType(EDIT_EVENT_BEGIN),
- //   mergeMap(action => from(editEvent(action.payload)).pipe(
- //      map(resp => editEventSuccess([resp.result]))
- //   )
- //  )
- // )
+// export const beginEditEventEpics = action$ => action$.pipe(
+//   ofType(EDIT_EVENT_BEGIN),
+//   mergeMap(action => from(editEvent(action.payload)).pipe(
+//      map(resp => editEventSuccess([resp.result]))
+//   )
+//  )
+// )
 
- // export const deleteEventEpics = action$ => action$.pipe(
- //   ofType(DELETE_EVENT_BEGIN),
- //   mergeMap(action => from(deleteEvent(action.payload)).pipe(
- //      map(resp => deleteEventSuccess([resp.result]))
- //   )
- //  )
- // )
+// export const deleteEventEpics = action$ => action$.pipe(
+//   ofType(DELETE_EVENT_BEGIN),
+//   mergeMap(action => from(deleteEvent(action.payload)).pipe(
+//      map(resp => deleteEventSuccess([resp.result]))
+//   )
+//  )
+// )
 
 
 const postEvent = async (resource) => {

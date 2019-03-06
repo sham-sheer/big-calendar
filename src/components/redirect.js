@@ -5,7 +5,9 @@ import { connect } from 'react-redux';
 import { successOutlookAuth } from '../actions/auth';
 
 import { Client } from '@microsoft/microsoft-graph-client';
-import { getAccessToken } from '../utils/client/outlook';
+import { getAccessToken,filterUser } from '../utils/client/outlook';
+
+import getDb from '../db';
 
 const mapDispatchToProps = dispatch => ({
   successOutlookAuth: (user) => dispatch(successOutlookAuth(user))
@@ -64,7 +66,8 @@ class OutLookRedirect extends React.Component {
             if (err) {
               console.log(err);
             } else {
-              console.log(JSON.stringify(res));
+              const db = await getDb();
+              db.provider_users.upsert(filterUser(res, accessToken, expireDate.getTime()));
             }
           });
       } else {
