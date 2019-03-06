@@ -31,7 +31,7 @@ const guid = () => {
       s4(buf[4]) + '-' + s4(buf[5]) + s4(buf[6]) + s4(buf[7]);
 };
 
-const getAccessToken = (callback) => {
+export const getAccessToken = (callback) => {
   var now = new Date().getTime();
   var isExpired = now > parseInt(window.localStorage.getItem('outlook_expiry'));
   // Do we have a token already?

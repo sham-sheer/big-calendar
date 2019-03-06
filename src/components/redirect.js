@@ -4,6 +4,9 @@ import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import { successOutlookAuth } from '../actions/auth';
 
+import { Client } from '@microsoft/microsoft-graph-client';
+import { getAccessToken } from '../utils/client/outlook';
+
 const mapDispatchToProps = dispatch => ({
   successOutlookAuth: (user) => dispatch(successOutlookAuth(user))
 });
@@ -40,6 +43,35 @@ class OutLookRedirect extends React.Component {
     window.localStorage.setItem('outlook_access_token', accessToken);
     window.localStorage.setItem('outlook_expiry', expireDate.getTime());
     window.localStorage.setItem('outlook_id_token', response.id_token);
+
+    getAccessToken((accessToken) => {
+      if (accessToken) {
+        // Create a Graph client
+        var client = Client.init({
+          authProvider: (done) => {
+            // Just return the token
+            done(null, accessToken);
+          }
+        });
+  
+        var id = "";
+        
+        // This first select is to choose from the list of calendars 
+        client
+          .api('/me')
+          .select('*')
+          .get(async (err, res) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(JSON.stringify(res));
+            }
+          });
+      } else {
+        var error = { responseText: 'Could not retrieve access token' };
+        console.log(error);
+      }
+    });
 
     this.props.successOutlookAuth(currentUser);
   }

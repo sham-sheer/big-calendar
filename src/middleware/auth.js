@@ -36,7 +36,15 @@ export const authBeginMiddleware = store => next => action => {
           //GoogleAuth.signIn();
           handleAuthClick(GoogleAuth);
           const user = GoogleAuth.currentUser.get();
-          console.log(user);
+
+          console.log(user.getBasicProfile());
+          console.log('ID: ' + user.getBasicProfile().getId());
+          console.log('Full Name: ' + user.getBasicProfile().getName());
+          console.log('Given Name: ' + user.getBasicProfile().getGivenName());
+          console.log('Family Name: ' + user.getBasicProfile().getFamilyName());
+          console.log('Image URL: ' + user.getBasicProfile().getImageUrl());
+          console.log('Email: ' + user.getBasicProfile().getEmail());
+
           const isAuthorized = user.hasGrantedScopes(GOOGLE_SCOPE);
           if(isAuthorized) {
             next({
