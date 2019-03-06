@@ -50,7 +50,6 @@ export default class View extends React.Component {
     //return BASE_URL + PARAMS_URL;
   }
 
-
   // Calendar Event Functions
 
   moveEventList = ({ event, start, end }) => {
@@ -79,6 +78,10 @@ export default class View extends React.Component {
     this.props.history.push(`/${start}/$${end}`);
   }
 
+  editEvent = () => {
+    this.props.history.push(`/${this.state.currentEvent.id}`)
+  }
+
   handleEventClick = (event) => {
     this.setState({
       isShowEvent: true,
@@ -94,6 +97,10 @@ export default class View extends React.Component {
     });
   }
 
+  deleteEvent = () => {
+    this.props.beginDeleteEvent(this.state.currentEvent.id);
+    this.closeModal();
+  }
 
   /* Render functions */
 
@@ -127,7 +134,8 @@ export default class View extends React.Component {
         <h2 ref={subtitle => this.subtitle = subtitle}>{this.state.currentEvent.title}</h2>
         <h4>{this.state.currentEventStartDateTime} - {this.state.currentEventEndDateTime}</h4>
         <button onClick={this.closeModal}>Close</button>
-        <button onClick={() => this.props.beginDeleteEvent(this.state.currentEvent.id)}>Delete</button>
+        <button onClick={this.deleteEvent}>Delete</button>
+        <button onClick={this.editEvent}>Edit</button>
       </Modal>
     );
   }

@@ -73,7 +73,6 @@ export const deleteEventEpics = action$ => action$.pipe(
   ),
 )
 
-
 const storeEvents = async (events) => {
   const db = await getDb();
   const addedEvents = [];
@@ -111,7 +110,6 @@ const deleteEvent = async (id) => {
   const query = db.events.find().where("id").eq(id);
   const originalDocument = await query.exec();
   const originalId = originalDocument[0].get("originalId");
-  debugger;
   const responseFromAPI = await deleteGoogleEvent(originalId);
   await query.remove();
 }

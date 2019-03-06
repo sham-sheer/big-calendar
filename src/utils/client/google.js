@@ -33,8 +33,17 @@ export const postGoogleEvent = async (calendarObject) => {
   })
 }
 
+export const editGoogleEvent = async (eventId ,eventObject) => {
+  return new Promise((resolve) => {
+    resolve(window.gapi.client.calendar.events.patch({
+      'calendarId' : 'primary',
+      'eventId'    : eventId,
+      'eventObject': eventObject
+    }))
+  })
+}
+
 export const deleteGoogleEvent = async (eventId) => {
-  debugger;
   return new Promise((resolve) => {
     resolve(window.gapi.client.calendar.events.delete({
       'calendarId' : 'primary',
