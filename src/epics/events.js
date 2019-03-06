@@ -5,6 +5,7 @@ import { GET_EVENTS_BEGIN,
   DELETE_EVENT_BEGIN,
   GET_OUTLOOK_EVENTS_BEGIN, 
   CLEAR_ALL_EVENTS,
+  EDIT_EVENT_BEGIN,
 } from '../actions/events';
 import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
@@ -31,7 +32,7 @@ export const beginGetEventsEpics = action$ => action$.pipe(
     mergeMap(() => from(setCalendarRequest()).pipe(
       mergeMap(resp => from(eventsPromise(resp)).pipe(
         map((resp) => {
-          return getEventsSuccess(resp,Providers.GOOGLE);
+          return getEventsSuccess(resp, Providers.GOOGLE);
         })
       )
       )
@@ -48,6 +49,23 @@ export const beginPostEventEpics = action$ => action$.pipe(
   )
   )
 );
+
+ // export const beginEditEventEpics = action$ => action$.pipe(
+ //   ofType(EDIT_EVENT_BEGIN),
+ //   mergeMap(action => from(editEvent(action.payload)).pipe(
+ //      map(resp => editEventSuccess([resp.result]))
+ //   )
+ //  )
+ // )
+
+ // export const deleteEventEpics = action$ => action$.pipe(
+ //   ofType(DELETE_EVENT_BEGIN),
+ //   mergeMap(action => from(deleteEvent(action.payload)).pipe(
+ //      map(resp => deleteEventSuccess([resp.result]))
+ //   )
+ //  )
+ // )
+
 
 const postEvent = async (resource) => {
   let calendarObject = {
