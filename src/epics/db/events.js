@@ -22,11 +22,15 @@ import {
   loadClient
 } from '../../utils/client/google';
 import getDb from '../../db';
+import * as Providers from '../../utils/constants';
 
 export const retrieveEventsEpic = action$ => action$.pipe(
   ofType(RETRIEVE_STORED_EVENTS),
-  mergeMap(() => from(getDb()).pipe(
+  mergeMap((action) => from(getDb()).pipe(
     mergeMap(db => from(db.events.find().exec()).pipe(
+      map(events => events.filter(singleEvent => {
+        return singleEvent.providerType === action.providerType;
+      })),
       map(events => events.map(singleEvent => {
         return {
           'id' : singleEvent.id,
@@ -61,7 +65,7 @@ export const storeEventsEpic = action$ => action$.pipe(
 export const beginStoreEventsEpic = action$ => action$.pipe(
   ofType(POST_EVENT_SUCCESS, GET_EVENTS_SUCCESS),
   map((action) => {
-    return beginStoringEvents(action.payload)
+    return beginStoringEvents(action.payload);
   })
 );
 
@@ -73,36 +77,90 @@ export const deleteEventEpics = action$ => action$.pipe(
   ),
 )
 
-const storeEvents = async (events) => {
+
+const storeEvents = async (payload) => {
   const db = await getDb();
   const addedEvents = [];
-  debugger;
-  for(let dbEvent of events) {
-    let filteredEvent = filter(dbEvent);
+  const data = payload.data;
+
+  for(let dbEvent of data) {
+    // #TO-DO, we need to figure out how to handle recurrence, for now, we ignore
+    if(dbEvent.recurringEventId !== undefined) {
+      continue;
+    }
+
+    let filteredEvent = filterIntoSchema(dbEvent, payload.providerType);
+    filteredEvent['providerType'] = payload.providerType;
+
     try {
       await db.events.upsert(filteredEvent);
     }
     catch(e) {
       return e;
     }
-    addedEvents.push(dbEvent);
+    // Adding filtered event coz if I added dbEvent, it will result it non compatability with outlook objects.
+    addedEvents.push(filteredEvent);
   }
   return addedEvents;
-}
+};
 
-const filter = (dbEvent) => {
-  ['kind',
-  'etag',
-  'extendedProperties',
-  'conferenceData',
-  'reminders',
-  'attachments',
-  'hangoutLink'].forEach(e => delete dbEvent[e]);
-  dbEvent.originalId = dbEvent.id;
-  dbEvent.id = md5(dbEvent.id);
-  dbEvent.creator = dbEvent.creator.email;
-  return dbEvent;
-}
+const filterIntoSchema = (dbEvent, type) => {
+  switch(type) {
+    case Providers.GOOGLE:
+      ['kind',
+        'etag',
+        'extendedProperties',
+        'conferenceData',
+        'reminders',
+        'attachments',
+        'hangoutLink'].forEach(e => delete dbEvent[e]);
+      dbEvent.originalId = dbEvent.id;
+      dbEvent.id = md5(dbEvent.id);
+      dbEvent.creator = dbEvent.creator.email;
+
+      return dbEvent;
+    case Providers.OUTLOOK:
+      ['@odata.etag'].forEach(e => delete dbEvent[e]);
+      var schemaCastedDbObject = {};
+
+      schemaCastedDbObject.id = md5(dbEvent.id);
+      schemaCastedDbObject.htmlLink = dbEvent.webLink;
+      // schemaCastedDbObject.status = dbEvent.responseStatus;    // dk how to deal with responseStatus on microsoft side first.
+      schemaCastedDbObject.created = dbEvent.createdDateTime;
+      schemaCastedDbObject.updated = dbEvent.lastModifiedDateTime;
+      schemaCastedDbObject.summary = dbEvent.subject;
+      schemaCastedDbObject.description = dbEvent.bodyPreview; // Might need to use .body instead, but it returns html so idk how to deal w/ it now
+      schemaCastedDbObject.location = JSON.stringify(dbEvent.location.coordinates); // We need to convert coordinates coz idk how else to represent it
+      schemaCastedDbObject.creator = dbEvent.organizer.emailAddress.address;
+      schemaCastedDbObject.organizer = { email: dbEvent.organizer.emailAddress.address, displayName: dbEvent.organizer.emailAddress.name };
+      schemaCastedDbObject.start = { dateTime: dbEvent.start.dateTime, timezone: dbEvent.originalStartTimeZone };
+      schemaCastedDbObject.end = { dateTime: dbEvent.end.dateTime, timezone: dbEvent.originalEndTimeZone };
+      // schemaCastedDbObject.endTimeUnspecified = dbEvent.responseStatus;
+      // schemaCastedDbObject.recurrence = dbEvent.recurrence;      // Need to write converted from microsoft graph lib to standard array
+      schemaCastedDbObject.recurringEventId = dbEvent.seriesMasterId;
+      // schemaCastedDbObject.originalStartTime = dbEvent.responseStatus;
+      // schemaCastedDbObject.transparency = dbEvent.responseStatus;
+      // schemaCastedDbObject.visibility = dbEvent.responseStatus;
+      schemaCastedDbObject.iCalUID = dbEvent.iCalUId;
+      // schemaCastedDbObject.sequence = dbEvent.responseStatus;
+      schemaCastedDbObject.attendees = dbEvent.attendees;
+
+      // schemaCastedDbObject.anyoneCanAddSelf = dbEvent.responseStatus;
+      // schemaCastedDbObject.guestsCanInviteOthers = dbEvent.responseStatus;
+      // schemaCastedDbObject.guestsCanModify = dbEvent.responseStatus;
+      // schemaCastedDbObject.guestsCanSeeOtherGuests = dbEvent.responseStatus;
+      // schemaCastedDbObject.privateCopy = dbEvent.responseStatus;
+      // schemaCastedDbObject.locked = dbEvent.responseStatus;
+      schemaCastedDbObject.allDay = dbEvent.isAllDay;
+
+      // schemaCastedDbObject.calenderId = dbEvent.responseStatus;
+      // schemaCastedDbObject.source = dbEvent.responseStatus;
+
+      return schemaCastedDbObject;
+    default:
+      console.log("Provider " + type + " not available");
+  }
+};
 
 const deleteEvent = async (id) => {
   const db = await getDb();

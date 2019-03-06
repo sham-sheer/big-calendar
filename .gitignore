@@ -23,14 +23,6 @@ coverage
 # nyc test coverage
 .nyc_output
 
-<<<<<<< HEAD
-# node_modules
-node_modules
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-=======
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
@@ -70,4 +62,3 @@ typings/
 
 # next.js build output
 .next
->>>>>>> c9ff191e3b06359f1b8affa2d8ae16d67709a46b

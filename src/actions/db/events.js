@@ -10,8 +10,9 @@ export const DUPLICATE_ACTION = 'DUPLICATE_ACTION';
 export const failStoringEvents = () => ({
   type: FAIL_STORE_EVENTS
 });
-export const retrieveStoreEvents = () => ({
-  type: RETRIEVE_STORED_EVENTS
+export const retrieveStoreEvents = (providerType) => ({
+  type: RETRIEVE_STORED_EVENTS,
+  providerType: providerType
 });
 
 export const updateStoredEvents = (resp) => ({
