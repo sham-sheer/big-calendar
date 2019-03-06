@@ -23,12 +23,6 @@ export default class AddEvent extends Component {
       start: '',
       end: ''
     };
-
-    this.handleTitleChange = this.handleTitleChange.bind(this);
-    this.handleDescChange = this.handleDescChange.bind(this);
-    this.handleChangeStartTime = this.handleChangeStartTime.bind(this);
-    this.handleChangeEndTime = this.handleChangeEndTime.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   processStringForUTC = (dateInString) => {
@@ -61,19 +55,19 @@ export default class AddEvent extends Component {
     });
   }
 
-  handleTitleChange(e) {
+  handleTitleChange = (e) => {
     this.setState({ title: e.target.value });
   }
 
-  handleDescChange(e) {
+  handleDescChange = (e) => {
     this.setState({ desc: e.target.value });
   }
 
-  handleChangeStartTime(e) {
+  handleChangeStartTime = (e) => {
     this.setState({ startParsed: e.target.value });
   }
 
-  handleChangeEndTime(e) {
+  handleChangeEndTime = (e) => {
     this.setState({ endParsed: e.target.value });
   }
 
