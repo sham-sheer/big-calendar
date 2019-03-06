@@ -13,6 +13,9 @@ export default {
     },
     "displayName": {
       "type": "string"
+    },
+    "familyName": {
+      "type": "string"
     }
   },
   "required": [

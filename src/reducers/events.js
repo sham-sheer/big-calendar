@@ -1,6 +1,7 @@
 import {
   UPDATE_STORED_EVENTS,
   SUCCESS_STORED_EVENTS,
+  RETRIEVE_STORED_EVENTS,
   DUPLICATE_ACTION
 } from '../actions/db/events';
 
@@ -22,6 +23,8 @@ const mergeEvents = (oldEvents, newItems) => {
 
 export default function eventsReducer(state = initialState, action) {
   switch(action.type) {
+    case RETRIEVE_STORED_EVENTS:
+      return Object.assign({}, state, { providerType: action.providerType });
     case UPDATE_STORED_EVENTS:
       return Object.assign({}, state, { calEvents: action.payload });
     case SUCCESS_STORED_EVENTS: {

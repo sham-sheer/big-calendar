@@ -13,7 +13,7 @@ const collections = [
   }
 ];
 
-const createDb = async () => {
+export const createDb = async () => {
   const db = await RxDB.create({
     name: 'eventsdb',
     adapter: 'idb',
@@ -29,7 +29,7 @@ const createDb = async () => {
 
 
 export default () => {
-  //RxDB.removeDatabase('eventsdb', 'idb')
+  // RxDB.removeDatabase('eventsdb', 'idb');
   if(!dbPromise) {
     dbPromise = createDb();
   }

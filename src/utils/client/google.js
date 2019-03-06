@@ -4,9 +4,13 @@ export const GOOGLE_SCOPE = `https://www.googleapis.com/auth/calendar.events`;
 
 
 export async function loadClient() {
-  let result =  new Promise((resolve) => {
+  let result =  new Promise((resolve, reject) => {
+    if (window.gapi.client === undefined) {
+      reject("Client undefined!");
+    }
+
     resolve(window.gapi.client.load('calendar', 'v3'));
-  })
+  });
   return result;
 }
 
@@ -15,8 +19,8 @@ export const loadFullCalendar = async () =>  {
     resolve( window.gapi.client.calendar.events.list({
       'calendarId' : 'primary'
     }));
-  })
-}
+  });
+};
 
 export const loadSyncCalendar = async (syncToken) => {
   return new Promise((resolve) => {
@@ -24,14 +28,14 @@ export const loadSyncCalendar = async (syncToken) => {
       'calendarId' : 'primary',
       'syncToken'  : syncToken
     }));
-  })
-}
+  });
+};
 
 export const postGoogleEvent = async (calendarObject) => {
   return new Promise((resolve) => {
     resolve(window.gapi.client.calendar.events.insert(calendarObject));
-  })
-}
+  });
+};
 
 export const deleteGoogleEvent = async (eventId) => {
   debugger;
@@ -48,6 +52,6 @@ export const loadNextPage = async (pageToken) => {
     resolve(window.gapi.client.calendar.events.list({
       'calendarId' : 'primary',
       'pageToken': pageToken
-    }))
-  })
-}
+    }));
+  });
+};

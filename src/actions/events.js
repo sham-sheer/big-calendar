@@ -35,24 +35,58 @@ export const DELETE_EVENT_FAILURE_API = 'DELETE_EVENT_FAILURE_API';
 export const beginGetGoogleEvents = (resp) => ({
   type: GET_EVENTS_BEGIN,
   payload: resp
-})
+});
 
 export const postEventBegin = (calEvent) => ({
   type: POST_EVENT_BEGIN,
   payload: calEvent
-})
+});
 
-export const getEventsSuccess = (response) => ({
+export const getEventsSuccess = (response, providerType) => ({
   type: GET_EVENTS_SUCCESS,
-  payload: response
-})
+  payload: {
+    data: response,
+    providerType: providerType,
+  }
+});
 
 export const postEventSuccess = (response) => ({
   type: POST_EVENT_SUCCESS,
   payload: response
-})
+});
 
 export const beginDeleteEvent = (id) => ({
   type: DELETE_EVENT_BEGIN,
   payload: id
-})
+});
+
+// ---------------------- OUTLOOK ---------------------- //
+export const GET_OUTLOOK_EVENTS_BEGIN = 'GET_OUTLOOK_EVENTS_BEGIN';
+export const GET_OUTLOOK_EVENTS_SUCCESS = 'GET_OUTLOOK_EVENTS_SUCCESS';
+export const GET_OUTLOOK_EVENTS_FAILURE = 'GET_OUTLOOK_EVENTS_FAILURE';
+
+export const beginGetOutlookEvents = (resp) => ({ 
+  type: GET_OUTLOOK_EVENTS_BEGIN,
+  payload: resp
+});
+
+export const postOutlookEventBegin = (calEvent) => ({
+  type: GET_OUTLOOK_EVENTS_FAILURE,
+  payload: calEvent
+});
+
+export const getOutlookEventsSuccess = (response) => ({
+  type: GET_OUTLOOK_EVENTS_SUCCESS,
+  payload: {
+    data: response,
+  }
+});
+// ---------------------- OUTLOOK ---------------------- //
+
+// ---------------------- GENERAL ---------------------- //
+export const CLEAR_ALL_EVENTS = 'CLEAR_ALL_EVENTS';
+
+export const clearAllEvents = () => ({ 
+  type: CLEAR_ALL_EVENTS,
+});
+// ---------------------- GENERAL ---------------------- //

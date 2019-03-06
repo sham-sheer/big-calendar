@@ -2,13 +2,16 @@ import View from '../components/view';
 import { withRouter } from 'react-router-dom';
 import {
   beginGoogleAuth,
+  beginOutlookAuth,
 } from '../actions/auth';
 import {
   retrieveStoreEvents
 } from '../actions/db/events';
 import {
   beginGetGoogleEvents,
-  beginDeleteEvent
+  beginGetOutlookEvents,
+  beginDeleteEvent,
+  clearAllEvents,
 } from '../actions/events';
 import { connect } from 'react-redux';
 import { getFilteredEvents } from '../selectors/ui-selector';
@@ -24,8 +27,14 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   beginGetGoogleEvents: () => dispatch(beginGetGoogleEvents()),
   beginGoogleAuth: () => dispatch(beginGoogleAuth()),
-  retrieveStoreEvents: () => dispatch(retrieveStoreEvents()),
-  beginDeleteEvent: (id) => dispatch(beginDeleteEvent(id))
+
+  beginGetOutlookEvents: () => dispatch(beginGetOutlookEvents()),
+  beginOutlookAuth: () => dispatch(beginOutlookAuth()),
+  
+  retrieveStoreEvents: (providerType) => dispatch(retrieveStoreEvents(providerType)),
+  beginDeleteEvent: (id) => dispatch(beginDeleteEvent(id)),
+
+  clearAllEvents: () => dispatch(clearAllEvents()),
 });
 
 

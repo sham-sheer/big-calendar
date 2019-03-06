@@ -154,6 +154,7 @@ const eventSchema = {
       "type" : "boolean",
       "default" : false
     },
+    // ----------------------------------------------- //
     "recurrence" : {
       "type": "array",
       "item": {
@@ -231,6 +232,9 @@ const eventSchema = {
           "type" : "string"
         }
       }
+    },
+    "providerType": {
+      "type": "string"
     }
     // ----------------------------------------------- //
   },
