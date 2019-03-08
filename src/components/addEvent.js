@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import { FormControl } from 'react-bootstrap';
 import moment from "moment";
 
@@ -21,7 +22,8 @@ export default class AddEvent extends Component {
       startParsed: '',
       endParsed: '',
       start: '',
-      end: ''
+      end: '',
+      selectedProvider: '',
     };
   }
 
@@ -90,6 +92,14 @@ export default class AddEvent extends Component {
   }
 
   render() {
+    var providers = [];
+    for (const providerIndivAccount of Object.keys(this.props.providers)) {
+      this.props.providers[providerIndivAccount].map(
+        data => providers.push(data)
+      );
+    }
+
+
     return (
       <div className="form-event-container">
         <form className="container" onSubmit={this.handleSubmit} noValidate>
@@ -134,6 +144,26 @@ export default class AddEvent extends Component {
             }}
             onChange={this.handleChangeEndTime}
           />
+
+          <TextField
+            id="standard-select-currency-native"
+            select
+            label="Select email"
+            value={this.state.selectedProvider}
+            onChange={() => { 
+              console.log("Clicked!!"); 
+            }}
+            helperText="Please select which provider"
+            margin="normal"
+          >
+            {
+              providers.map(option => (
+                <MenuItem key={option.personId} value={option.email} >
+                  {option.email}
+                </MenuItem>
+              ))
+            }
+          </TextField>
 
           <input type="submit" value="Submit" />
         </form>

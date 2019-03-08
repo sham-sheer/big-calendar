@@ -24,6 +24,7 @@ const styles = theme => ({
 const mapStateToProps = state => {
   return {
     events: state.events,
+    providers: state.auth.providers,
   };
 };
 
