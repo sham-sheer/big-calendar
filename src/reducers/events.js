@@ -10,7 +10,6 @@ const initialState = {
 };
 
 const mergeEvents = (oldEvents, newItems) => {
-  debugger;
   let oldIds = oldEvents.map(item => item.id);
   let newPayload = [...oldEvents];
   for(let newItem of newItems) {

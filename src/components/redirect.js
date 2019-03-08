@@ -21,32 +21,32 @@ const mapStateToProps = state => {
 
 class OutLookRedirect extends React.Component {
   state = {
-    access_token: ''
+    isDone: false,
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const response = queryString
       .parse(this.props.location.hash);
     const accessToken = response.access_token;
 
-    let currentUser = {user: {
-      access_token: accessToken,
-    }};
+    // let currentUser = {user: {
+    //   access_token: accessToken,
+    // }};
 
-    this.setState({
-      currentUser: currentUser,
-      access_token: accessToken
-    });
+    // this.setState({
+    //   currentUser: currentUser,
+    //   access_token: accessToken
+    // });
 
     var expiresin = (parseInt(response.expires_in) - 300) * 1000;
     var now = new Date();
     var expireDate = new Date(now.getTime() + expiresin);
   
-    window.localStorage.setItem('outlook_access_token', accessToken);
-    window.localStorage.setItem('outlook_expiry', expireDate.getTime());
-    window.localStorage.setItem('outlook_id_token', response.id_token);
+    // window.localStorage.setItem('outlook_access_token', accessToken);
+    // window.localStorage.setItem('outlook_expiry', expireDate.getTime());
+    // window.localStorage.setItem('outlook_id_token', response.id_token);
 
-    getAccessToken((accessToken) => {
+    getAccessToken(accessToken, expireDate.getTime(), (accessToken) => {
       if (accessToken) {
         // Create a Graph client
         var client = Client.init({
@@ -67,7 +67,25 @@ class OutLookRedirect extends React.Component {
               console.log(err);
             } else {
               const db = await getDb();
-              db.provider_users.upsert(filterUser(res, accessToken, expireDate.getTime()));
+              const filteredSchemaUser = filterUser(res, accessToken, expireDate.getTime());
+
+              // debugger;
+
+              await db.provider_users.upsert(filteredSchemaUser);
+
+              // debugger;
+              // db.provider_users.find().exec().then(providerUserData => { 
+              //   providerUserData.map((singleProviderUserData) => {
+              //     console.log(singleProviderUserData);
+              //   });
+              // });
+
+              // db.provider_users.findOne().where('personId').eq('07619e640007f756feeab3f79df85b0a').exec().then(doc => console.log(doc));
+
+              this.props.successOutlookAuth({ user: filteredSchemaUser });
+              this.setState({
+                isDone: true,
+              });
             }
           });
       } else {
@@ -76,11 +94,10 @@ class OutLookRedirect extends React.Component {
       }
     });
 
-    this.props.successOutlookAuth(currentUser);
   }
 
   renderRedirect = () => {
-    if(this.state.currentUser !== null) {
+    if(this.state.isDone) {
       return (
         <Redirect to="/" />
       );

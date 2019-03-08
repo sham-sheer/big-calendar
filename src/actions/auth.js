@@ -17,11 +17,16 @@ export const BEGIN_OUTLOOK_AUTH = 'BEGIN_OUTLOOK_AUTH';
 export const SUCCESS_OUTLOOK_AUTH = 'SUCCESS_OUTLOOK_AUTH';
 export const FAIL_OUTLOOK_AUTH = 'FAIL_OUTLOOK_AUTH';
 export const RETRY_OUTLOOK_AUTH = 'RETRY_OUTLOOK_AUTH';
+export const EXPIRED_OUTLOOK_AUTH = 'EXPIRED_OUTLOOK_AUTH';
 
 export const beginOutlookAuth = () => ({ type: BEGIN_OUTLOOK_AUTH });
-export const failOutlookAuth = () => ({ type: SUCCESS_OUTLOOK_AUTH });
+export const failOutlookAuth = () => ({ type: FAIL_OUTLOOK_AUTH });
 export const successOutlookAuth = (user) => ({ 
   type: SUCCESS_OUTLOOK_AUTH,
+  payload: user
+});
+export const expiredOutlookAuth = (user) => ({ 
+  type: EXPIRED_OUTLOOK_AUTH,
   payload: user
 });
 // --------------------- OUTLOOK AUTH -------------------- //

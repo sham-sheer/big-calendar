@@ -96,7 +96,7 @@ const setCalendarRequest = () => {
 
 const normalizeEvents = (response) => {
   let singleEvent = new schema.Entity('events');
-  let results = normalize({ events : response}, { events: [ singleEvent ]});
+  let results = normalize({ events : response }, { events: [ singleEvent ]});
   return results;
 };
 
@@ -132,8 +132,14 @@ const fetchEvents = (resp, items, resolve, reject) => {
 // ------------------------------------ OUTLOOK ------------------------------------ //
 export const beginGetOutlookEventsEpics = action$ => action$.pipe(
   ofType(GET_OUTLOOK_EVENTS_BEGIN),
-  mergeMap(() => from(new Promise((resolve, reject) => {
-    getUserEvents((events, error) => {
+  mergeMap(action => from(new Promise((resolve, reject) => {
+    console.log("Performing full sync", action);
+    getUserEvents(action.payload.user.accessToken, action.payload.user.accessTokenExpiry, (events, error) => {
+      if(error) {
+        console.error(error);
+        return;
+      }
+
       resolve(events);
     });
   })).pipe(

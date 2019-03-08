@@ -4,6 +4,10 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
 import Modal from 'react-modal';
 import './view.css';
+import getDb from '../db';
+import * as ProviderTypes from '../utils/constants';
+import { filterUserOnStart } from '../utils/client/outlook';
+import SignupSyncLink from './SignupSyncLink';
 
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
@@ -35,9 +39,49 @@ export default class View extends React.Component {
     // For the modal third party library
     Modal.setAppElement('body');
   }
-  componentDidMount() {
+
+  async componentDidMount() {
     // this.props.beginGoogleAuth();
     // this.props.beginOutlookAuth();
+
+    const db = await getDb();
+    db.provider_users.find().exec().then(providerUserData => { 
+      providerUserData.map((singleProviderUserData) => {
+
+        var now = 1552009086286;
+        // var now = 9999999999999999;
+        var isExpired = now > parseInt(singleProviderUserData.accessTokenExpiry);
+        
+        console.log(now,singleProviderUserData.accessTokenExpiry);
+        // console.log(singleProviderUserData.providerType + " is " + (isExpired ? "expired!" : "not expired!"));
+
+        if(!isExpired){
+          switch (singleProviderUserData.providerType) {
+            case ProviderTypes.GOOGLE:
+              this.props.onStartGetGoogleAuth(singleProviderUserData);
+              break;
+            case ProviderTypes.OUTLOOK:
+              this.props.onStartGetOutlookAuth(filterUserOnStart(singleProviderUserData));
+              this.setState({
+                temp_outlookUser: filterUserOnStart(singleProviderUserData),
+              });
+              break;
+            default:
+              break;
+          }
+        }else{
+          switch (singleProviderUserData.providerType) {
+            case ProviderTypes.GOOGLE:
+              break;
+            case ProviderTypes.OUTLOOK:
+              this.props.onExpiredOutlook(filterUserOnStart(singleProviderUserData));
+              break;
+            default:
+              break;
+          }
+        }
+      });
+    });
   }
 
   componentWillUnmount() {
@@ -84,7 +128,7 @@ export default class View extends React.Component {
   }
 
   editEvent = () => {
-    this.props.history.push(`/${this.state.currentEvent.id}`)
+    this.props.history.push(`/${this.state.currentEvent.id}`);
   }
 
   handleEventClick = (event) => {
@@ -146,8 +190,31 @@ export default class View extends React.Component {
   }
 
   renderSignupLinks = () => {
+    var providers = [];
+    for (const providerType of Object.keys(this.props.expiredProviders)) {
+      var providerFunc;
+      switch(providerType) {
+        case ProviderTypes.GOOGLE:
+          providerFunc = (() => this.authorizeGoogleCodeRequest());
+          break;
+        case ProviderTypes.OUTLOOK:
+          providerFunc = (() => this.authorizeOutLookCodeRequest());
+          break;
+        default:
+          console.log('Provider not accounted for!!');
+          break;
+      }
+
+      providers.push(<SignupSyncLink key={providerType}
+        providerType={providerType}
+        providerInfo={this.props.expiredProviders[providerType]}
+        providerFunc={() => providerFunc()}
+      />);
+    }
+
     return (
       <div>
+        {providers}
         <a>
           <button className="btn btn-block btn-social"
             onClick={() => this.authorizeGoogleCodeRequest()}>
@@ -161,17 +228,17 @@ export default class View extends React.Component {
               Sign in with Outlook
           </button>
         </a>
-        <button className="btn btn-block btn-social"
+        {/*<button className="btn btn-block btn-social"
           onClick={() => this.props.beginGetGoogleEvents()}>
           <span className="fa fa-google"></span>
               Get Google Events
         </button>
 
         <button className="btn btn-block btn-social"
-          onClick={() => this.props.beginGetOutlookEvents()}>
+          onClick={() => {console.log(this.state.temp_outlookUser); this.props.beginGetOutlookEvents(this.state.temp_outlookUser);}}>
           <span className="fa fa-google"></span>
               Get Outlook Events
-        </button>
+        </button> */}
 
         <button className="btn btn-block btn-social"
           onClick={() => this.props.clearAllEvents()}>

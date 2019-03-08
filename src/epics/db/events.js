@@ -117,6 +117,7 @@ const filterIntoSchema = (dbEvent, type) => {
       dbEvent.originalId = dbEvent.id;
       dbEvent.id = md5(dbEvent.id);
       dbEvent.creator = dbEvent.creator.email;
+      dbEvent.providerType = Providers.GOOGLE;
 
       return dbEvent;
     case Providers.OUTLOOK:
@@ -124,8 +125,9 @@ const filterIntoSchema = (dbEvent, type) => {
       var schemaCastedDbObject = {};
 
       schemaCastedDbObject.id = md5(dbEvent.id);
+      schemaCastedDbObject.originalId = dbEvent.id;
       schemaCastedDbObject.htmlLink = dbEvent.webLink;
-      // schemaCastedDbObject.status = dbEvent.responseStatus;    // dk how to deal with responseStatus on microsoft side first.
+      schemaCastedDbObject.status = dbEvent.isCancelled ? 'cancelled' : 'confirmed';    
       schemaCastedDbObject.created = dbEvent.createdDateTime;
       schemaCastedDbObject.updated = dbEvent.lastModifiedDateTime;
       schemaCastedDbObject.summary = dbEvent.subject;
@@ -138,9 +140,9 @@ const filterIntoSchema = (dbEvent, type) => {
       // schemaCastedDbObject.endTimeUnspecified = dbEvent.responseStatus;
       // schemaCastedDbObject.recurrence = dbEvent.recurrence;      // Need to write converted from microsoft graph lib to standard array
       schemaCastedDbObject.recurringEventId = dbEvent.seriesMasterId;
-      // schemaCastedDbObject.originalStartTime = dbEvent.responseStatus;
+      schemaCastedDbObject.originalStartTime = { dateTime: dbEvent.originalStartTime, timezone: dbEvent.originalStartTimeZone };
       // schemaCastedDbObject.transparency = dbEvent.responseStatus;
-      // schemaCastedDbObject.visibility = dbEvent.responseStatus;
+      schemaCastedDbObject.visibility = "default";
       schemaCastedDbObject.iCalUID = dbEvent.iCalUId;
       // schemaCastedDbObject.sequence = dbEvent.responseStatus;
       schemaCastedDbObject.attendees = dbEvent.attendees;
@@ -155,6 +157,7 @@ const filterIntoSchema = (dbEvent, type) => {
 
       // schemaCastedDbObject.calenderId = dbEvent.responseStatus;
       // schemaCastedDbObject.source = dbEvent.responseStatus;
+      schemaCastedDbObject.providerType = Providers.OUTLOOK;
 
       return schemaCastedDbObject;
     default:
