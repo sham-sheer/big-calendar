@@ -6,7 +6,6 @@ import Modal from 'react-modal';
 import './view.css';
 import getDb from '../db';
 import * as ProviderTypes from '../utils/constants';
-import { filterUserOnStart } from '../utils/client/outlook';
 import SignupSyncLink from './SignupSyncLink';
 
 const localizer = BigCalendar.momentLocalizer(moment);
@@ -48,22 +47,25 @@ export default class View extends React.Component {
     db.provider_users.find().exec().then(providerUserData => { 
       providerUserData.map((singleProviderUserData) => {
 
-        var now = 1552009086286;
-        // var now = 9999999999999999;
+        var now = new Date().getTime();
         var isExpired = now > parseInt(singleProviderUserData.accessTokenExpiry);
         
-        console.log(now,singleProviderUserData.accessTokenExpiry);
+        // console.log(singleProviderUserData,this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
+        // console.log(now,singleProviderUserData.accessTokenExpiry,isExpired,providerUserData);
         // console.log(singleProviderUserData.providerType + " is " + (isExpired ? "expired!" : "not expired!"));
 
         if(!isExpired){
           switch (singleProviderUserData.providerType) {
             case ProviderTypes.GOOGLE:
-              this.props.onStartGetGoogleAuth(singleProviderUserData);
+              this.props.onStartGetGoogleAuth(this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
+              this.setState({
+                temp_googleUser: this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE),
+              });
               break;
             case ProviderTypes.OUTLOOK:
-              this.props.onStartGetOutlookAuth(filterUserOnStart(singleProviderUserData));
+              this.props.onStartGetOutlookAuth(this.filterUserOnStart(singleProviderUserData,ProviderTypes.OUTLOOK));
               this.setState({
-                temp_outlookUser: filterUserOnStart(singleProviderUserData),
+                temp_outlookUser: this.filterUserOnStart(singleProviderUserData,ProviderTypes.OUTLOOK),
               });
               break;
             default:
@@ -72,9 +74,10 @@ export default class View extends React.Component {
         }else{
           switch (singleProviderUserData.providerType) {
             case ProviderTypes.GOOGLE:
+              this.props.onExpiredGoogle(this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
               break;
             case ProviderTypes.OUTLOOK:
-              this.props.onExpiredOutlook(filterUserOnStart(singleProviderUserData));
+              this.props.onExpiredOutlook(this.filterUserOnStart(singleProviderUserData,ProviderTypes.OUTLOOK));
               break;
             default:
               break;
@@ -140,6 +143,21 @@ export default class View extends React.Component {
     });
   }
 
+  // This filter user is used when the outlook first creates the object. 
+  // It takes the outlook user object, and map it to the common schema defined in db/person.js
+  filterUserOnStart = (rxDoc, providerType) => {
+    return { 
+      user: {
+        personId: rxDoc.personId,
+        originalId: rxDoc.originalId,
+        email: rxDoc.email,
+        providerType: providerType,
+        accessToken: rxDoc.accessToken,
+        accessTokenExpiry: rxDoc.accessTokenExpiry,
+      }
+    };
+  };
+
   closeModal = () => {
     this.setState({
       isShowEvent: false
@@ -192,7 +210,7 @@ export default class View extends React.Component {
   renderSignupLinks = () => {
     var providers = [];
     for (const providerType of Object.keys(this.props.expiredProviders)) {
-      var providerFunc;
+      let providerFunc;
       switch(providerType) {
         case ProviderTypes.GOOGLE:
           providerFunc = (() => this.authorizeGoogleCodeRequest());

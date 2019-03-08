@@ -15,6 +15,8 @@ export default class signupSyncLink extends React.Component {
       return <div></div>;
     }
 
+    // console.log(this.props.providerInfo);
+
     var renderArray = [];
     for(var i = 0; i < this.props.providerInfo.length; i++) {
       renderArray.push(

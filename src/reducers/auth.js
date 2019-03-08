@@ -24,15 +24,15 @@ export default function authReducer(state = initialState, action) {
         'OUTLOOK': state.providers[ProviderTypes.OUTLOOK]
       },
       expiredProviders: {
-        'GOOGLE': state.providers[ProviderTypes.GOOGLE].filter(user => user.originalId !== action.payload.user.originalId),
-        'OUTLOOK': state.providers[ProviderTypes.OUTLOOK]
+        'GOOGLE': state.expiredProviders[ProviderTypes.GOOGLE].filter(user => user.originalId !== action.payload.user.originalId),
+        'OUTLOOK': state.expiredProviders[ProviderTypes.OUTLOOK]
       }});
     case AuthActionTypes.FAIL_GOOGLE_AUTH:
       return Object.assign({}, state, {isAuth: false, currentUser: null});
     case AuthActionTypes.EXPIRED_GOOGLE_AUTH:
       return Object.assign({}, state, {isAuth: false, expiredProviders: {
-        'GOOGLE': state.providers[ProviderTypes.GOOGLE].concat(action.payload.user),
-        'OUTLOOK': state.providers[ProviderTypes.OUTLOOK]
+        'GOOGLE': state.expiredProviders[ProviderTypes.GOOGLE].concat(action.payload.user),
+        'OUTLOOK': state.expiredProviders[ProviderTypes.OUTLOOK]
       }});
 
     case AuthActionTypes.BEGIN_OUTLOOK_AUTH:
@@ -44,15 +44,15 @@ export default function authReducer(state = initialState, action) {
           'OUTLOOK': state.providers[ProviderTypes.OUTLOOK].concat(action.payload.user) 
         },
         expiredProviders: {
-          'GOOGLE': state.providers[ProviderTypes.GOOGLE],
-          'OUTLOOK': state.providers[ProviderTypes.OUTLOOK].filter(user => user.originalId !== action.payload.user.originalId) 
+          'GOOGLE': state.expiredProviders[ProviderTypes.GOOGLE],
+          'OUTLOOK': state.expiredProviders[ProviderTypes.OUTLOOK].filter(user => user.originalId !== action.payload.user.originalId) 
         }});
     case AuthActionTypes.FAIL_OUTLOOK_AUTH:
       return Object.assign({}, state, {isAuth: false, currentUser: null});
     case AuthActionTypes.EXPIRED_OUTLOOK_AUTH:
       return Object.assign({}, state, {isAuth: false, expiredProviders: {
-        'GOOGLE': state.providers[ProviderTypes.GOOGLE],
-        'OUTLOOK': state.providers[ProviderTypes.OUTLOOK].concat(action.payload.user) 
+        'GOOGLE': state.expiredProviders[ProviderTypes.GOOGLE],
+        'OUTLOOK': state.expiredProviders[ProviderTypes.OUTLOOK].concat(action.payload.user) 
       }});
     default:
       return state;
