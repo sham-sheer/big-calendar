@@ -214,7 +214,9 @@ export default class View extends React.Component {
 
     return (
       <div>
+        {/* this is for out of sync tokens. */}
         {providers}
+
         <a>
           <button className="btn btn-block btn-social"
             onClick={() => this.authorizeGoogleCodeRequest()}>
@@ -228,7 +230,7 @@ export default class View extends React.Component {
               Sign in with Outlook
           </button>
         </a>
-        {/*<button className="btn btn-block btn-social"
+        <button className="btn btn-block btn-social"
           onClick={() => this.props.beginGetGoogleEvents()}>
           <span className="fa fa-google"></span>
               Get Google Events
@@ -238,7 +240,7 @@ export default class View extends React.Component {
           onClick={() => {console.log(this.state.temp_outlookUser); this.props.beginGetOutlookEvents(this.state.temp_outlookUser);}}>
           <span className="fa fa-google"></span>
               Get Outlook Events
-        </button> */}
+        </button>
 
         <button className="btn btn-block btn-social"
           onClick={() => this.props.clearAllEvents()}>

@@ -19,9 +19,21 @@ export default function authReducer(state = initialState, action) {
     case AuthActionTypes.BEGIN_GOOGLE_AUTH:
       return Object.assign({}, state, {isAuth: true, currentUser: null});
     case AuthActionTypes.SUCCESS_GOOGLE_AUTH:
-      return Object.assign({}, state, {isAuth: false, currentUser: action.payload.user});
+      return Object.assign({}, state, {isAuth: false, providers: {
+        'GOOGLE': state.providers[ProviderTypes.GOOGLE].concat(action.payload.user),
+        'OUTLOOK': state.providers[ProviderTypes.OUTLOOK]
+      },
+      expiredProviders: {
+        'GOOGLE': state.providers[ProviderTypes.GOOGLE].filter(user => user.originalId !== action.payload.user.originalId),
+        'OUTLOOK': state.providers[ProviderTypes.OUTLOOK]
+      }});
     case AuthActionTypes.FAIL_GOOGLE_AUTH:
       return Object.assign({}, state, {isAuth: false, currentUser: null});
+    case AuthActionTypes.EXPIRED_GOOGLE_AUTH:
+      return Object.assign({}, state, {isAuth: false, expiredProviders: {
+        'GOOGLE': state.providers[ProviderTypes.GOOGLE].concat(action.payload.user),
+        'OUTLOOK': state.providers[ProviderTypes.OUTLOOK]
+      }});
 
     case AuthActionTypes.BEGIN_OUTLOOK_AUTH:
       return Object.assign({}, state, {isAuth: true, currentUser: null});
@@ -35,7 +47,6 @@ export default function authReducer(state = initialState, action) {
           'GOOGLE': state.providers[ProviderTypes.GOOGLE],
           'OUTLOOK': state.providers[ProviderTypes.OUTLOOK].filter(user => user.originalId !== action.payload.user.originalId) 
         }});
-      // return Object.assign({}, state, {isAuth: false, currentUser: action.payload.user});
     case AuthActionTypes.FAIL_OUTLOOK_AUTH:
       return Object.assign({}, state, {isAuth: false, currentUser: null});
     case AuthActionTypes.EXPIRED_OUTLOOK_AUTH:

@@ -16,7 +16,8 @@ import {
 import {
   successGoogleAuth,
   successOutlookAuth,
-  expiredOutlookAuth
+  expiredOutlookAuth,
+  expiredGoogleAuth,
 } from '../actions/auth';
 import { connect } from 'react-redux';
 import { getFilteredEvents } from '../selectors/ui-selector';
@@ -47,6 +48,7 @@ const mapDispatchToProps = dispatch => ({
   onStartGetOutlookAuth: (user) => dispatch(successOutlookAuth(user)),
 
   onExpiredOutlook: (user) => dispatch(expiredOutlookAuth(user)),
+  onExpiredGoogle: (user) => dispatch(expiredGoogleAuth(user)),
 });
 
 

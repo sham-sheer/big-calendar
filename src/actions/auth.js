@@ -3,11 +3,16 @@ export const BEGIN_GOOGLE_AUTH = 'BEGIN_GOOGLE_AUTH';
 export const SUCCESS_GOOGLE_AUTH = 'SUCCESS_GOOGLE_AUTH';
 export const FAIL_GOOGLE_AUTH = 'FAIL_GOOGLE_AUTH';
 export const RETRY_GOOGLE_AUTH = 'RETRY_GOOGLE_AUTH';
+export const EXPIRED_GOOGLE_AUTH = 'EXPIRED_GOOGLE_AUTH';
 
 export const beginGoogleAuth = () => ({ type: BEGIN_GOOGLE_AUTH });
 export const failGoogleAuth = () => ({ type: FAIL_GOOGLE_AUTH });
 export const successGoogleAuth = (user) => ({ 
   type: SUCCESS_GOOGLE_AUTH,
+  payload: user
+});
+export const expiredGoogleAuth = (user) => ({ 
+  type: EXPIRED_GOOGLE_AUTH,
   payload: user
 });
 // --------------------- GOOGLE AUTH --------------------- //
