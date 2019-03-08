@@ -19,7 +19,7 @@ export async function loadClient() {
 
 export const loadFullCalendar = async () =>  {
   return new Promise((resolve) => {
-    resolve( window.gapi.client.calendar.events.list({
+    resolve(window.gapi.client.calendar.events.list({
       'calendarId' : 'primary'
     }));
   });
@@ -76,20 +76,5 @@ export const filterUser = (jsonObj, accessToken, accessTokenExpiry) => {
     providerType: ProviderTypes.GOOGLE,
     accessToken: accessToken,
     accessTokenExpiry: accessTokenExpiry,
-  };
-};
-
-// This filter user is used when the outlook first creates the object. 
-// It takes the outlook user object, and map it to the common schema defined in db/person.js
-export const filterUserOnStart = (rxDoc) => {
-  return { 
-    user: {
-      personId: rxDoc.personId,
-      originalId: rxDoc.originalId,
-      email: rxDoc.email,
-      providerType: ProviderTypes.GOOGLE,
-      accessToken: rxDoc.accessToken,
-      accessTokenExpiry: rxDoc.accessTokenExpiry,
-    }
   };
 };

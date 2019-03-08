@@ -136,36 +136,36 @@ export const buildAuthUrl = () => {
   return OUTLOOK_OAUTH_ENDPOINT + params(authParams);
 };
 
-const parseHashParams = (hash) => {
-  var params = hash.slice(1).split('&');
+// const parseHashParams = (hash) => {
+//   var params = hash.slice(1).split('&');
     
-  var paramarray = {};
-  params.forEach(function(param) {
-    param = param.split('=');
-    paramarray[param[0]] = param[1];
-  });
+//   var paramarray = {};
+//   params.forEach(function(param) {
+//     param = param.split('=');
+//     paramarray[param[0]] = param[1];
+//   });
     
-  return paramarray;
-};
+//   return paramarray;
+// };
 
-export const PopupCenter = (url, title, w, h) => {
-  // Fixes dual-screen position                         Most browsers      Firefox
-  var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
-  var dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+// export const PopupCenter = (url, title, w, h) => {
+//   // Fixes dual-screen position                         Most browsers      Firefox
+//   var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+//   var dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
 
-  //eslint-disable-next-line
-  var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
-  //eslint-disable-next-line
-  var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+//   //eslint-disable-next-line
+//   var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+//   //eslint-disable-next-line
+//   var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
 
-  var systemZoom = width / window.screen.availWidth;
-  var left = (width - w) / 2 / systemZoom + dualScreenLeft;
-  var top = (height - h) / 2 / systemZoom + dualScreenTop;
-  var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w / systemZoom + ', height=' + h / systemZoom + ', top=' + top + ', left=' + left);
+//   var systemZoom = width / window.screen.availWidth;
+//   var left = (width - w) / 2 / systemZoom + dualScreenLeft;
+//   var top = (height - h) / 2 / systemZoom + dualScreenTop;
+//   var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w / systemZoom + ', height=' + h / systemZoom + ', top=' + top + ', left=' + left);
 
-  // Puts focus on the newWindow
-  if (window.focus) newWindow.focus();
-};
+//   // Puts focus on the newWindow
+//   if (window.focus) newWindow.focus();
+// };
 
 // This filter user is used when the outlook first creates the object. 
 // It takes the outlook user object, and map it to the common schema defined in db/person.js

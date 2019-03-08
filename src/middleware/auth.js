@@ -1,5 +1,5 @@
 import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE, filterUser } from '../utils/client/google';
-import { buildAuthUrl,PopupCenter } from '../utils/client/outlook';
+import { buildAuthUrl } from '../utils/client/outlook';
 
 import * as Providers from '../utils/constants'; 
 import getDb from '../db';

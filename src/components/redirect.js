@@ -29,23 +29,10 @@ class OutLookRedirect extends React.Component {
       .parse(this.props.location.hash);
     const accessToken = response.access_token;
 
-    // let currentUser = {user: {
-    //   access_token: accessToken,
-    // }};
-
-    // this.setState({
-    //   currentUser: currentUser,
-    //   access_token: accessToken
-    // });
-
     var expiresin = (parseInt(response.expires_in) - 300) * 1000;
     var now = new Date();
     var expireDate = new Date(now.getTime() + expiresin);
   
-    // window.localStorage.setItem('outlook_access_token', accessToken);
-    // window.localStorage.setItem('outlook_expiry', expireDate.getTime());
-    // window.localStorage.setItem('outlook_id_token', response.id_token);
-
     getAccessToken(accessToken, expireDate.getTime(), (accessToken) => {
       if (accessToken) {
         // Create a Graph client
@@ -56,8 +43,6 @@ class OutLookRedirect extends React.Component {
           }
         });
   
-        var id = "";
-        
         // This first select is to choose from the list of calendars 
         client
           .api('/me')

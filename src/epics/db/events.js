@@ -1,11 +1,14 @@
-import { map, mergeMap, switchMap, catchError } from 'rxjs/operators';
+import { map, 
+  mergeMap, 
+  // switchMap, 
+  catchError } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
 import { from } from 'rxjs';
 import md5 from 'md5';
 import {
   RETRIEVE_STORED_EVENTS,
   BEGIN_STORE_EVENTS,
-  duplicateAction,
+  // duplicateAction,
   updateStoredEvents,
   successStoringEvents,
   failStoringEvents,

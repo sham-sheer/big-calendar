@@ -40,9 +40,6 @@ export default class View extends React.Component {
   }
 
   async componentDidMount() {
-    // this.props.beginGoogleAuth();
-    // this.props.beginOutlookAuth();
-
     const db = await getDb();
     db.provider_users.find().exec().then(providerUserData => { 
       providerUserData.map((singleProviderUserData) => {
@@ -249,13 +246,27 @@ export default class View extends React.Component {
           </button>
         </a>
         <button className="btn btn-block btn-social"
-          onClick={() => this.props.beginGetGoogleEvents()}>
+          // onClick={() => this.props.beginGetGoogleEvents()}>
+
+          // This is suppose to allow us to sync multiple user per single provider in the future!! 
+          // Currently, due to no UI, I am hardcoding it to a single instance. But once we get the 
+          // UI up and running for choosing which user events you want to get, this will be amazing
+          // Note: This is the same for the following button, which pulls outlook events.
+
+          // Hm.... I need to think if this is really needed. 
+          onClick={() => { 
+            console.log(this.state.temp_googleUser); 
+            // this.props.beginGetGoogleEvents(this.state.temp_googleUser);}}>
+            this.props.beginGetGoogleEvents();}}>
           <span className="fa fa-google"></span>
               Get Google Events
         </button>
 
         <button className="btn btn-block btn-social"
-          onClick={() => {console.log(this.state.temp_outlookUser); this.props.beginGetOutlookEvents(this.state.temp_outlookUser);}}>
+          onClick={() => { 
+            console.log(this.state.temp_outlookUser); 
+            this.props.beginGetOutlookEvents(this.state.temp_outlookUser);}
+          }>
           <span className="fa fa-google"></span>
               Get Outlook Events
         </button>

@@ -1,10 +1,6 @@
 import React from "react";
 
 export default class signupSyncLink extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   capitalize = (s) => {
     if (typeof s !== 'string') return '';
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
@@ -14,8 +10,6 @@ export default class signupSyncLink extends React.Component {
     if (this.props.providerInfo.length <= 0) {
       return <div></div>;
     }
-
-    // console.log(this.props.providerInfo);
 
     var renderArray = [];
     for(var i = 0; i < this.props.providerInfo.length; i++) {
