@@ -44,7 +44,7 @@ export default class View extends React.Component {
     db.provider_users.find().exec().then(providerUserData => { 
       providerUserData.map((singleProviderUserData) => {
 
-        var now = 1552092084082;
+        var now = new Date().getTime();
         var isExpired = now > parseInt(singleProviderUserData.accessTokenExpiry);
         
         // console.log(singleProviderUserData,this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
