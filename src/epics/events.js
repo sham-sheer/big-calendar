@@ -6,11 +6,13 @@ import { GET_EVENTS_BEGIN,
   GET_OUTLOOK_EVENTS_BEGIN, 
   CLEAR_ALL_EVENTS,
   EDIT_EVENT_BEGIN,
+  getEventsFailure,
+
 } from '../actions/events';
 import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
-import { from } from 'rxjs';
+import { from,iif,of } from 'rxjs';
 import { normalize, schema } from 'normalizr';
 import { loadClient,
   loadFullCalendar,
@@ -28,16 +30,20 @@ import * as RxDB from 'rxdb';
 
 export const beginGetEventsEpics = action$ => action$.pipe(
   ofType(GET_EVENTS_BEGIN),
-  mergeMap(() => from(loadClient()).pipe(
-    mergeMap(() => from(setCalendarRequest()).pipe(
-      mergeMap(resp => from(eventsPromise(resp)).pipe(
-        map((resp) => {
-          return getEventsSuccess(resp, Providers.GOOGLE);
-        })
+  mergeMap(action => iif(() => action.payload !== undefined, 
+    from(loadClient()).pipe(
+      mergeMap(() => { 
+        return from(setCalendarRequest()).pipe(
+          mergeMap(resp => from(eventsPromise(resp)).pipe(
+            map((resp) => {
+              return getEventsSuccess(resp, Providers.GOOGLE);
+            })
+          )
+          )
+        );}  
       )
-      )
-    )
-    )
+    ),
+    of(getEventsFailure("Google user undefined!!"))
   )
   )
 );
@@ -132,23 +138,58 @@ const fetchEvents = (resp, items, resolve, reject) => {
 // ------------------------------------ OUTLOOK ------------------------------------ //
 export const beginGetOutlookEventsEpics = action$ => action$.pipe(
   ofType(GET_OUTLOOK_EVENTS_BEGIN),
-  mergeMap(action => from(new Promise((resolve, reject) => {
-    console.log("Performing full sync", action);
-    getUserEvents(action.payload.user.accessToken, action.payload.user.accessTokenExpiry, (events, error) => {
-      if(error) {
-        console.error(error);
-        return;
+  mergeMap(action => 
+    from(new Promise((resolve, reject) => {
+      if(action.payload === undefined) {
+        reject(getEventsFailure("Outlook user undefined!!"));
       }
 
-      resolve(events);
-    });
-  })).pipe(
-    map((resp) => {
-      return getEventsSuccess(resp, Providers.OUTLOOK);
-    })
-  )
+      // console.log("Outlook Performing full sync", action);
+      getUserEvents(action.payload.accessToken, action.payload.accessTokenExpiry, (events, error) => {
+        if(error) {
+          console.error(error);
+          return;
+        }
+
+        resolve(events);
+      });
+    }))
+      .pipe(
+        map((resp) => {
+          return getEventsSuccess(resp, Providers.OUTLOOK);
+        }),
+        catchError((error) => {
+          return of(error);
+        })
+      )
   )
 );
+// of(getEventsFailure("hello world")),
+
+// export const beginGetOutlookEventsEpics = action$ => action$.pipe(
+//   ofType(GET_OUTLOOK_EVENTS_BEGIN),
+//   mergeMap(action => 
+//     from(new Promise((resolve, reject) => {
+//       if(action.payload === undefined) {
+//         reject("User not defined!!");
+//       }
+
+//       console.log("Outlook Performing full sync", action);
+//       getUserEvents(action.payload.accessToken, action.payload.accessTokenExpiry, (events, error) => {
+//         if(error) {
+//           console.error(error);
+//           return;
+//         }
+
+//         resolve(events);
+//       });
+//     })).pipe(
+//       map((resp) => {
+//         return getEventsSuccess(resp, Providers.OUTLOOK);
+//       })
+//     )
+//   )
+// );
 // ------------------------------------ OUTLOOK ------------------------------------ //
 
 

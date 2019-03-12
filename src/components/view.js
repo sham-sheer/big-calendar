@@ -8,6 +8,8 @@ import getDb from '../db';
 import * as ProviderTypes from '../utils/constants';
 import SignupSyncLink from './SignupSyncLink';
 
+import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
+
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 
@@ -45,6 +47,7 @@ export default class View extends React.Component {
       providerUserData.map((singleProviderUserData) => {
 
         var now = new Date().getTime();
+        // var now = 1552437629100;
         var isExpired = now > parseInt(singleProviderUserData.accessTokenExpiry);
         
         // console.log(singleProviderUserData,this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
@@ -55,15 +58,9 @@ export default class View extends React.Component {
           switch (singleProviderUserData.providerType) {
             case ProviderTypes.GOOGLE:
               this.props.onStartGetGoogleAuth(this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
-              this.setState({
-                temp_googleUser: this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE),
-              });
               break;
             case ProviderTypes.OUTLOOK:
               this.props.onStartGetOutlookAuth(this.filterUserOnStart(singleProviderUserData,ProviderTypes.OUTLOOK));
-              this.setState({
-                temp_outlookUser: this.filterUserOnStart(singleProviderUserData,ProviderTypes.OUTLOOK),
-              });
               break;
             default:
               break;
@@ -167,7 +164,6 @@ export default class View extends React.Component {
   }
 
   /* Render functions */
-
   renderCalendar = () => {
     return (
       <DragAndDropCalendar
@@ -253,19 +249,18 @@ export default class View extends React.Component {
           // UI up and running for choosing which user events you want to get, this will be amazing
           // Note: This is the same for the following button, which pulls outlook events.
 
-          // Hm.... I need to think if this is really needed. 
+          // Okay, debate later, coz idk how to deal with it when the user signs in, to update this state here. 
           onClick={() => { 
-            console.log(this.state.temp_googleUser); 
-            // this.props.beginGetGoogleEvents(this.state.temp_googleUser);}}>
-            this.props.beginGetGoogleEvents();}}>
+            // console.log(this.state.temp_googleUser); 
+            // this.props.beginGetGoogleEvents();}}>
+            this.props.beginGetGoogleEvents(this.props.providers["GOOGLE"][0]);}}>
           <span className="fa fa-google"></span>
               Get Google Events
         </button>
 
         <button className="btn btn-block btn-social"
           onClick={() => { 
-            console.log(this.state.temp_outlookUser); 
-            this.props.beginGetOutlookEvents(this.state.temp_outlookUser);}
+            this.props.beginGetOutlookEvents(this.props.providers["OUTLOOK"][0]);}
           }>
           <span className="fa fa-google"></span>
               Get Outlook Events

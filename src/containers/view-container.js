@@ -33,7 +33,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  beginGetGoogleEvents: () => dispatch(beginGetGoogleEvents()),
+  beginGetGoogleEvents: (user) => dispatch(beginGetGoogleEvents(user)),
   beginGoogleAuth: () => dispatch(beginGoogleAuth()),
 
   beginGetOutlookEvents: (resp) => dispatch(beginGetOutlookEvents(resp)),

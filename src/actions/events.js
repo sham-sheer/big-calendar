@@ -42,6 +42,13 @@ export const postEventBegin = (calEvent) => ({
   payload: calEvent
 });
 
+export const getEventsFailure = (error) => ({
+  type: GET_EVENTS_FAILURE,
+  payload: {
+    error: error,
+  }
+});
+
 export const getEventsSuccess = (response, providerType) => ({
   type: GET_EVENTS_SUCCESS,
   payload: {
