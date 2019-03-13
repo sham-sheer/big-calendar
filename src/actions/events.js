@@ -37,11 +37,12 @@ export const beginGetGoogleEvents = (resp) => ({
   payload: resp
 });
 
-export const postEventBegin = (calEvent, providerType) => ({
+export const postEventBegin = (calEvent, auth, providerType) => ({
   type: POST_EVENT_BEGIN,
   payload: {
     data: calEvent,
-    providerType: providerType
+    auth: auth,
+    providerType: providerType,
   }
 });
 

@@ -90,7 +90,7 @@ export default class AddEvent extends Component {
         'dateTime' : moment(this.state.endParsed).format(),
         'timezone' : 'America/Los_Angeles'
       }
-    },providerType);
+    },JSON.parse(this.state.selectedProvider), providerType);
     this.props.history.push('/');
   }
 

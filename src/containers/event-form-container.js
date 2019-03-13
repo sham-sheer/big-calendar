@@ -29,7 +29,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  postEventBegin: (event, type) => dispatch(postEventBegin(event, type))
+  postEventBegin: (event, auth, type) => dispatch(postEventBegin(event, auth, type))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withStyles(styles)(AddEvent)));
