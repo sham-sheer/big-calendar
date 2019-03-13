@@ -9,7 +9,7 @@ import { GET_EVENTS_BEGIN,
   getEventsFailure,
 
 } from '../actions/events';
-import { duplicateAction } from '../actions/db/events';
+// import { duplicateAction } from '../actions/db/events';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
 import { from,iif,of } from 'rxjs';
@@ -164,32 +164,6 @@ export const beginGetOutlookEventsEpics = action$ => action$.pipe(
       )
   )
 );
-// of(getEventsFailure("hello world")),
-
-// export const beginGetOutlookEventsEpics = action$ => action$.pipe(
-//   ofType(GET_OUTLOOK_EVENTS_BEGIN),
-//   mergeMap(action => 
-//     from(new Promise((resolve, reject) => {
-//       if(action.payload === undefined) {
-//         reject("User not defined!!");
-//       }
-
-//       console.log("Outlook Performing full sync", action);
-//       getUserEvents(action.payload.accessToken, action.payload.accessTokenExpiry, (events, error) => {
-//         if(error) {
-//           console.error(error);
-//           return;
-//         }
-
-//         resolve(events);
-//       });
-//     })).pipe(
-//       map((resp) => {
-//         return getEventsSuccess(resp, Providers.OUTLOOK);
-//       })
-//     )
-//   )
-// );
 // ------------------------------------ OUTLOOK ------------------------------------ //
 
 

@@ -1,6 +1,5 @@
 import md5 from 'md5';
 import * as ProviderTypes from '../constants';
-import { getEventsFailure } from '../../actions/events';
 
 export const GOOGLE_CLIENT_ID = '65724758895-gc7lubjkjsqqddfhlb7jcme80i3mjqn0.apps.googleusercontent.com';
 export const GOOGLE_API_KEY = 'AIzaSyCTYXWtoRKnXeZkPCcZwYOXm0Qz3Lz9F9g';

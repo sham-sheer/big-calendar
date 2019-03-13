@@ -5,11 +5,8 @@ import { map,
   mergeMap
 } from 'rxjs/operators';
 import getDb from '../db';
-import {
-  successGoogleAuth
-} from '../actions/auth';
 
-export const storeUsersEpics = (action$,state$) => action$.pipe(
+export const storeUsersEpics = (action$) => action$.pipe(
   ofType(AuthActionTypes.SUCCESS_GOOGLE_AUTH),
   mergeMap(action => from(getDb()).pipe(
     map(db => { 
