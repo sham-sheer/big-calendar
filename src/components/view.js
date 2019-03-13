@@ -10,6 +10,8 @@ import SignupSyncLink from './SignupSyncLink';
 
 // import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
 
+import { transport, Credentials, createAccount } from "dav/dav";
+
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 
@@ -42,6 +44,22 @@ export default class View extends React.Component {
   }
 
   async componentDidMount() {
+    console.log("here",transport);
+    var xhr = new transport.Basic(
+      new Credentials({
+        username: 'fongzhizhong',
+        password: 'WKPFd2ScEHBv7qY'
+      })
+    );
+    console.log(xhr);
+    createAccount({ server: 'https://caldav.calendar.yahoo.com', xhr: xhr}).then(function(account) {
+      account.calendars.forEach((function(calendar) {
+        console.log('Found calendar named ' + calendar.displayName);
+        // etc.
+      }));
+    });
+
+
     const db = await getDb();
     db.provider_users.find().exec().then(providerUserData => { 
       providerUserData.map((singleProviderUserData) => {
