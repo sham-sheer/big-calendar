@@ -76,7 +76,6 @@ export default class AddEvent extends Component {
   handleSubmit = async (e) => {
     // need to write validation method
     e.preventDefault();
-    console.log(this.state.selectedProvider);
 
     if(this.state.selectedProvider !== "") {
       var providerType = JSON.parse(this.state.selectedProvider).providerType;
@@ -93,6 +92,8 @@ export default class AddEvent extends Component {
         }
       },JSON.parse(this.state.selectedProvider), providerType);
       this.props.history.push('/');
+    } else {
+      console.log("No provider selected! Disabled adding of events!!");
     }
   }
 
