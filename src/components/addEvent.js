@@ -78,20 +78,22 @@ export default class AddEvent extends Component {
     e.preventDefault();
     console.log(this.state.selectedProvider);
 
-    var providerType = JSON.parse(this.state.selectedProvider).providerType;
+    if(this.state.selectedProvider !== "") {
+      var providerType = JSON.parse(this.state.selectedProvider).providerType;
 
-    this.props.postEventBegin({
-      'summary': this.state.title,
-      'start': {
-        'dateTime' : moment(this.state.startParsed).format(),
-        'timezone' : 'America/Los_Angeles'
-      },
-      'end': {
-        'dateTime' : moment(this.state.endParsed).format(),
-        'timezone' : 'America/Los_Angeles'
-      }
-    },JSON.parse(this.state.selectedProvider), providerType);
-    this.props.history.push('/');
+      this.props.postEventBegin({
+        'summary': this.state.title,
+        'start': {
+          'dateTime' : moment(this.state.startParsed).format(),
+          'timezone' : 'America/Los_Angeles'
+        },
+        'end': {
+          'dateTime' : moment(this.state.endParsed).format(),
+          'timezone' : 'America/Los_Angeles'
+        }
+      },JSON.parse(this.state.selectedProvider), providerType);
+      this.props.history.push('/');
+    }
   }
 
   handleProvider = (e) => {

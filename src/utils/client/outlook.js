@@ -75,7 +75,7 @@ export const getUserEvents = (accessToken, accessTokenExpiry, callback) => {
             // We are hard coding to select from keith's calendar first. but change this for production. LOL
             // By default, can use 0 coz should have a default calendar. 
             id = res.value[3].id;
-            console.log(id);
+            // console.log(id);
 
             var allEvents = await loadOutlookEventsChunked(client, id);
             callback(allEvents);

@@ -59,7 +59,7 @@ export const retrieveEventsEpic = action$ => action$.pipe(
 export const storeEventsEpic = action$ => action$.pipe(
   ofType(BEGIN_STORE_EVENTS),
   mergeMap((action) => from(storeEvents(action.payload)).pipe(
-    map(results => { console.log(results); return successStoringEvents(results); }),
+    map(results => successStoringEvents(results)),
     catchError(error => failStoringEvents(error))
   ))
 );
@@ -81,26 +81,18 @@ export const deleteEventEpics = action$ => action$.pipe(
 
 
 const storeEvents = async (payload) => {
-  console.log(payload);
   const db = await getDb();
   const addedEvents = [];
   const data = payload.data;
 
-  console.log(data);
-
   for(let dbEvent of data) {
-    console.log(dbEvent, dbEvent.recurringEventId !== undefined, dbEvent.recurringEventId !== null);
-
     // #TO-DO, we need to figure out how to handle recurrence, for now, we ignore
     if(dbEvent.recurringEventId !== undefined && dbEvent.recurringEventId !== null) {
-      console.log("what");
       continue;
     }
 
     let filteredEvent = Providers.filterIntoSchema(dbEvent, payload.providerType);
-    console.log(filteredEvent);
     filteredEvent['providerType'] = payload.providerType;
-
 
     try {
       await db.events.upsert(filteredEvent);
@@ -111,7 +103,6 @@ const storeEvents = async (payload) => {
     // Adding filtered event coz if I added dbEvent, it will result it non compatability with outlook objects.
     addedEvents.push(filteredEvent);
   }
-  console.log("here?");
   return addedEvents;
 };
 

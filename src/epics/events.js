@@ -58,31 +58,8 @@ export const beginPostEventEpics = action$ => action$.pipe(
         map(resp => postEventSuccess([resp.result],action.payload.providerType))
       );
     } else if(action.payload.providerType === Providers.OUTLOOK) {
-      console.log("Dealing w/ outlook");
-      return from(new Promise((resolve, reject) => {
-        getAccessToken(action.payload.auth.accessToken, action.payload.auth.accessTokenExpiry, async (accessToken) => {
-          if (accessToken) {
-            // Create a Graph client
-            var client = Client.init({
-              authProvider: (done) => {
-                // Just return the token
-                done(null, accessToken);
-              }
-            });
-      
-            // This first select is to choose from the list of calendars 
-            resolve(client
-              .api('/me/calendars/AAMkAGZlZDEyNmMxLTMyNDgtNDMzZi05ZmZhLTU5ODk3ZjA5ZjQyOABGAAAAAAA-XPNVbhVJSbREEYK0xJ3FBwCK0Ut7mQOxT5W1Wd82ZSuqAAAAAAEGAACK0Ut7mQOxT5W1Wd82ZSuqAAGfLM-yAAA=/events')
-              .post(filterEventToOutlook(action.payload.data)));
-          } else {
-            var error = { responseText: 'Could not retrieve access token' };
-            console.log(error);
-            reject(error);
-          }
-        });
-      })).pipe(
-        map(resp => postEventSuccess([resp],action.payload.providerType)
-        )
+      return from(postEventsOutlook(action.payload)).pipe(
+        map(resp => postEventSuccess([resp],action.payload.providerType))
       );
     }
   })
@@ -114,50 +91,28 @@ const postEvent = async (resource) => {
   return postGoogleEvent(calendarObject);
 };
 
-const postEventsOutlook = async (payload) => {
-  console.log(payload);
-
-  getAccessToken(payload.auth.accessToken, payload.auth.accessTokenExpiry, async (accessToken) => {
-    if (accessToken) {
+const postEventsOutlook = (payload) => {
+  return new Promise((resolve, reject) => {
+    getAccessToken(payload.auth.accessToken, payload.auth.accessTokenExpiry, (accessToken) => {
+      if (accessToken) {
       // Create a Graph client
-      var client = Client.init({
-        authProvider: (done) => {
+        var client = Client.init({
+          authProvider: (done) => {
           // Just return the token
-          done(null, accessToken);
-        }
-      });
+            done(null, accessToken);
+          }
+        });
 
-      var id = "";
-      
-      // This first select is to choose from the list of calendars 
-      const promise = await client
-        .api('/me/calendars/AAMkAGZlZDEyNmMxLTMyNDgtNDMzZi05ZmZhLTU5ODk3ZjA5ZjQyOABGAAAAAAA-XPNVbhVJSbREEYK0xJ3FBwCK0Ut7mQOxT5W1Wd82ZSuqAAAAAAEGAACK0Ut7mQOxT5W1Wd82ZSuqAAGfLM-yAAA=/events')
-        .post(filterEventToOutlook(payload.data));
-
-      console.log(promise);
-      const result = await Promise.all([promise]);
-
-      console.log(result,promise);
-      return promise;
-        
-      // .post(async (err, res) => {
-      // if (err) {
-      //   console.log(err);
-      // } else {
-      //   // console.log(res);
-      //   // We are hard coding to select from keith's calendar first. but change this for production. LOL
-      //   // By default, can use 0 coz should have a default calendar. 
-      //   id = res.value[3].id;
-
-      //   var allEvents = await loadOutlookEventsChunked(client, id);
-      //   callback(allEvents);
-      // }
-      // });
-    } else {
-      var error = { responseText: 'Could not retrieve access token' };
-      console.log(error);
-      // callback(null, error);
-    }
+        // This first select is to choose from the list of calendars 
+        resolve(client
+          .api('/me/calendars/AAMkAGZlZDEyNmMxLTMyNDgtNDMzZi05ZmZhLTU5ODk3ZjA5ZjQyOABGAAAAAAA-XPNVbhVJSbREEYK0xJ3FBwCK0Ut7mQOxT5W1Wd82ZSuqAAAAAAEGAACK0Ut7mQOxT5W1Wd82ZSuqAAGfLM-yAAA=/events')
+          .post(filterEventToOutlook(payload.data)));
+      } else {
+        var error = { responseText: 'Could not retrieve access token' };
+        console.log(error);
+        reject(error);
+      }
+    });
   });
 };
 
