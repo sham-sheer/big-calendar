@@ -76,6 +76,10 @@ export default class AddEvent extends Component {
   handleSubmit = async (e) => {
     // need to write validation method
     e.preventDefault();
+    console.log(this.state.selectedProvider);
+
+    var providerType = JSON.parse(this.state.selectedProvider).providerType;
+
     this.props.postEventBegin({
       'summary': this.state.title,
       'start': {
@@ -86,9 +90,12 @@ export default class AddEvent extends Component {
         'dateTime' : moment(this.state.endParsed).format(),
         'timezone' : 'America/Los_Angeles'
       }
-
-    });
+    },providerType);
     this.props.history.push('/');
+  }
+
+  handleProvider = (e) => {
+    this.setState({ selectedProvider: e.target.value });
   }
 
   render() {
@@ -98,7 +105,6 @@ export default class AddEvent extends Component {
         data => providers.push(data)
       );
     }
-
 
     return (
       <div className="form-event-container">
@@ -150,15 +156,14 @@ export default class AddEvent extends Component {
             select
             label="Select email"
             value={this.state.selectedProvider}
-            onChange={() => { 
-              console.log("Clicked!!"); 
-            }}
+            onChange={this.handleProvider}
             helperText="Please select which provider"
             margin="normal"
           >
             {
               providers.map(option => (
-                <MenuItem key={option.personId} value={option.email} >
+                // Currently an issue: https://github.com/mui-org/material-ui/issues/10845 
+                <MenuItem key={option.personId} value={JSON.stringify(option)} >
                   {option.email}
                 </MenuItem>
               ))

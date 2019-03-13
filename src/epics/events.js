@@ -51,7 +51,7 @@ export const beginGetEventsEpics = action$ => action$.pipe(
 export const beginPostEventEpics = action$ => action$.pipe(
   ofType(POST_EVENT_BEGIN),
   mergeMap(action => from(postEvent(action.payload)).pipe(
-    map(resp => postEventSuccess([resp.result]))
+    map(resp => postEventSuccess([resp.result],action.payload.providerType))
   )
   )
 );
@@ -76,7 +76,7 @@ export const beginPostEventEpics = action$ => action$.pipe(
 const postEvent = async (resource) => {
   let calendarObject = {
     'calendarId': 'primary',
-    'resource': resource
+    'resource': resource.data
   };
   await loadClient();
   return postGoogleEvent(calendarObject);

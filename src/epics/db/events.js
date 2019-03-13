@@ -82,6 +82,7 @@ export const deleteEventEpics = action$ => action$.pipe(
 
 
 const storeEvents = async (payload) => {
+  console.log(payload);
   const db = await getDb();
   const addedEvents = [];
   const data = payload.data;

@@ -44,20 +44,21 @@ export default class View extends React.Component {
   }
 
   async componentDidMount() {
-    console.log("here",transport);
-    var xhr = new transport.Basic(
-      new Credentials({
-        username: 'fongzhizhong',
-        password: 'WKPFd2ScEHBv7qY'
-      })
-    );
-    console.log(xhr);
-    createAccount({ server: 'https://caldav.calendar.yahoo.com', xhr: xhr}).then(function(account) {
-      account.calendars.forEach((function(calendar) {
-        console.log('Found calendar named ' + calendar.displayName);
-        // etc.
-      }));
-    });
+    //// This doesn't work fml. LOL
+    // console.log("here",transport);
+    // var xhr = new transport.Basic(
+    //   new Credentials({
+    //     username: 'fongzhizhong',
+    //     password: 'WKPFd2ScEHBv7qY'
+    //   })
+    // );
+    // console.log(xhr);
+    // createAccount({ server: 'https://caldav.calendar.yahoo.com', xhr: xhr}).then(function(account) {
+    //   account.calendars.forEach((function(calendar) {
+    //     console.log('Found calendar named ' + calendar.displayName);
+    //     // etc.
+    //   }));
+    // });
 
 
     const db = await getDb();
