@@ -1,9 +1,11 @@
 import { GET_EVENTS_BEGIN,
   POST_EVENT_BEGIN,
+  apiFailure,
   getEventsSuccess,
   postEventSuccess,
+  editEventSuccess,
   DELETE_EVENT_BEGIN,
-  GET_OUTLOOK_EVENTS_BEGIN, 
+  GET_OUTLOOK_EVENTS_BEGIN,
   CLEAR_ALL_EVENTS,
   EDIT_EVENT_BEGIN,
 } from '../actions/events';
@@ -17,10 +19,11 @@ import { loadClient,
   loadSyncCalendar,
   loadNextPage,
   postGoogleEvent,
-  deleteGoogleEvent
+  deleteGoogleEvent,
+  editGoogleEvent
 } from '../utils/client/google';
 
-import * as Providers from '../utils/constants'; 
+import * as Providers from '../utils/constants';
 
 import { getUserEvents } from '../utils/client/outlook';
 
@@ -33,11 +36,14 @@ export const beginGetEventsEpics = action$ => action$.pipe(
       mergeMap(resp => from(eventsPromise(resp)).pipe(
         map((resp) => {
           return getEventsSuccess(resp, Providers.GOOGLE);
-        })
+        }),
+        catchError(error => apiFailure(error))
       )
-      )
+    ),
+    catchError(error => apiFailure(error))
     )
-    )
+  ),
+  catchError(error => apiFailure(error))
   )
   )
 );
@@ -45,18 +51,28 @@ export const beginGetEventsEpics = action$ => action$.pipe(
 export const beginPostEventEpics = action$ => action$.pipe(
   ofType(POST_EVENT_BEGIN),
   mergeMap(action => from(postEvent(action.payload)).pipe(
-    map(resp => postEventSuccess([resp.result]))
+    map(resp => postEventSuccess([resp.result])),
+    catchError(error => apiFailure(error))
   )
   )
 );
 
- // export const beginEditEventEpics = action$ => action$.pipe(
- //   ofType(EDIT_EVENT_BEGIN),
- //   mergeMap(action => from(editEvent(action.payload)).pipe(
- //      map(resp => editEventSuccess([resp.result]))
- //   )
- //  )
- // )
+ export const beginEditEventEpics = action$ => action$.pipe(
+   ofType(EDIT_EVENT_BEGIN),
+   mergeMap(action => from(editEvent(action.payload)).pipe(
+      map(resp => editEventSuccess(resp),
+      catchError(error => apiFailure(error))
+   )
+  )
+ )
+);
+
+ const editEvent = async (payload) => {
+   let calendarObject = payload.data;
+   const id = payload.id;
+   await loadClient();
+   return editGoogleEvent(id, calendarObject);
+ }
 
  // export const deleteEventEpics = action$ => action$.pipe(
  //   ofType(DELETE_EVENT_BEGIN),

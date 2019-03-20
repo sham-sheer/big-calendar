@@ -1,5 +1,5 @@
 import * as RxDB from 'rxdb';
-import schema from './schemas';
+import schemas from './schemas';
 
 RxDB.plugin(require('pouchdb-adapter-idb'));
 RxDB.plugin(require('pouchdb-adapter-http'));
@@ -9,7 +9,7 @@ let dbPromise = null;
 const collections = [
   {
     name: 'events',
-    schema: schema
+    schema: schemas
   }
 ];
 
@@ -21,7 +21,8 @@ export const createDb = async () => {
   });
   window['db'] = db;
   await Promise.all(
-    collections.map(colData => db.collection(colData))
+    Object.entries(schemas)
+      .map(([name, schema]) => db.collection({ name, schema }))
   );
   return db;
 };
@@ -29,7 +30,7 @@ export const createDb = async () => {
 
 
 export default () => {
-  // RxDB.removeDatabase('eventsdb', 'idb');
+  //RxDB.removeDatabase('eventsdb', 'idb');
   if(!dbPromise) {
     dbPromise = createDb();
   }

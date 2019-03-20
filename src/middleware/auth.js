@@ -1,7 +1,7 @@
 import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
 import { buildAuthUrl,PopupCenter } from '../utils/client/outlook';
 
-import * as Providers from '../utils/constants'; 
+import * as Providers from '../utils/constants';
 
 import * as AuthActionTypes from '../actions/auth';
 import * as DbActionTypes from '../actions/db/events';
@@ -33,8 +33,8 @@ export const authBeginMiddleware = store => next => action => {
           'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
         }).then(() => {
           GoogleAuth = window.gapi.auth2.getAuthInstance();
-          //GoogleAuth.signIn();
-          handleAuthClick(GoogleAuth);
+          GoogleAuth.signIn();
+          //handleAuthClick(GoogleAuth);
           const user = GoogleAuth.currentUser.get();
 
           console.log(user.getBasicProfile());
@@ -46,12 +46,16 @@ export const authBeginMiddleware = store => next => action => {
           console.log('Email: ' + user.getBasicProfile().getEmail());
 
           const isAuthorized = user.hasGrantedScopes(GOOGLE_SCOPE);
+          const newPerson = {
+            'personId' : user.getBasicProfile().getId(),
+            'email' : user.getBasicProfile().getEmail(),
+            'displayName' : user.getBasicProfile().getGivenName(),
+            'familyName' : user.getBasicProfile().getFamilyName()
+          }
           if(isAuthorized) {
             next({
               type: AuthActionTypes.SUCCESS_GOOGLE_AUTH,
-              payload: {
-                user
-              }
+              payload: newPerson
             });
           } else {
             next({
@@ -70,12 +74,12 @@ export const authBeginMiddleware = store => next => action => {
 };
 
 export const authSuccessMiddleware = store => next => action => {
-  if(action.type === AuthActionTypes.SUCCESS_GOOGLE_AUTH) {
+  /*if(action.type === AuthActionTypes.SUCCESS_GOOGLE_AUTH) {
     next({
       type: DbActionTypes.RETRIEVE_STORED_EVENTS,
       providerType: Providers.GOOGLE,
     });
-  }
+  }*/
   if(action.type === AuthActionTypes.FAIL_GOOGLE_AUTH) {
     next({
       type: AuthActionTypes.RETRY_GOOGLE_AUTH

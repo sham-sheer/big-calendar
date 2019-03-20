@@ -5,6 +5,7 @@ import moment from "moment";
 import Modal from 'react-modal';
 import './view.css';
 
+
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 
@@ -148,36 +149,21 @@ export default class View extends React.Component {
   renderSignupLinks = () => {
     return (
       <div>
-        <a>
-          <button className="btn btn-block btn-social"
-            onClick={() => this.authorizeGoogleCodeRequest()}>
-            <span className="fa fa-outlook"></span>
-              Sign in with Google
-          </button>
-
-          <button className="btn btn-block btn-social"
-            onClick={() => this.authorizeOutLookCodeRequest()}>
-            <span className="fa fa-outlook"></span>
-              Sign in with Outlook
-          </button>
-        </a>
-        <button className="btn btn-block btn-social"
-          onClick={() => this.props.beginGetGoogleEvents()}>
-          <span className="fa fa-google"></span>
-              Get Google Events
-        </button>
-
-        <button className="btn btn-block btn-social"
-          onClick={() => this.props.beginGetOutlookEvents()}>
-          <span className="fa fa-google"></span>
-              Get Outlook Events
-        </button>
-
-        <button className="btn btn-block btn-social"
-          onClick={() => this.props.clearAllEvents()}>
-          <span className="fa fa-google"></span>
-              Clear all Events
-        </button>
+      <a className="waves-effect waves-light btn"
+          onClick={() => this.authorizeGoogleCodeRequest()}>
+       <i className="material-icons left">cloud</i>Sign in with Google</a>
+       <a className="waves-effect waves-light btn"
+           onClick={() => this.authorizeOutLookCodeRequest()}>
+        <i className="material-icons left">cloud</i>Sign in with Outlook</a>
+        <a className="waves-effect waves-light btn"
+            onClick={() => this.props.beginGetGoogleEvents()}>
+         <i className="material-icons left">cloud_download</i>Get Google Events</a>
+         <a className="waves-effect waves-light btn"
+             onClick={() => this.props.beginGetOutlookEvents()}>
+          <i className="material-icons left">cloud_download</i>Get Outlook Events</a>
+          <a className="waves-effect waves-light btn"
+              onClick={() => this.props.clearAllEvents()}>
+           <i className="material-icons left">close</i>Clear all Events</a>
       </div>
     );
   }

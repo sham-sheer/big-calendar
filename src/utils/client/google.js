@@ -3,7 +3,7 @@ export const GOOGLE_API_KEY = 'AIzaSyCTYXWtoRKnXeZkPCcZwYOXm0Qz3Lz9F9g';
 export const GOOGLE_SCOPE = `https://www.googleapis.com/auth/calendar.events`;
 
 
-export async function loadClient() {
+export const loadClient = async () => {
   let result =  new Promise((resolve, reject) => {
     if (window.gapi.client === undefined) {
       reject("Client undefined!");
@@ -16,7 +16,7 @@ export async function loadClient() {
 
 export const loadFullCalendar = async () =>  {
   return new Promise((resolve) => {
-    resolve( window.gapi.client.calendar.events.list({
+    resolve(window.gapi.client.calendar.events.list({
       'calendarId' : 'primary'
     }));
   });
@@ -42,7 +42,7 @@ export const editGoogleEvent = async (eventId ,eventObject) => {
     resolve(window.gapi.client.calendar.events.patch({
       'calendarId' : 'primary',
       'eventId'    : eventId,
-      'eventObject': eventObject
+      'resource': eventObject
     }))
   })
 }
