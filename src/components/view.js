@@ -10,7 +10,7 @@ import SignupSyncLink from './SignupSyncLink';
 
 // import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
 
-import { transport, Credentials, createAccount } from "dav/dav";
+// import { transport, Credentials, createAccount } from "dav/dav";
 
 
 const localizer = BigCalendar.momentLocalizer(moment);

@@ -17,7 +17,7 @@ import * as DbActionTypes from '../../actions/db/events';
 import * as Providers from '../../utils/constants';
 
 export const storeGoogleAuthEpic = action$ => action$.pipe(
-  ofType(SUCCESS_GOOGLE_AUTH),
+  ofType(AuthActionTypes.SUCCESS_GOOGLE_AUTH),
   mergeMap((action) => from(storeUser(action.payload)).pipe(
     mergeMap(resp => of(successStoreAuth(), retrieveStoreEvents(Providers.GOOGLE))),
     catchError(error => {
@@ -28,7 +28,7 @@ export const storeGoogleAuthEpic = action$ => action$.pipe(
 )
 
 export const storeOutLookAuthEpic = action$ => action$.pipe(
-  ofType(SUCCESS_OUTLOOK_AUTH),
+  ofType(AuthActionTypes.SUCCESS_OUTLOOK_AUTH),
   mergeMap((action) => from(storeUser(action.payload)).pipe(
     mergeMap(resp => of(successStoreAuth(), retrieveStoreEvents(Providers.OUTLOOK))),
     catchError(error => {
