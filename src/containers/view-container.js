@@ -13,12 +13,6 @@ import {
   beginDeleteEvent,
   clearAllEvents,
 } from '../actions/events';
-import {
-  successGoogleAuth,
-  successOutlookAuth,
-  expiredOutlookAuth,
-  expiredGoogleAuth,
-} from '../actions/auth';
 import { connect } from 'react-redux';
 import { getFilteredEvents } from '../selectors/ui-selector';
 
@@ -26,29 +20,21 @@ const mapStateToProps = state => {
   return {
     events: getFilteredEvents(state),
     initialSync: state.events.initialSync,
-    isAuth: state.auth.isAuth,
-    providers: state.auth.providers,
-    expiredProviders: state.auth.expiredProviders,
+    isAuth: state.auth.currentUser
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  beginGetGoogleEvents: (user) => dispatch(beginGetGoogleEvents(user)),
+  beginGetGoogleEvents: () => dispatch(beginGetGoogleEvents()),
   beginGoogleAuth: () => dispatch(beginGoogleAuth()),
 
-  beginGetOutlookEvents: (resp) => dispatch(beginGetOutlookEvents(resp)),
+  beginGetOutlookEvents: () => dispatch(beginGetOutlookEvents()),
   beginOutlookAuth: () => dispatch(beginOutlookAuth()),
   
   retrieveStoreEvents: (providerType) => dispatch(retrieveStoreEvents(providerType)),
   beginDeleteEvent: (id) => dispatch(beginDeleteEvent(id)),
 
   clearAllEvents: () => dispatch(clearAllEvents()),
-
-  onStartGetGoogleAuth: (user) => dispatch(successGoogleAuth(user)),
-  onStartGetOutlookAuth: (user) => dispatch(successOutlookAuth(user)),
-
-  onExpiredOutlook: (user) => dispatch(expiredOutlookAuth(user)),
-  onExpiredGoogle: (user) => dispatch(expiredGoogleAuth(user)),
 });
 
 

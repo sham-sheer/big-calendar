@@ -24,12 +24,11 @@ const styles = theme => ({
 const mapStateToProps = state => {
   return {
     events: state.events,
-    providers: state.auth.providers,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  postEventBegin: (event, auth, type) => dispatch(postEventBegin(event, auth, type))
+  postEventBegin: (event) => dispatch(postEventBegin(event))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withStyles(styles)(AddEvent)));

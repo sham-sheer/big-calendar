@@ -1,6 +1,5 @@
 import * as RxDB from 'rxdb';
 import schema from './schemas';
-import personSchema from './schemas/person';
 
 RxDB.plugin(require('pouchdb-adapter-idb'));
 RxDB.plugin(require('pouchdb-adapter-http'));
@@ -11,10 +10,6 @@ const collections = [
   {
     name: 'events',
     schema: schema
-  }, 
-  {
-    name: 'provider_users',
-    schema: personSchema
   }
 ];
 

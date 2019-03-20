@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import { FormControl } from 'react-bootstrap';
 import moment from "moment";
 
@@ -22,8 +21,7 @@ export default class AddEvent extends Component {
       startParsed: '',
       endParsed: '',
       start: '',
-      end: '',
-      selectedProvider: '',
+      end: ''
     };
   }
 
@@ -76,39 +74,22 @@ export default class AddEvent extends Component {
   handleSubmit = async (e) => {
     // need to write validation method
     e.preventDefault();
+    this.props.postEventBegin({
+      'summary': this.state.title,
+      'start': {
+        'dateTime' : moment(this.state.startParsed).format(),
+        'timezone' : 'America/Los_Angeles'
+      },
+      'end': {
+        'dateTime' : moment(this.state.endParsed).format(),
+        'timezone' : 'America/Los_Angeles'
+      }
 
-    if(this.state.selectedProvider !== "") {
-      var providerType = JSON.parse(this.state.selectedProvider).providerType;
-
-      this.props.postEventBegin({
-        'summary': this.state.title,
-        'start': {
-          'dateTime' : moment(this.state.startParsed).format(),
-          'timezone' : 'America/Los_Angeles'
-        },
-        'end': {
-          'dateTime' : moment(this.state.endParsed).format(),
-          'timezone' : 'America/Los_Angeles'
-        }
-      },JSON.parse(this.state.selectedProvider), providerType);
-      this.props.history.push('/');
-    } else {
-      console.log("No provider selected! Disabled adding of events!!");
-    }
-  }
-
-  handleProvider = (e) => {
-    this.setState({ selectedProvider: e.target.value });
+    });
+    this.props.history.push('/');
   }
 
   render() {
-    var providers = [];
-    for (const providerIndivAccount of Object.keys(this.props.providers)) {
-      this.props.providers[providerIndivAccount].map(
-        data => providers.push(data)
-      );
-    }
-
     return (
       <div className="form-event-container">
         <form className="container" onSubmit={this.handleSubmit} noValidate>
@@ -153,25 +134,6 @@ export default class AddEvent extends Component {
             }}
             onChange={this.handleChangeEndTime}
           />
-
-          <TextField
-            id="standard-select-currency-native"
-            select
-            label="Select email"
-            value={this.state.selectedProvider}
-            onChange={this.handleProvider}
-            helperText="Please select which provider"
-            margin="normal"
-          >
-            {
-              providers.map(option => (
-                // Currently an issue: https://github.com/mui-org/material-ui/issues/10845 
-                <MenuItem key={option.personId} value={JSON.stringify(option)} >
-                  {option.email}
-                </MenuItem>
-              ))
-            }
-          </TextField>
 
           <input type="submit" value="Submit" />
         </form>
