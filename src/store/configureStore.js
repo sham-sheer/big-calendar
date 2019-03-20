@@ -1,17 +1,17 @@
 import rootReducer from '../reducers';
 import { createStore, applyMiddleware, compose } from 'redux';
-import { storeEventsMiddleware,
-  apiSuccessToDbMiddleware,
-  eventsStoreOutMiddleware
-}
-  from '../middleware/db/events';
+// import { storeEventsMiddleware,
+//   apiSuccessToDbMiddleware,
+//   eventsStoreOutMiddleware
+// }
+//   from '../middleware/db/events';
 import { authBeginMiddleware,
   authSuccessMiddleware
 }
   from '../middleware/auth';
-import { eventsMiddleware
-}
-  from '../middleware/events';
+// import { eventsMiddleware
+// }
+//   from '../middleware/events';
 import { loggerMiddleware } from '../middleware/logger';
 
 import { rootEpic } from '../epics';

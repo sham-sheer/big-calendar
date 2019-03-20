@@ -1,7 +1,9 @@
-import { map, mergeMap, switchMap, catchError } from 'rxjs/operators';
+import { map, 
+  mergeMap, 
+  // switchMap, 
+  catchError } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
 import { from } from 'rxjs';
-import md5 from 'md5';
 import {
   RETRIEVE_STORED_EVENTS,
   BEGIN_STORE_EVENTS,
@@ -72,10 +74,10 @@ export const beginStoreEventsEpic = action$ => action$.pipe(
 export const deleteEventEpics = action$ => action$.pipe(
   ofType(DELETE_EVENT_BEGIN),
   mergeMap((action) => from(deleteEvent(action.payload)).pipe(
-      map(() => retrieveStoreEvents()),
-    )
+    map(() => retrieveStoreEvents()),
+  )
   ),
-)
+);
 
 
 const storeEvents = async (payload) => {
@@ -85,11 +87,11 @@ const storeEvents = async (payload) => {
 
   for(let dbEvent of data) {
     // #TO-DO, we need to figure out how to handle recurrence, for now, we ignore
-    if(dbEvent.recurringEventId !== undefined) {
+    if(dbEvent.recurringEventId !== undefined && dbEvent.recurringEventId !== null) {
       continue;
     }
 
-    let filteredEvent = filterIntoSchema(dbEvent, payload.providerType);
+    let filteredEvent = Providers.filterIntoSchema(dbEvent, payload.providerType);
     filteredEvent['providerType'] = payload.providerType;
 
     try {
@@ -104,63 +106,7 @@ const storeEvents = async (payload) => {
   return addedEvents;
 };
 
-const filterIntoSchema = (dbEvent, type) => {
-  switch(type) {
-    case Providers.GOOGLE:
-      ['kind',
-        'etag',
-        'extendedProperties',
-        'conferenceData',
-        'reminders',
-        'attachments',
-        'hangoutLink'].forEach(e => delete dbEvent[e]);
-      dbEvent.originalId = dbEvent.id;
-      dbEvent.id = md5(dbEvent.id);
-      dbEvent.creator = dbEvent.creator.email;
 
-      return dbEvent;
-    case Providers.OUTLOOK:
-      ['@odata.etag'].forEach(e => delete dbEvent[e]);
-      var schemaCastedDbObject = {};
-
-      schemaCastedDbObject.id = md5(dbEvent.id);
-      schemaCastedDbObject.htmlLink = dbEvent.webLink;
-      // schemaCastedDbObject.status = dbEvent.responseStatus;    // dk how to deal with responseStatus on microsoft side first.
-      schemaCastedDbObject.created = dbEvent.createdDateTime;
-      schemaCastedDbObject.updated = dbEvent.lastModifiedDateTime;
-      schemaCastedDbObject.summary = dbEvent.subject;
-      schemaCastedDbObject.description = dbEvent.bodyPreview; // Might need to use .body instead, but it returns html so idk how to deal w/ it now
-      schemaCastedDbObject.location = JSON.stringify(dbEvent.location.coordinates); // We need to convert coordinates coz idk how else to represent it
-      schemaCastedDbObject.creator = dbEvent.organizer.emailAddress.address;
-      schemaCastedDbObject.organizer = { email: dbEvent.organizer.emailAddress.address, displayName: dbEvent.organizer.emailAddress.name };
-      schemaCastedDbObject.start = { dateTime: dbEvent.start.dateTime, timezone: dbEvent.originalStartTimeZone };
-      schemaCastedDbObject.end = { dateTime: dbEvent.end.dateTime, timezone: dbEvent.originalEndTimeZone };
-      // schemaCastedDbObject.endTimeUnspecified = dbEvent.responseStatus;
-      // schemaCastedDbObject.recurrence = dbEvent.recurrence;      // Need to write converted from microsoft graph lib to standard array
-      schemaCastedDbObject.recurringEventId = dbEvent.seriesMasterId;
-      // schemaCastedDbObject.originalStartTime = dbEvent.responseStatus;
-      // schemaCastedDbObject.transparency = dbEvent.responseStatus;
-      // schemaCastedDbObject.visibility = dbEvent.responseStatus;
-      schemaCastedDbObject.iCalUID = dbEvent.iCalUId;
-      // schemaCastedDbObject.sequence = dbEvent.responseStatus;
-      schemaCastedDbObject.attendees = dbEvent.attendees;
-
-      // schemaCastedDbObject.anyoneCanAddSelf = dbEvent.responseStatus;
-      // schemaCastedDbObject.guestsCanInviteOthers = dbEvent.responseStatus;
-      // schemaCastedDbObject.guestsCanModify = dbEvent.responseStatus;
-      // schemaCastedDbObject.guestsCanSeeOtherGuests = dbEvent.responseStatus;
-      // schemaCastedDbObject.privateCopy = dbEvent.responseStatus;
-      // schemaCastedDbObject.locked = dbEvent.responseStatus;
-      schemaCastedDbObject.allDay = dbEvent.isAllDay;
-
-      // schemaCastedDbObject.calenderId = dbEvent.responseStatus;
-      // schemaCastedDbObject.source = dbEvent.responseStatus;
-
-      return schemaCastedDbObject;
-    default:
-      console.log("Provider " + type + " not available");
-  }
-};
 
 const deleteEvent = async (id) => {
   const db = await getDb();
@@ -170,4 +116,4 @@ const deleteEvent = async (id) => {
   const originalId = originalDocument[0].get("originalId");
   const responseFromAPI = await deleteGoogleEvent(originalId);
   await query.remove();
-}
+};

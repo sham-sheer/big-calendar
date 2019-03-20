@@ -1,5 +1,7 @@
-import { Client } from "@microsoft/microsoft-graph-client";
-import { PageIterator } from "@microsoft/microsoft-graph-client/lib/src/tasks/PageIterator";
+import { Client } from '@microsoft/microsoft-graph-client';
+import { PageIterator } from '@microsoft/microsoft-graph-client/lib/src/tasks/PageIterator';
+import md5 from 'md5';
+import * as ProviderTypes from '../constants';
 
 const OUTLOOK_APPLICATION_ID = '8f81c6fd-0bf6-4b44-9c6a-32fe75795c4d';
 const OUTLOOK_OAUTH_ENDPOINT = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?`;
@@ -31,14 +33,15 @@ const guid = () => {
       s4(buf[4]) + '-' + s4(buf[5]) + s4(buf[6]) + s4(buf[7]);
 };
 
-export const getAccessToken = (callback) => {
+export const getAccessToken = (accessToken, accessTokenExpiry, callback) => {
   var now = new Date().getTime();
-  var isExpired = now > parseInt(window.localStorage.getItem('outlook_expiry'));
+  var isExpired = now > parseInt(accessTokenExpiry);
+
   // Do we have a token already?
-  if (window.localStorage.getItem('outlook_access_token') && !isExpired) {
+  if (accessToken && !isExpired) {
     // Just return what we have
     if (callback) {
-      callback(window.localStorage.getItem('outlook_access_token'));
+      callback(accessToken);
     }
   } else {
     // Attempt to do a hidden iframe request
@@ -47,8 +50,9 @@ export const getAccessToken = (callback) => {
   }
 };
 
-export const getUserEvents = (callback) => {
-  getAccessToken((accessToken) => {
+// yay, this should be the last portion before we handle multiple outlook accounts!!
+export const getUserEvents = (accessToken, accessTokenExpiry, callback) => {
+  getAccessToken(accessToken, accessTokenExpiry, (accessToken) => {
     if (accessToken) {
       // Create a Graph client
       var client = Client.init({
@@ -71,6 +75,7 @@ export const getUserEvents = (callback) => {
             // We are hard coding to select from keith's calendar first. but change this for production. LOL
             // By default, can use 0 coz should have a default calendar. 
             id = res.value[3].id;
+            // console.log(id);
 
             var allEvents = await loadOutlookEventsChunked(client, id);
             callback(allEvents);
@@ -132,34 +137,59 @@ export const buildAuthUrl = () => {
   return OUTLOOK_OAUTH_ENDPOINT + params(authParams);
 };
 
-const parseHashParams = (hash) => {
-  var params = hash.slice(1).split('&');
+// const parseHashParams = (hash) => {
+//   var params = hash.slice(1).split('&');
     
-  var paramarray = {};
-  params.forEach(function(param) {
-    param = param.split('=');
-    paramarray[param[0]] = param[1];
-  });
+//   var paramarray = {};
+//   params.forEach(function(param) {
+//     param = param.split('=');
+//     paramarray[param[0]] = param[1];
+//   });
     
-  return paramarray;
+//   return paramarray;
+// };
+
+// export const PopupCenter = (url, title, w, h) => {
+//   // Fixes dual-screen position                         Most browsers      Firefox
+//   var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+//   var dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+//   //eslint-disable-next-line
+//   var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+//   //eslint-disable-next-line
+//   var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+//   var systemZoom = width / window.screen.availWidth;
+//   var left = (width - w) / 2 / systemZoom + dualScreenLeft;
+//   var top = (height - h) / 2 / systemZoom + dualScreenTop;
+//   var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w / systemZoom + ', height=' + h / systemZoom + ', top=' + top + ', left=' + left);
+
+//   // Puts focus on the newWindow
+//   if (window.focus) newWindow.focus();
+// };
+
+// This filter user is used when the outlook first creates the object. 
+// It takes the outlook user object, and map it to the common schema defined in db/person.js
+export const filterUser = (jsonObj, accessToken, accessTokenExpiry) => {
+  return {
+    personId: md5(jsonObj['id']),
+    originalId: jsonObj['id'],
+    email: jsonObj['mail'],
+    providerType: ProviderTypes.OUTLOOK,
+    accessToken: accessToken,
+    accessTokenExpiry: accessTokenExpiry,
+  };
 };
 
-export const PopupCenter = (url, title, w, h) => {
-  // Fixes dual-screen position                         Most browsers      Firefox
-  var dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
-  var dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
 
-  //eslint-disable-next-line
-  var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
-  //eslint-disable-next-line
-  var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
-
-  var systemZoom = width / window.screen.availWidth;
-  var left = (width - w) / 2 / systemZoom + dualScreenLeft;
-  var top = (height - h) / 2 / systemZoom + dualScreenTop;
-  var newWindow = window.open(url, title, 'scrollbars=yes, width=' + w / systemZoom + ', height=' + h / systemZoom + ', top=' + top + ', left=' + left);
-
-  // Puts focus on the newWindow
-  if (window.focus) newWindow.focus();
+export const filterEventToOutlook = (jsonObject) => {
+  return {
+    "subject": jsonObject.summary,
+    "body": {
+      "contentType": "HTML",
+      "content": "Does mid month work for you?"
+    },
+    "start": jsonObject.start,
+    "end": jsonObject.end,
+  };
 };
-

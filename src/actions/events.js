@@ -37,9 +37,20 @@ export const beginGetGoogleEvents = (resp) => ({
   payload: resp
 });
 
-export const postEventBegin = (calEvent) => ({
+export const postEventBegin = (calEvent, auth, providerType) => ({
   type: POST_EVENT_BEGIN,
-  payload: calEvent
+  payload: {
+    data: calEvent,
+    auth: auth,
+    providerType: providerType,
+  }
+});
+
+export const getEventsFailure = (error) => ({
+  type: GET_EVENTS_FAILURE,
+  payload: {
+    error: error,
+  }
 });
 
 export const getEventsSuccess = (response, providerType) => ({
@@ -50,9 +61,12 @@ export const getEventsSuccess = (response, providerType) => ({
   }
 });
 
-export const postEventSuccess = (response) => ({
+export const postEventSuccess = (response, providerType) => ({
   type: POST_EVENT_SUCCESS,
-  payload: response
+  payload: {
+    data: response,
+    providerType: providerType,
+  }
 });
 
 export const beginDeleteEvent = (id) => ({

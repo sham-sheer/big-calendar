@@ -59,7 +59,6 @@ export const eventsMiddleware = store => next => action => {
           type: 'GET_EVENTS_SUCCESS',
           payload: {
             data: response,
-            providerType: 'GOOGLE',
           }
         });
       });
@@ -76,6 +75,7 @@ export const eventsMiddleware = store => next => action => {
       var request = window.gapi.client.calendar.events.insert(calendarObject);
       request.execute((resp) => {
         const newId = resp.id;
+        console.log('midware?!');
         next({
           type: 'POST_EVENT_SUCCESS',
           payload: {

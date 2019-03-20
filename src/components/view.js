@@ -4,6 +4,13 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import moment from "moment";
 import Modal from 'react-modal';
 import './view.css';
+import getDb from '../db';
+import * as ProviderTypes from '../utils/constants';
+import SignupSyncLink from './SignupSyncLink';
+
+// import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
+
+import { transport, Credentials, createAccount } from "dav/dav";
 
 const localizer = BigCalendar.momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
@@ -35,9 +42,62 @@ export default class View extends React.Component {
     // For the modal third party library
     Modal.setAppElement('body');
   }
-  componentDidMount() {
-    // this.props.beginGoogleAuth();
-    // this.props.beginOutlookAuth();
+
+  async componentDidMount() {
+    //// This doesn't work fml. LOL
+    // console.log("here",transport);
+    // var xhr = new transport.Basic(
+    //   new Credentials({
+    //     username: 'fongzhizhong',
+    //     password: 'WKPFd2ScEHBv7qY'
+    //   })
+    // );
+    // console.log(xhr);
+    // createAccount({ server: 'https://caldav.calendar.yahoo.com', xhr: xhr}).then(function(account) {
+    //   account.calendars.forEach((function(calendar) {
+    //     console.log('Found calendar named ' + calendar.displayName);
+    //     // etc.
+    //   }));
+    // });
+
+
+    const db = await getDb();
+    db.provider_users.find().exec().then(providerUserData => { 
+      providerUserData.map((singleProviderUserData) => {
+
+        var now = new Date().getTime();
+        // var now = 1552437629100;
+        var isExpired = now > parseInt(singleProviderUserData.accessTokenExpiry);
+        
+        // console.log(singleProviderUserData,this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
+        // console.log(now,singleProviderUserData.accessTokenExpiry,isExpired,providerUserData);
+        // console.log(singleProviderUserData.providerType + " is " + (isExpired ? "expired!" : "not expired!"));
+
+        if(!isExpired){
+          switch (singleProviderUserData.providerType) {
+            case ProviderTypes.GOOGLE:
+              this.props.onStartGetGoogleAuth(this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
+              break;
+            case ProviderTypes.OUTLOOK:
+              this.props.onStartGetOutlookAuth(this.filterUserOnStart(singleProviderUserData,ProviderTypes.OUTLOOK));
+              break;
+            default:
+              break;
+          }
+        }else{
+          switch (singleProviderUserData.providerType) {
+            case ProviderTypes.GOOGLE:
+              this.props.onExpiredGoogle(this.filterUserOnStart(singleProviderUserData,ProviderTypes.GOOGLE));
+              break;
+            case ProviderTypes.OUTLOOK:
+              this.props.onExpiredOutlook(this.filterUserOnStart(singleProviderUserData,ProviderTypes.OUTLOOK));
+              break;
+            default:
+              break;
+          }
+        }
+      });
+    });
   }
 
   componentWillUnmount() {
@@ -84,7 +144,7 @@ export default class View extends React.Component {
   }
 
   editEvent = () => {
-    this.props.history.push(`/${this.state.currentEvent.id}`)
+    this.props.history.push(`/${this.state.currentEvent.id}`);
   }
 
   handleEventClick = (event) => {
@@ -95,6 +155,21 @@ export default class View extends React.Component {
       currentEventEndDateTime: moment(event.end).format("D, MMMM Do YYYY, h:mm a"),
     });
   }
+
+  // This filter user is used when the outlook first creates the object. 
+  // It takes the outlook user object, and map it to the common schema defined in db/person.js
+  filterUserOnStart = (rxDoc, providerType) => {
+    return { 
+      user: {
+        personId: rxDoc.personId,
+        originalId: rxDoc.originalId,
+        email: rxDoc.email,
+        providerType: providerType,
+        accessToken: rxDoc.accessToken,
+        accessTokenExpiry: rxDoc.accessTokenExpiry,
+      }
+    };
+  };
 
   closeModal = () => {
     this.setState({
@@ -108,7 +183,6 @@ export default class View extends React.Component {
   }
 
   /* Render functions */
-
   renderCalendar = () => {
     return (
       <DragAndDropCalendar
@@ -146,8 +220,33 @@ export default class View extends React.Component {
   }
 
   renderSignupLinks = () => {
+    var providers = [];
+    for (const providerType of Object.keys(this.props.expiredProviders)) {
+      let providerFunc;
+      switch(providerType) {
+        case ProviderTypes.GOOGLE:
+          providerFunc = (() => this.authorizeGoogleCodeRequest());
+          break;
+        case ProviderTypes.OUTLOOK:
+          providerFunc = (() => this.authorizeOutLookCodeRequest());
+          break;
+        default:
+          console.log('Provider not accounted for!!');
+          break;
+      }
+
+      providers.push(<SignupSyncLink key={providerType}
+        providerType={providerType}
+        providerInfo={this.props.expiredProviders[providerType]}
+        providerFunc={() => providerFunc()}
+      />);
+    }
+
     return (
       <div>
+        {/* this is for out of sync tokens. */}
+        {providers}
+
         <a>
           <button className="btn btn-block btn-social"
             onClick={() => this.authorizeGoogleCodeRequest()}>
@@ -162,13 +261,26 @@ export default class View extends React.Component {
           </button>
         </a>
         <button className="btn btn-block btn-social"
-          onClick={() => this.props.beginGetGoogleEvents()}>
+          // onClick={() => this.props.beginGetGoogleEvents()}>
+
+          // This is suppose to allow us to sync multiple user per single provider in the future!! 
+          // Currently, due to no UI, I am hardcoding it to a single instance. But once we get the 
+          // UI up and running for choosing which user events you want to get, this will be amazing
+          // Note: This is the same for the following button, which pulls outlook events.
+
+          // Okay, debate later, coz idk how to deal with it when the user signs in, to update this state here. 
+          onClick={() => { 
+            // console.log(this.state.temp_googleUser); 
+            // this.props.beginGetGoogleEvents();}}>
+            this.props.beginGetGoogleEvents(this.props.providers["GOOGLE"][0]);}}>
           <span className="fa fa-google"></span>
               Get Google Events
         </button>
 
         <button className="btn btn-block btn-social"
-          onClick={() => this.props.beginGetOutlookEvents()}>
+          onClick={() => { 
+            this.props.beginGetOutlookEvents(this.props.providers["OUTLOOK"][0]);}
+          }>
           <span className="fa fa-google"></span>
               Get Outlook Events
         </button>

@@ -10,7 +10,6 @@ const initialState = {
 };
 
 const mergeEvents = (oldEvents, newItems) => {
-  debugger;
   let oldIds = oldEvents.map(item => item.id);
   let newPayload = [...oldEvents];
   for(let newItem of newItems) {
@@ -26,7 +25,9 @@ export default function eventsReducer(state = initialState, action) {
     case RETRIEVE_STORED_EVENTS:
       return Object.assign({}, state, { providerType: action.providerType });
     case UPDATE_STORED_EVENTS:
-      return Object.assign({}, state, { calEvents: action.payload });
+      // return Object.assign({}, state, { calEvents: action.payload });
+      // return Object.assign({}, state, { calEvents: state.calEvents.concat(action.payload) });
+      return Object.assign({}, state, { calEvents: mergeEvents(state.calEvents, action.payload) });
     case SUCCESS_STORED_EVENTS: {
       let newEvents = mergeEvents(state.calEvents, action.payload);
       return Object.assign({}, state, { calEvents: newEvents });
