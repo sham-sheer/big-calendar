@@ -5,7 +5,9 @@ import { connect } from 'react-redux';
 import { successOutlookAuth } from '../actions/auth';
 
 import { Client } from '@microsoft/microsoft-graph-client';
-import { getAccessToken } from '../utils/client/outlook';
+import { getAccessToken,filterUser } from '../utils/client/outlook';
+
+import getDb from '../db';
 
 const mapDispatchToProps = dispatch => ({
   successOutlookAuth: (user) => dispatch(successOutlookAuth(user))
@@ -19,32 +21,19 @@ const mapStateToProps = state => {
 
 class OutLookRedirect extends React.Component {
   state = {
-    access_token: ''
+    isDone: false,
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const response = queryString
       .parse(this.props.location.hash);
     const accessToken = response.access_token;
-
-    let currentUser = {user: {
-      access_token: accessToken,
-    }};
-
-    this.setState({
-      currentUser: currentUser,
-      access_token: accessToken
-    });
 
     var expiresin = (parseInt(response.expires_in) - 300) * 1000;
     var now = new Date();
     var expireDate = new Date(now.getTime() + expiresin);
   
-    window.localStorage.setItem('outlook_access_token', accessToken);
-    window.localStorage.setItem('outlook_expiry', expireDate.getTime());
-    window.localStorage.setItem('outlook_id_token', response.id_token);
-
-    getAccessToken((accessToken) => {
+    getAccessToken(accessToken, expireDate.getTime(), (accessToken) => {
       if (accessToken) {
         // Create a Graph client
         var client = Client.init({
@@ -54,8 +43,6 @@ class OutLookRedirect extends React.Component {
           }
         });
   
-        var id = "";
-        
         // This first select is to choose from the list of calendars 
         client
           .api('/me')
@@ -64,7 +51,16 @@ class OutLookRedirect extends React.Component {
             if (err) {
               console.log(err);
             } else {
-              console.log(JSON.stringify(res));
+              const db = await getDb();
+              const filteredSchemaUser = filterUser(res, accessToken, expireDate.getTime());
+
+              const doc = await db.persons.upsert(filteredSchemaUser);
+              console.log(doc);
+
+              this.props.successOutlookAuth({ user: filteredSchemaUser });
+              await this.setState({
+                isDone: true,
+              });
             }
           });
       } else {
@@ -73,11 +69,10 @@ class OutLookRedirect extends React.Component {
       }
     });
 
-    this.props.successOutlookAuth(currentUser);
   }
 
   renderRedirect = () => {
-    if(this.state.currentUser !== null) {
+    if(this.state.isDone) {
       return (
         <Redirect to="/" />
       );

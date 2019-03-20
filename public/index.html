@@ -25,8 +25,26 @@
     -->
     <title>React App</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<<<<<<< HEAD
     <script async defer src="https://apis.google.com/js/api.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSlcIifI5yDulPluuQjuhML3V0AO2TqfA&libraries=places"></script>
+=======
+    <script async defer src="https://apis.google.com/js/api.js?onload=onLoadCallback"></script>
+    <script>
+      // window.onLoadCallback = function(){
+      function onLoadCallback (){
+        // NEED TO FIND A PLACE FOR THIS GUY. 
+        window.gapi.load('client:auth2', {
+          callback: () => {
+            window.gapi.client.init({
+              'apiKey': 'AIzaSyCTYXWtoRKnXeZkPCcZwYOXm0Qz3Lz9F9g',
+              'clientId': '65724758895-gc7lubjkjsqqddfhlb7jcme80i3mjqn0.apps.googleusercontent.com',
+              'scope': `https://www.googleapis.com/auth/calendar.events`,
+              'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+            });}});
+        // Wow look at how ugly this is man :\
+      }
+>>>>>>> a2e17830a5c1203e024b086d3777ed08ecd6ede4
     </script>
   </head>
   <body>

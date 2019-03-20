@@ -12,11 +12,10 @@ import {
   clearAllEventsEpics,
 } from './events';
 import {
-  storeGoogleAuthEpic
-} from './db/auth';
-import {
   storeEventPersonEpic
 } from './db/eventPersons';
+  storeUsersEpics,
+} from './auth';
 
 export const rootEpic = combineEpics(
   retrieveEventsEpic,
@@ -27,5 +26,5 @@ export const rootEpic = combineEpics(
   beginPostEventEpics,
   deleteEventEpics,
   clearAllEventsEpics,
-  storeGoogleAuthEpic
+  storeUsersEpics,
 );

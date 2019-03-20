@@ -8,17 +8,23 @@ export default {
       "type": "string",
       "primary": true,
     },
+    "originalId": {
+      "type": "string"
+    },
     "email": {
       "type": "string"
     },
-    "displayName": {
+    "providerType": {
       "type": "string"
     },
-    "familyName": {
+    "accessToken": {
       "type": "string"
+    },
+    "accessTokenExpiry" : {
+      "type": "number"
     }
   },
   "required": [
-    "personId"
+    "personId", "originalId"
   ]
 };

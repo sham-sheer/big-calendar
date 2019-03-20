@@ -18,7 +18,7 @@ class Time extends Component {
       label: this.props.currentTime,
     }
     return(
-      <div>
+      <div >
         <Select
           value={currentTimeObj}
           options={this.props.dropDownTime}

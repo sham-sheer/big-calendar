@@ -1,5 +1,10 @@
 import * as RxDB from 'rxdb';
+<<<<<<< HEAD
 import schemas from './schemas';
+=======
+import schema from './schemas';
+import personSchema from './schemas/person';
+>>>>>>> a2e17830a5c1203e024b086d3777ed08ecd6ede4
 
 RxDB.plugin(require('pouchdb-adapter-idb'));
 RxDB.plugin(require('pouchdb-adapter-http'));
@@ -9,7 +14,15 @@ let dbPromise = null;
 const collections = [
   {
     name: 'events',
+<<<<<<< HEAD
     schema: schemas
+=======
+    schema: schema
+  }, 
+  {
+    name: 'provider_users',
+    schema: personSchema
+>>>>>>> a2e17830a5c1203e024b086d3777ed08ecd6ede4
   }
 ];
 

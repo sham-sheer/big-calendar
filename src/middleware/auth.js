@@ -1,5 +1,5 @@
-import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE } from '../utils/client/google';
-import { buildAuthUrl,PopupCenter } from '../utils/client/outlook';
+import { GOOGLE_API_KEY, GOOGLE_CLIENT_ID, GOOGLE_SCOPE, filterUser } from '../utils/client/google';
+import { buildAuthUrl } from '../utils/client/outlook';
 
 import * as Providers from '../utils/constants';
 
@@ -24,50 +24,112 @@ export const authBeginMiddleware = store => next => action => {
   }
 
   if(action.type === AuthActionTypes.BEGIN_GOOGLE_AUTH) {
-    window.gapi.load('client:auth2', {
-      callback: () => {
-        window.gapi.client.init({
-          'apiKey': GOOGLE_API_KEY,
-          'clientId': GOOGLE_CLIENT_ID,
-          'scope': GOOGLE_SCOPE,
-          'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-        }).then(() => {
-          GoogleAuth = window.gapi.auth2.getAuthInstance();
-          GoogleAuth.signIn();
-          //handleAuthClick(GoogleAuth);
-          const user = GoogleAuth.currentUser.get();
+    GoogleAuth = window.gapi.auth2.getAuthInstance();
+    //GoogleAuth.signIn();
+    handleAuthClick(GoogleAuth);
+    const googleUser = GoogleAuth.currentUser.get();
+    const authResponse = googleUser.getAuthResponse();
+    const user = filterUser(googleUser.getBasicProfile(), authResponse.access_token, authResponse.expires_at);
 
-          console.log(user.getBasicProfile());
-          console.log('ID: ' + user.getBasicProfile().getId());
-          console.log('Full Name: ' + user.getBasicProfile().getName());
-          console.log('Given Name: ' + user.getBasicProfile().getGivenName());
-          console.log('Family Name: ' + user.getBasicProfile().getFamilyName());
-          console.log('Image URL: ' + user.getBasicProfile().getImageUrl());
-          console.log('Email: ' + user.getBasicProfile().getEmail());
+    const isAuthorized = googleUser.hasGrantedScopes(GOOGLE_SCOPE);
+    if(isAuthorized) {
+      next({
+        type: AuthActionTypes.SUCCESS_GOOGLE_AUTH,
+        payload: {
+          user
+        }
+      });
+    } else {
+      next({
+        type: AuthActionTypes.FAIL_GOOGLE_AUTH,
+      });
+    }
+    // window.gapi.load('client:auth2', {
+    //   callback: () => {
+    //     window.gapi.client.init({
+    //       'apiKey': GOOGLE_API_KEY,
+    //       'clientId': GOOGLE_CLIENT_ID,
+    //       'scope': GOOGLE_SCOPE,
+    //       'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+    //     });
+    //   }
+    // }););
 
-          const isAuthorized = user.hasGrantedScopes(GOOGLE_SCOPE);
-          const newPerson = {
-            'personId' : user.getBasicProfile().getId(),
-            'email' : user.getBasicProfile().getEmail(),
-            'displayName' : user.getBasicProfile().getGivenName(),
-            'familyName' : user.getBasicProfile().getFamilyName()
-          }
-          if(isAuthorized) {
-            next({
-              type: AuthActionTypes.SUCCESS_GOOGLE_AUTH,
-              payload: newPerson
-            });
-          } else {
-            next({
-              type: AuthActionTypes.FAIL_GOOGLE_AUTH,
-            });
-          }
-        });
-      }
-    });
+    // window.gapi.load('client:auth2', {
+    //   callback: () => {
+    //     window.gapi.client.init({
+    //       'apiKey': GOOGLE_API_KEY,
+    //       'clientId': GOOGLE_CLIENT_ID,
+    //       'scope': GOOGLE_SCOPE,
+    //       'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+    //     }).then(async () => {
+    //       GoogleAuth = window.gapi.auth2.getAuthInstance();
+    //       //GoogleAuth.signIn();
+    //       handleAuthClick(GoogleAuth);
+    //       const googleUser = GoogleAuth.currentUser.get();
+    //       const authResponse = googleUser.getAuthResponse();
+
+    //       const db = await getDb();
+    //       const user = filterUser(googleUser.getBasicProfile(), authResponse.access_token, authResponse.expires_at);
+    //       console.log(user);
+    //       // db.persons.find().exec().then(document => console.log(document));
+    //       db.persons.upsert(user);
+
+    //       const isAuthorized = googleUser.hasGrantedScopes(GOOGLE_SCOPE);
+    //       if(isAuthorized) {
+    //         next({
+    //           type: AuthActionTypes.SUCCESS_GOOGLE_AUTH,
+    //           payload: {
+    //             user
+    //           }
+    //         });
+    //       } else {
+    //         next({
+    //           type: AuthActionTypes.FAIL_GOOGLE_AUTH,
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
+
+    // GoogleAuth = window.gapi.auth2.getAuthInstance();
+    // //GoogleAuth.signIn();
+    // handleAuthClick(GoogleAuth);
+    // const googleUser = GoogleAuth.currentUser.get();
+    // const authResponse = googleUser.getAuthResponse();
+    // const user = filterUser(googleUser.getBasicProfile(), authResponse.access_token, authResponse.expires_at);
+
+    // // const db = await getDb();
+    // // const user = filterUser(googleUser.getBasicProfile(), authResponse.access_token, authResponse.expires_at);
+    // // console.log(user);
+    // // // db.persons.find().exec().then(document => console.log(document));
+    // // db.persons.upsert(user);
+
+    // const isAuthorized = googleUser.hasGrantedScopes(GOOGLE_SCOPE);
+    // if(isAuthorized) {
+    //   next({
+    //     type: AuthActionTypes.SUCCESS_GOOGLE_AUTH,
+    //     payload: {
+    //       user
+    //     }
+    //   });
+    // } else {
+    //   next({
+    //     type: AuthActionTypes.FAIL_GOOGLE_AUTH,
+    //   });
+    // }
+    // // window.gapi.load('client:auth2', {
+    // //   callback: () => {
+    // //     window.gapi.client.init({
+    // //       'apiKey': GOOGLE_API_KEY,
+    // //       'clientId': GOOGLE_CLIENT_ID,
+    // //       'scope': GOOGLE_SCOPE,
+    // //       'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+    // //     });
+    // //   }
+    // // });
   } else if (action.type === AuthActionTypes.BEGIN_OUTLOOK_AUTH) {
     const url = buildAuthUrl();
-    console.log(url);
     window.open(url,'_self',false);
   }
   return next(action);
